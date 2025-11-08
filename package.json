@@ -1,0 +1,36 @@
+{
+  "name": "@ddevkim/carousel-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Monorepo workspace for Carousel Circular package",
+  "packageManager": "pnpm@10.20.0",
+  "scripts": {
+    "dev": "node scripts/dev-package.js",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "format": "biome format --write .",
+    "type-check": "turbo run type-check",
+    "clean": "turbo run clean && rm -rf .turbo",
+    "changeset": "changeset",
+    "changeset:add": "changeset add",
+    "version": "changeset version",
+    "release": "node scripts/release-package.js",
+    "release:all": "turbo run build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.7",
+    "@types/node": "^22.19.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "biome": "^0.3.3",
+    "prompts": "^2.4.2",
+    "tsup": "^8.5.0",
+    "turbo": "^2.6.0",
+    "typescript": "^5.9.3",
+    "vite": "^5.4.21"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
