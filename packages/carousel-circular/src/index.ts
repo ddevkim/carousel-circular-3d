@@ -9,4 +9,6 @@ export type {
   CarouselItem,
   CarouselItemWithContent,
   CarouselItemWithImage,
+  LightboxOptions,
+  LightboxState,
 } from './types';

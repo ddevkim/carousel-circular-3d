@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { pxToRem } from '../utils/helpers';
+import { pxToRem } from '../../utils/helpers';
 
 /**
  * CarouselContainer 컴포넌트 Props
@@ -13,8 +13,6 @@ export interface CarouselContainerProps {
   cameraAngle: number;
   /** 최종 회전 각도 (degree) */
   finalRotation: number;
-  /** 드래그 중 여부 */
-  isDragging: boolean;
   /** 브라우저 환경 여부 */
   isBrowser: boolean;
   /** 접근성 레이블 */
@@ -40,7 +38,6 @@ export function CarouselContainer({
   perspective,
   cameraAngle,
   finalRotation,
-  isDragging,
   isBrowser,
   ariaLabel,
   onMouseEnter,
@@ -68,7 +65,6 @@ export function CarouselContainer({
 
   // 브라우저 환경에서는 상호작용 활성화
   if (isBrowser) {
-    containerStyle.cursor = isDragging ? 'grabbing' : 'grab';
     containerStyle.isolation = 'isolate';
     rotationContainerStyle.transform = `rotateX(-${cameraAngle}deg) rotateY(${finalRotation}deg)`;
     rotationContainerStyle.transition = 'transform 0s';

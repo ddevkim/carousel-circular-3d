@@ -40,7 +40,7 @@ export function calculateItemStyle(params: ItemStyleParams): CSSProperties {
     border: 'none',
     padding: 0,
     background: 'transparent',
-    cursor: isClickable ? 'pointer' : undefined,
     pointerEvents: isClickable ? 'auto' : 'none',
+    userSelect: 'none',
   };
 }

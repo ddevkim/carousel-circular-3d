@@ -4,9 +4,10 @@ import { getAlbums } from "./utils/albumHelper";
 import { AutoRotateExample } from "./examples/AutoRotateExample";
 import { BasicExample } from "./examples/BasicExample";
 import { CustomContentExample } from "./examples/CustomContentExample";
+import { LightboxExample } from "./examples/LightboxExample";
 import "./App.css";
 
-type ExampleType = "basic" | "auto-rotate" | "custom-content";
+type ExampleType = "basic" | "auto-rotate" | "custom-content" | "lightbox";
 
 export function App() {
   const [activeExample, setActiveExample] = useState<ExampleType>("basic");
@@ -53,6 +54,13 @@ export function App() {
           </button>
           <button
             type="button"
+            className={activeExample === "lightbox" ? "active" : ""}
+            onClick={() => setActiveExample("lightbox")}
+          >
+            Lightbox
+          </button>
+          <button
+            type="button"
             className={activeExample === "custom-content" ? "active" : ""}
             onClick={() => setActiveExample("custom-content")}
           >
@@ -64,13 +72,13 @@ export function App() {
       <main className="main">
         {activeExample === "basic" && <BasicExample album={selectedAlbum} />}
         {activeExample === "auto-rotate" && <AutoRotateExample album={selectedAlbum} />}
+        {activeExample === "lightbox" && <LightboxExample album={selectedAlbum} />}
         {activeExample === "custom-content" && <CustomContentExample />}
       </main>
 
       <footer className="footer">
         <p>
-          Drag to rotate | Use Arrow keys ← → | Mouse enter/leave to control
-          auto-rotate
+          Drag to rotate | Use Arrow keys ← → | Click images to open lightbox | Mouse enter/leave to control auto-rotate
         </p>
       </footer>
     </div>

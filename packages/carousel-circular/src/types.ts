@@ -96,6 +96,12 @@ export interface CarouselCircularProps {
   /** CSS 클래스명 설정 */
   style?: StyleConfig;
 
+  // ========== Lightbox ==========
+  /** 아이템 클릭 시 Lightbox 활성화 여부 (기본: false) */
+  enableLightboxWhenClick?: boolean;
+  /** Lightbox 옵션 설정 */
+  lightboxOptions?: LightboxOptions;
+
   // ========== 콜백 ==========
   /** 아이템 클릭 시 호출되는 콜백 함수 */
   onItemClick?: (item: CarouselItem, index: number) => void;
@@ -158,4 +164,32 @@ export interface ItemTransform {
   opacity: number;
   /** 계산된 z-index 값 */
   zIndex: number;
+}
+
+/**
+ * Lightbox 상태
+ */
+export interface LightboxState {
+  /** Lightbox 열림 여부 */
+  isOpen: boolean;
+  /** 현재 선택된 아이템 인덱스 */
+  selectedIndex: number;
+  /** 클릭된 소스 요소의 DOMRect (애니메이션 시작 위치) */
+  sourceRect: DOMRect | null;
+  /** 클릭된 소스 요소의 transform 값 (애니메이션 시작 상태) */
+  sourceTransform: string | null;
+}
+
+/**
+ * Lightbox 옵션 설정
+ */
+export interface LightboxOptions {
+  /** 키보드 네비게이션 활성화 여부 (기본: true) */
+  enableKeyboardNavigation?: boolean;
+  /** ESC 키로 닫기 활성화 여부 (기본: true) */
+  closeOnEsc?: boolean;
+  /** 배경 blur 강도 (px, 기본: 8) */
+  backgroundBlur?: number;
+  /** 애니메이션 지속 시간 (ms, 기본: 500) */
+  animationDuration?: number;
 }

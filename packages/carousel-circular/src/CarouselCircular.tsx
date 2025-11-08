@@ -1,9 +1,10 @@
 import { useCallback } from 'react';
-import { CarouselContainer } from './components/CarouselContainer';
-import { CarouselItem } from './components/CarouselItem';
+import { CarouselContainer, CarouselItem } from './components/Carousel';
+import { Lightbox } from './components/Lightbox';
 import { useCarouselConfig } from './hooks/useCarouselConfig';
 import { useCarouselRotation } from './hooks/useCarouselRotation';
 import { useKeyboard } from './hooks/useKeyboard';
+import { useLightbox } from './hooks/useLightbox';
 import type { CarouselCircularProps } from './types';
 import { calculateItemTransform } from './utils/transformCalculator';
 
@@ -32,9 +33,17 @@ export function CarouselCircular(props: CarouselCircularProps) {
     isBrowser,
   });
 
-  // 키보드 네비게이션 Hook
+  // Lightbox 상태 관리 Hook
+  const lightbox = useLightbox({
+    enabled: config.enableLightboxWhenClick && isBrowser,
+    itemCount: config.items.length,
+    onRotateCarousel: rotation.rotateByDelta,
+    options: config.lightboxOptions,
+  });
+
+  // 키보드 네비게이션 Hook (Lightbox가 열려있지 않을 때만 동작)
   useKeyboard({
-    enabled: isBrowser,
+    enabled: isBrowser && !lightbox.lightboxState.isOpen,
     onRotateByDelta: rotation.rotateByDelta,
     onKeyboardInput: rotation.handleKeyboardInput,
   });
@@ -76,6 +85,20 @@ export function CarouselCircular(props: CarouselCircularProps) {
   );
 
   /**
+   * Lightbox 열기 핸들러
+   * @param index - 아이템 인덱스
+   * @param element - 클릭된 요소
+   */
+  const handleLightboxOpen = useCallback(
+    (index: number, element: HTMLElement) => {
+      if (config.enableLightboxWhenClick) {
+        lightbox.openLightbox(index, element);
+      }
+    },
+    [config.enableLightboxWhenClick, lightbox]
+  );
+
+  /**
    * 아이템 렌더링
    * @param item - CarouselItem
    * @param index - 아이템 인덱스
@@ -99,6 +122,7 @@ export function CarouselCircular(props: CarouselCircularProps) {
             rotation.resetSignificantDrag();
           }}
           shouldPreventClick={shouldPreventItemClick}
+          onLightboxOpen={config.enableLightboxWhenClick ? handleLightboxOpen : undefined}
         />
       );
     },
@@ -108,7 +132,9 @@ export function CarouselCircular(props: CarouselCircularProps) {
       config.itemHeight,
       config.itemClassName,
       config.onItemClick,
+      config.enableLightboxWhenClick,
       shouldPreventItemClick,
+      handleLightboxOpen,
       rotation.resetSignificantDrag,
       rotation,
       config,
@@ -116,20 +142,32 @@ export function CarouselCircular(props: CarouselCircularProps) {
   );
 
   return (
-    <CarouselContainer
-      className={config.className}
-      perspective={config.perspective}
-      cameraAngle={config.cameraAngle}
-      finalRotation={rotation.finalRotation}
-      isDragging={rotation.isDragging}
-      isBrowser={isBrowser}
-      ariaLabel={config.ariaLabel}
-      onMouseEnter={rotation.handleMouseEnter}
-      onMouseLeave={rotation.handleMouseLeave}
-      onMouseDown={rotation.handleMouseDown}
-      onTouchStart={rotation.handleTouchStart}
-    >
-      {config.items.map((item, index) => renderItem(item, index))}
-    </CarouselContainer>
+    <>
+      <CarouselContainer
+        className={config.className}
+        perspective={config.perspective}
+        cameraAngle={config.cameraAngle}
+        finalRotation={rotation.finalRotation}
+        isBrowser={isBrowser}
+        ariaLabel={config.ariaLabel}
+        onMouseEnter={rotation.handleMouseEnter}
+        onMouseLeave={rotation.handleMouseLeave}
+        onMouseDown={rotation.handleMouseDown}
+        onTouchStart={rotation.handleTouchStart}
+      >
+        {config.items.map((item, index) => renderItem(item, index))}
+      </CarouselContainer>
+
+      {/* Lightbox */}
+      {config.enableLightboxWhenClick && (
+        <Lightbox
+          lightboxState={lightbox.lightboxState}
+          items={config.items}
+          onClose={lightbox.closeLightbox}
+          onNavigate={lightbox.navigateLightbox}
+          options={config.lightboxOptions}
+        />
+      )}
+    </>
   );
 }

@@ -24,9 +24,7 @@ export function ExampleContainer({ title, description, carouselProps }: ExampleC
   return (
     <div className="example">
       <h2 className="example-title">{title}</h2>
-      {description && (
-        <p style={{ textAlign: 'center', marginBottom: '1rem', opacity: 0.9 }}>{description}</p>
-      )}
+      {description && <p className="example-description">{description}</p>}
       <CarouselCircular {...carouselProps} />
     </div>
   );

@@ -1,7 +1,7 @@
 import type { CarouselItem } from '@ddevkim/carousel-circular';
+import { ExampleContainer } from '../components/ExampleContainer';
 import type { AlbumName } from '../utils/albumHelper';
 import { createAlbumItems } from '../utils/albumHelper';
-import { ExampleContainer } from '../components/ExampleContainer';
 
 interface BasicExampleProps {
   album: AlbumName;
@@ -22,13 +22,14 @@ export function BasicExample({ album }: BasicExampleProps) {
   return (
     <ExampleContainer
       title="Basic Usage - Image Carousel"
+      description="Basic circular carousel with image items. Click items to interact. Configured with large radius (900px), depth effects, and scale transitions."
       carouselProps={{
         items,
         style: { className: 'carousel-container', itemClassName: 'carousel-item' },
-        geometry: { 
+        geometry: {
           radius: 900,
-          cameraAngle: 0,        // Camera angle for depth perception (0-30deg)
-          depthIntensity: 5,    // Individual item Z-depth variation (0-3)
+          cameraAngle: 0, // Camera angle for depth perception (0-30deg)
+          depthIntensity: 5, // Individual item Z-depth variation (0-3)
         },
         visualEffect: { scaleRange: [0.5, 1] },
         onItemClick: handleItemClick,

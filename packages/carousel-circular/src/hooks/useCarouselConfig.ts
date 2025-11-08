@@ -40,6 +40,10 @@ export interface NormalizedCarouselConfig {
   className?: string;
   itemClassName?: string;
 
+  // Lightbox
+  enableLightboxWhenClick: boolean;
+  lightboxOptions?: import('../types').LightboxOptions;
+
   // 콜백 및 접근성
   onItemClick?: (item: CarouselItem, index: number) => void;
   ariaLabel: string;
@@ -112,6 +116,10 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
   const className = props.style?.className;
   const itemClassName = props.style?.itemClassName;
 
+  // Lightbox 설정
+  const enableLightboxWhenClick = props.enableLightboxWhenClick ?? false;
+  const lightboxOptions = props.lightboxOptions;
+
   // 콜백 및 접근성
   const onItemClick = props.onItemClick;
   const ariaLabel = props.ariaLabel ?? DEFAULT_PROPS.ARIA_LABEL;
@@ -136,6 +144,8 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
     scaleRange,
     className,
     itemClassName,
+    enableLightboxWhenClick,
+    lightboxOptions,
     onItemClick,
     ariaLabel,
     keyboardRotationStep,
