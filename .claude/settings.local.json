@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm type-check:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm lint:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
