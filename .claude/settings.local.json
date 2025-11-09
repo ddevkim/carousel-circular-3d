@@ -6,7 +6,8 @@
       "Bash(pnpm lint:*)",
       "Bash(pnpm lint:fix:*)",
       "Bash(pnpm run lint:fix:*)",
-      "Bash(biome check:*)"
+      "Bash(biome check:*)",
+      "Bash(git show:*)"
     ],
     "deny": [],
     "ask": []
