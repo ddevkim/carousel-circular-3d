@@ -15,16 +15,6 @@ export interface GeometryConfig {
 }
 
 /**
- * 아이템 크기 설정
- */
-export interface ItemSizeConfig {
-  /** 각 아이템의 너비 (px, 기본: 300) */
-  width?: number;
-  /** 각 아이템의 높이 (px, 기본: 400) */
-  height?: number;
-}
-
-/**
  * 드래그 및 관성 상호작용 설정
  */
 export interface InteractionConfig {
@@ -79,8 +69,6 @@ export interface CarouselCircularProps {
   // ========== 3D 기하학 ==========
   /** 3D 기하학 구조 설정 (반지름, 원근감 등) */
   geometry?: GeometryConfig;
-  /** 아이템 크기 설정 */
-  itemSize?: ItemSizeConfig;
 
   // ========== 상호작용 ==========
   /** 드래그 및 관성 효과 설정 */
@@ -95,6 +83,8 @@ export interface CarouselCircularProps {
   // ========== 스타일링 ==========
   /** CSS 클래스명 설정 */
   style?: StyleConfig;
+  /** 캐러셀 컨테이너 높이 (px, 기본: 600) */
+  containerHeight?: number;
 
   // ========== Lightbox ==========
   /** 아이템 클릭 시 Lightbox 활성화 여부 (기본: false) */
@@ -111,6 +101,19 @@ export interface CarouselCircularProps {
   ariaLabel?: string;
   /** 키보드 방향키 회전 각도 (기본: 360 / items.length) */
   keyboardRotationStep?: number;
+}
+
+/**
+ * 이미지 방향 타입
+ */
+export type ImageOrientation = 'square' | 'portrait' | 'landscape';
+
+/**
+ * 이미지 방향별 컨테이너 비율 (width:height)
+ */
+export interface OrientationRatio {
+  width: number;
+  height: number;
 }
 
 /**
@@ -164,6 +167,24 @@ export interface ItemTransform {
   opacity: number;
   /** 계산된 z-index 값 */
   zIndex: number;
+}
+
+/**
+ * 방향 정보가 포함된 아이템 메타데이터
+ */
+export interface ItemWithOrientation {
+  /** 원본 아이템 */
+  item: CarouselItem;
+  /** 결정된 방향 */
+  orientation: ImageOrientation;
+  /** 계산된 컨테이너 너비 (px) */
+  width: number;
+  /** 계산된 컨테이너 높이 (px) */
+  height: number;
+  /** 이 아이템이 차지하는 각도 */
+  angle: number;
+  /** 아이템의 중심 각도 (rotateY에 사용) */
+  cumulativeAngle: number;
 }
 
 /**

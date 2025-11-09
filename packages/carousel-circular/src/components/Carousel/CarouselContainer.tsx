@@ -5,7 +5,7 @@ import { pxToRem } from '../../utils/helpers';
  * CarouselContainer 컴포넌트 Props
  */
 export interface CarouselContainerProps {
-  /** 컨테이너 CSS 클래스명 */
+  /** 컨테이너 CSS 클래스명 (기본 .carousel-container에 추가됨) */
   className?: string;
   /** Perspective 값 (px) */
   perspective: number;
@@ -17,6 +17,8 @@ export interface CarouselContainerProps {
   isBrowser: boolean;
   /** 접근성 레이블 */
   ariaLabel: string;
+  /** 컨테이너 높이 (px, 기본: 600) */
+  height: number;
   /** 마우스 enter 핸들러 */
   onMouseEnter?: () => void;
   /** 마우스 leave 핸들러 */
@@ -40,6 +42,7 @@ export function CarouselContainer({
   finalRotation,
   isBrowser,
   ariaLabel,
+  height,
   onMouseEnter,
   onMouseLeave,
   onMouseDown,
@@ -50,6 +53,7 @@ export function CarouselContainer({
     perspective: `${pxToRem(perspective)}rem`,
     position: 'relative',
     width: '100%',
+    height: `${pxToRem(height)}rem`,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -75,9 +79,11 @@ export function CarouselContainer({
     rotationContainerStyle.pointerEvents = 'none';
   }
 
+  const finalClassName = className ? `carousel-container ${className}` : 'carousel-container';
+
   return (
     <section
-      className={className}
+      className={finalClassName}
       style={containerStyle}
       onMouseEnter={isBrowser ? onMouseEnter : undefined}
       onMouseLeave={isBrowser ? onMouseLeave : undefined}

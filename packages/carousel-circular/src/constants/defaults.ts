@@ -34,4 +34,6 @@ export const DEFAULT_PROPS = {
   CAMERA_ANGLE: 0,
   /** 개별 아이템 Z축 깊이 변동 강도 */
   DEPTH_INTENSITY: 0,
+  /** 컨테이너 높이 (px) */
+  CONTAINER_HEIGHT: 600,
 } as const;

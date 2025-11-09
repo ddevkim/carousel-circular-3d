@@ -1,4 +1,8 @@
-import type { CarouselItem as CarouselItemType, ItemTransform } from '../../types';
+import type {
+  CarouselItem as CarouselItemType,
+  ImageOrientation,
+  ItemTransform,
+} from '../../types';
 import { getItemAriaLabel, renderItemContent } from '../../utils/itemContentRenderer';
 import { calculateItemStyle } from '../../utils/itemStyleCalculator';
 
@@ -12,11 +16,17 @@ export interface CarouselItemProps {
   index: number;
   /** Transform 계산 결과 */
   transform: ItemTransform;
-  /** 아이템 너비 (px) */
-  itemWidth: number;
-  /** 아이템 높이 (px) */
-  itemHeight: number;
-  /** CSS 클래스명 */
+  /** 컨테이너 높이 (px) */
+  containerHeight: number;
+  /** 이미지 방향 */
+  orientation: ImageOrientation;
+  /** 크기 스케일 범위 [최소, 최대] */
+  scaleRange: [number, number];
+  /** Perspective 값 (px) */
+  perspective: number;
+  /** 원의 반지름 (px) */
+  radius: number;
+  /** CSS 클래스명 (기본 .carousel-item에 추가됨) */
   itemClassName?: string;
   /** 클릭 핸들러 */
   onItemClick?: (item: CarouselItemType, index: number) => void;
@@ -34,8 +44,11 @@ export function CarouselItem({
   item,
   index,
   transform,
-  itemWidth,
-  itemHeight,
+  containerHeight,
+  orientation,
+  scaleRange,
+  perspective,
+  radius,
   itemClassName,
   onItemClick,
   shouldPreventClick,
@@ -44,15 +57,17 @@ export function CarouselItem({
   const content = renderItemContent(item, index);
   const ariaLabel = getItemAriaLabel(item, index);
   const isClickable = Boolean(onItemClick) || Boolean(onLightboxOpen);
+  const finalClassName = itemClassName ? `carousel-item ${itemClassName}` : 'carousel-item';
 
   const baseStyle = calculateItemStyle({
-    itemWidth,
-    itemHeight,
+    containerHeight,
+    orientation,
     transform,
+    scaleRange,
+    perspective,
+    radius,
     isClickable,
   });
-
-  console.log(itemWidth, itemHeight);
 
   /**
    * 클릭 핸들러
@@ -82,7 +97,7 @@ export function CarouselItem({
       <button
         key={item.id}
         type="button"
-        className={itemClassName}
+        className={finalClassName}
         style={baseStyle}
         onClick={handleClick}
         aria-label={ariaLabel}
@@ -96,7 +111,7 @@ export function CarouselItem({
   return (
     <div
       key={item.id}
-      className={itemClassName}
+      className={finalClassName}
       style={baseStyle}
       title={ariaLabel}
       data-carousel-index={index}

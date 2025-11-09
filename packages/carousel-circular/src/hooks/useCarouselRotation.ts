@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { ItemWithOrientation } from '../types';
 import { normalizeAngle180, normalizeAngle360 } from '../utils/helpers';
 import { useAutoRotate } from './useAutoRotate';
 import { useDrag } from './useDrag';
@@ -30,6 +31,8 @@ export interface UseCarouselRotationParams {
   autoRotateResumeDelay: number;
   /** 아이템 총 개수 */
   itemCount: number;
+  /** 아이템 메타데이터 (orientation 기반 각도 정보) */
+  itemsMetadata: ItemWithOrientation[];
   /** 브라우저 환경 여부 */
   isBrowser: boolean;
 }
@@ -77,6 +80,7 @@ export function useCarouselRotation(params: UseCarouselRotationParams): UseCarou
     autoRotateSpeed,
     autoRotateResumeDelay,
     itemCount,
+    itemsMetadata,
     isBrowser,
   } = params;
 
@@ -116,14 +120,26 @@ export function useCarouselRotation(params: UseCarouselRotationParams): UseCarou
     },
   });
 
-  // 키보드 회전 애니메이션 Hook
-  const { rotateByDelta, keyboardRotation } = useRotateToIndex({
-    itemCount,
-    enabled: isBrowser,
-  });
+  // 키보드 회전 상태 (초기값 0)
+  const [keyboardRotation, setKeyboardRotation] = useState(0);
 
   // 최종 회전 각도 (dragRotation + autoRotation + keyboardRotation)
   const finalRotation = dragRotation + autoRotation + keyboardRotation;
+
+  // 키보드 회전 애니메이션 Hook
+  const rotateToIndexHook = useRotateToIndex({
+    itemCount,
+    itemsMetadata,
+    finalRotation,
+    enabled: isBrowser,
+  });
+
+  // keyboardRotation 동기화 (useRotateToIndex에서 업데이트된 값 반영)
+  useEffect(() => {
+    setKeyboardRotation(rotateToIndexHook.keyboardRotation);
+  }, [rotateToIndexHook.keyboardRotation]);
+
+  const rotateByDelta = rotateToIndexHook.rotateByDelta;
 
   // mousedown 시 현재 rotation 저장
   const handleMouseDown = useCallback(

@@ -24,6 +24,7 @@ export function BasicExample({ album }: BasicExampleProps) {
       title="Basic Usage - Image Carousel"
       description="Basic circular carousel with image items. Click items to interact. Configured with large radius (900px), depth effects, and scale transitions."
       carouselProps={{
+        containerHeight: 400,
         items,
         style: { className: 'carousel-container', itemClassName: 'carousel-item' },
         geometry: {

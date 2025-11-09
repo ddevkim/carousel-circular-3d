@@ -7,8 +7,10 @@ import { normalizeAngle180, normalizeAngle360, pxToRem } from './helpers';
 export interface TransformCalculationParams {
   /** 아이템 인덱스 */
   itemIndex: number;
-  /** 아이템당 각도 간격 (degree) */
-  anglePerItem: number;
+  /** 아이템당 각도 간격 (degree) - 고정 각도 모드에서만 사용 */
+  anglePerItem?: number;
+  /** 아이템의 누적 각도 (degree) - 동적 각도 모드에서 사용 */
+  cumulativeAngle?: number;
   /** 최종 회전 각도 (degree) */
   finalRotation: number;
   /** 원의 반지름 (px) */
@@ -30,6 +32,7 @@ export function calculateItemTransform(params: TransformCalculationParams): Item
   const {
     itemIndex,
     anglePerItem,
+    cumulativeAngle,
     finalRotation,
     radius,
     opacityRange,
@@ -37,7 +40,10 @@ export function calculateItemTransform(params: TransformCalculationParams): Item
     depthIntensity,
   } = params;
 
-  const itemAngle = itemIndex * anglePerItem;
+  // 동적 각도 모드(cumulativeAngle)를 우선 사용, 없으면 고정 각도 모드(anglePerItem) 사용
+  const itemAngle = cumulativeAngle !== undefined
+    ? cumulativeAngle
+    : (anglePerItem !== undefined ? itemIndex * anglePerItem : 0);
 
   // 정규화된 각도 계산
   const totalRotation = normalizeAngle360(finalRotation);

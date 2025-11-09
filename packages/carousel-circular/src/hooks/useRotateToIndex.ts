@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { KEYBOARD_ROTATION_DURATION } from '../constants';
+import type { ItemWithOrientation } from '../types';
+import { calculateCenterIndex } from '../utils/helpers';
 import {
   cancelRotationAnimation,
   createRotationAnimationState,
@@ -14,6 +16,10 @@ import {
 interface UseRotateToIndexProps {
   /** 아이템 총 개수 */
   itemCount: number;
+  /** 아이템 메타데이터 (orientation 기반 각도 정보) */
+  itemsMetadata: ItemWithOrientation[];
+  /** 최종 회전 각도 (dragRotation + autoRotation + keyboardRotation) */
+  finalRotation: number;
   /** 활성화 여부 (기본: true) */
   enabled?: boolean;
 }
@@ -40,6 +46,8 @@ interface UseRotateToIndexReturn {
  */
 export function useRotateToIndex({
   itemCount,
+  itemsMetadata,
+  finalRotation,
   enabled = true,
 }: UseRotateToIndexProps): UseRotateToIndexReturn {
   const [keyboardRotation, setKeyboardRotation] = useState(0);
@@ -49,27 +57,41 @@ export function useRotateToIndex({
 
   /**
    * 상대적 인덱스 이동
+   * orientation 기반 각도를 고려하여 타겟 아이템을 화면 정면(0°)에 배치
    * @param indexDelta - 이동할 인덱스 개수 (+1, -1 등)
    * @param direction - 회전 방향 (optional, default: 'auto')
-   *                    'clockwise': 항상 시계방향 (양수)
-   *                    'counterClockwise': 항상 반시계방향 (음수)
-   *                    'auto': 최단 거리 (기본값)
    */
   const rotateByDelta = useCallback(
     (indexDelta: number, direction?: RotationDirection) => {
       if (!enabled || itemCount === 0) return;
 
-      // 아이템당 각도 간격
-      const anglePerItem = 360 / itemCount;
+      // 키보드 입력 시점의 현재 중앙 인덱스를 계산 (on-demand)
+      const currentCenterIndex = calculateCenterIndex(itemsMetadata, finalRotation, itemCount);
 
-      // 새로운 타겟 인덱스 계산
-      const newTargetIndex = (currentTargetIndex + indexDelta + itemCount) % itemCount;
+      // 현재 화면 중앙의 실제 인덱스를 기반으로 새로운 타겟 인덱스 계산
+      const newTargetIndex = (currentCenterIndex + indexDelta + itemCount) % itemCount;
 
-      // 타겟 인덱스의 절대 각도 (정확한 목표 위치)
-      const absoluteTargetAngle = newTargetIndex * anglePerItem;
+      // 조기 반환 체크
+      if (itemsMetadata.length === 0) {
+        return;
+      }
 
-      // 현재 실시간 각도 (애니메이션 진행 중이면 currentAngle, 아니면 keyboardRotation)
-      const currentRealTimeAngle = isAnimating
+      // 타겟 아이템 메타데이터 조회
+      const targetMetadata = itemsMetadata[newTargetIndex];
+      if (!targetMetadata) {
+        return;
+      }
+
+      // 타겟 아이템을 정면(0°)에 배치하기 위한 목표 keyboardRotation 계산
+      // finalRotation = dragRotation + autoRotation + keyboardRotation
+      // 타겟을 0°에 배치: targetItemAngle + finalRotation = 0
+      // → keyboardRotation = -targetItemAngle - (dragRotation + autoRotation)
+      const targetItemAngle = targetMetadata.cumulativeAngle;
+      const dragAndAutoRotation = finalRotation - keyboardRotation;
+      const targetKeyboardRotation = -targetItemAngle - dragAndAutoRotation;
+
+      // 현재 실시간 keyboardRotation
+      const currentRealTimeKeyboardRotation = isAnimating
         ? animationStateRef.current.currentAngle
         : keyboardRotation;
 
@@ -82,11 +104,11 @@ export function useRotateToIndex({
       // 애니메이션 시작
       setIsAnimating(true);
 
-      // 현재 실시간 각도에서 절대 타겟 각도로 이동
+      // 현재 keyboardRotation에서 타겟 keyboardRotation으로 이동
       startRotationAnimation(
         animationStateRef.current,
-        currentRealTimeAngle,
-        absoluteTargetAngle,
+        currentRealTimeKeyboardRotation,
+        targetKeyboardRotation,
         KEYBOARD_ROTATION_DURATION,
         rotationDirection,
         (angle) => {
@@ -94,12 +116,12 @@ export function useRotateToIndex({
         },
         () => {
           setIsAnimating(false);
-          // 정확한 절대 타겟 각도로 설정 (누적 오류 방지)
-          setKeyboardRotation(absoluteTargetAngle);
+          // 정확한 타겟 각도로 설정 (누적 오류 방지)
+          setKeyboardRotation(targetKeyboardRotation);
         }
       );
     },
-    [enabled, itemCount, currentTargetIndex, keyboardRotation, isAnimating]
+    [enabled, itemCount, itemsMetadata, finalRotation, isAnimating, keyboardRotation]
   );
 
   /**

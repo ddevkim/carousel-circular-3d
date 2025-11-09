@@ -1,11 +1,13 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { CarouselContainer, CarouselItem } from './components/Carousel';
 import { Lightbox } from './components/Lightbox';
 import { useCarouselConfig } from './hooks/useCarouselConfig';
 import { useCarouselRotation } from './hooks/useCarouselRotation';
+import { useImageOrientations } from './hooks/useImageOrientations';
 import { useKeyboard } from './hooks/useKeyboard';
 import { useLightbox } from './hooks/useLightbox';
 import type { CarouselCircularProps } from './types';
+import { calculateItemsMetadata } from './utils/itemMetadataCalculator';
 import { calculateItemTransform } from './utils/transformCalculator';
 
 /**
@@ -20,6 +22,19 @@ export function CarouselCircular(props: CarouselCircularProps) {
   // Props 구조화 및 기본값 적용
   const config = useCarouselConfig(props);
 
+  // 이미지 방향 분석 (각 이미지의 orientation 결정)
+  const { orientationMap, isLoaded } = useImageOrientations(config.items);
+
+  // 아이템 메타데이터 계산 (orientation 기반 크기 및 각도)
+  // containerHeight를 기준으로 아이템 크기 동적 계산
+  // 로딩 완료 후에만 계산하여 일관된 각도 사용
+  const itemsMetadata = useMemo(() => {
+    if (!isLoaded) {
+      return [];
+    }
+    return calculateItemsMetadata(config.items, orientationMap, config.containerHeight);
+  }, [config.items, orientationMap, config.containerHeight, isLoaded]);
+
   // 회전 상태 통합 관리
   const rotation = useCarouselRotation({
     radius: config.radius,
@@ -30,6 +45,7 @@ export function CarouselCircular(props: CarouselCircularProps) {
     autoRotateSpeed: config.autoRotateSpeed,
     autoRotateResumeDelay: config.autoRotateResumeDelay,
     itemCount: config.items.length,
+    itemsMetadata,
     isBrowser,
   });
 
@@ -41,9 +57,9 @@ export function CarouselCircular(props: CarouselCircularProps) {
     options: config.lightboxOptions,
   });
 
-  // 키보드 네비게이션 Hook (Lightbox가 열려있지 않을 때만 동작)
+  // 키보드 네비게이션 Hook (Lightbox가 열려있지 않고 로딩 완료 시만 동작)
   useKeyboard({
-    enabled: isBrowser && !lightbox.lightboxState.isOpen,
+    enabled: isBrowser && !lightbox.lightboxState.isOpen && isLoaded,
     onRotateByDelta: rotation.rotateByDelta,
     onKeyboardInput: rotation.handleKeyboardInput,
   });
@@ -64,9 +80,13 @@ export function CarouselCircular(props: CarouselCircularProps) {
    */
   const calculateTransform = useCallback(
     (itemIndex: number) => {
+      // itemsMetadata가 있으면 동적 각도 사용, 없으면 고정 각도 사용
+      const metadata = itemsMetadata[itemIndex];
+
       return calculateItemTransform({
         itemIndex,
-        anglePerItem: config.anglePerItem,
+        anglePerItem: metadata ? undefined : config.anglePerItem,
+        cumulativeAngle: metadata?.cumulativeAngle,
         finalRotation: rotation.finalRotation,
         radius: config.radius,
         opacityRange: config.opacityRange,
@@ -75,6 +95,7 @@ export function CarouselCircular(props: CarouselCircularProps) {
       });
     },
     [
+      itemsMetadata,
       config.anglePerItem,
       rotation.finalRotation,
       config.radius,
@@ -107,6 +128,10 @@ export function CarouselCircular(props: CarouselCircularProps) {
   const renderItem = useCallback(
     (item: (typeof config.items)[0], index: number) => {
       const transform = calculateTransform(index);
+      const metadata = itemsMetadata[index];
+
+      // metadata에서 orientation 추출 (없으면 기본값 square 사용)
+      const orientation = metadata?.orientation ?? 'square';
 
       return (
         <CarouselItem
@@ -114,8 +139,11 @@ export function CarouselCircular(props: CarouselCircularProps) {
           item={item}
           index={index}
           transform={transform}
-          itemWidth={config.itemWidth}
-          itemHeight={config.itemHeight}
+          containerHeight={config.containerHeight}
+          orientation={orientation}
+          scaleRange={config.scaleRange}
+          perspective={config.perspective}
+          radius={config.radius}
           itemClassName={config.itemClassName}
           onItemClick={(item, index) => {
             config.onItemClick?.(item, index);
@@ -128,8 +156,11 @@ export function CarouselCircular(props: CarouselCircularProps) {
     },
     [
       calculateTransform,
-      config.itemWidth,
-      config.itemHeight,
+      itemsMetadata,
+      config.containerHeight,
+      config.scaleRange,
+      config.perspective,
+      config.radius,
       config.itemClassName,
       config.onItemClick,
       config.enableLightboxWhenClick,
@@ -141,6 +172,35 @@ export function CarouselCircular(props: CarouselCircularProps) {
     ]
   );
 
+  // 로딩 중일 때는 빈 컨테이너만 렌더링
+  if (!isLoaded) {
+    return (
+      <CarouselContainer
+        className={config.className}
+        perspective={config.perspective}
+        cameraAngle={config.cameraAngle}
+        finalRotation={0}
+        isBrowser={isBrowser}
+        ariaLabel={config.ariaLabel}
+        height={config.containerHeight}
+      >
+        {/* 로딩 중 표시 */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            color: '#666',
+            fontSize: '1rem',
+          }}
+        >
+          Loading images...
+        </div>
+      </CarouselContainer>
+    );
+  }
+
   return (
     <>
       <CarouselContainer
@@ -150,6 +210,7 @@ export function CarouselCircular(props: CarouselCircularProps) {
         finalRotation={rotation.finalRotation}
         isBrowser={isBrowser}
         ariaLabel={config.ariaLabel}
+        height={config.containerHeight}
         onMouseEnter={rotation.handleMouseEnter}
         onMouseLeave={rotation.handleMouseLeave}
         onMouseDown={rotation.handleMouseDown}

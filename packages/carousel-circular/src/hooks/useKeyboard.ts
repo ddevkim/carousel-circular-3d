@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
-import type { RotationDirection } from '../utils/rotationAnimation';
 import { KEYBOARD_DEBOUNCE_MS } from '../constants';
+import type { RotationDirection } from '../utils/rotationAnimation';
 
 /**
  * useKeyboard Hook Props
@@ -51,13 +51,14 @@ export function useKeyboard({
         // 키보드 입력 콜백 호출 (자동 회전 pause용)
         onKeyboardInput?.();
 
-        // 상대적 인덱스 이동 (명시적 방향 지정)
+        // 상대적 인덱스 이동
+        // 방향은 'auto'로 최단 거리 사용 (명시적 방향 지정 시 한 바퀴 도는 문제 발생)
         if (e.key === 'ArrowLeft') {
-          // 반시계 방향 (인덱스 감소, 명시적으로 'counterClockwise' 지정)
-          onRotateByDelta(-1, 'counterClockwise');
+          // 인덱스 감소
+          onRotateByDelta(-1, 'clockwise');
         } else {
-          // 시계 방향 (인덱스 증가, 명시적으로 'clockwise' 지정)
-          onRotateByDelta(+1, 'clockwise');
+          // 인덱스 증가
+          onRotateByDelta(+1, 'counterClockwise');
         }
       }
     },

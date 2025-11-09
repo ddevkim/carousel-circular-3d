@@ -18,10 +18,6 @@ export interface NormalizedCarouselConfig {
   cameraAngle: number;
   depthIntensity: number;
 
-  // 아이템 크기
-  itemWidth: number;
-  itemHeight: number;
-
   // 상호작용
   dragSensitivity: number;
   enableMomentum: boolean;
@@ -39,6 +35,7 @@ export interface NormalizedCarouselConfig {
   // 스타일
   className?: string;
   itemClassName?: string;
+  containerHeight: number;
 
   // Lightbox
   enableLightboxWhenClick: boolean;
@@ -93,10 +90,6 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
     [radius, customPerspective]
   );
 
-  // 아이템 크기 설정
-  const itemWidth = props.itemSize?.width ?? DEFAULT_PROPS.ITEM_WIDTH;
-  const itemHeight = props.itemSize?.height ?? DEFAULT_PROPS.ITEM_HEIGHT;
-
   // 상호작용 설정 (드래그, 관성)
   const dragSensitivity = props.interaction?.dragSensitivity ?? DEFAULT_PROPS.DRAG_SENSITIVITY;
   const enableMomentum = props.interaction?.enableMomentum ?? DEFAULT_PROPS.ENABLE_MOMENTUM;
@@ -115,6 +108,7 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
   // 스타일 설정 (CSS 클래스명)
   const className = props.style?.className;
   const itemClassName = props.style?.itemClassName;
+  const containerHeight = props.containerHeight ?? DEFAULT_PROPS.CONTAINER_HEIGHT;
 
   // Lightbox 설정
   const enableLightboxWhenClick = props.enableLightboxWhenClick ?? false;
@@ -132,8 +126,6 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
     perspective,
     cameraAngle,
     depthIntensity,
-    itemWidth,
-    itemHeight,
     dragSensitivity,
     enableMomentum,
     momentumFriction,
@@ -144,6 +136,7 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
     scaleRange,
     className,
     itemClassName,
+    containerHeight,
     enableLightboxWhenClick,
     lightboxOptions,
     onItemClick,

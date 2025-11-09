@@ -31,6 +31,7 @@ export default defineConfig({
   clean: true, // Clean output directory before build
   treeshake: true, // Enable tree-shaking
   minify: false, // Keep readable for development (can be overridden in CI)
+  inlineSourceMaps: true, // Inline source maps for CSS
 
   // Platform target
   platform: "browser", // Browser-only library

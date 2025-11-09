@@ -1,12 +1,31 @@
 import type { CarouselItem } from '@ddevkim/carousel-circular';
 
 // Constants
-const HOST = 'https://pub-3b9d4c1163534b129a1bbc0a31c701e4.r2.dev';
+const HOST = 'https://pub-7f7abe14948a4c78825b386f9eb1e70b.r2.dev';
 const IMAGE_COUNT = 20;
 
-export type AlbumName = 'city' | 'desert' | 'nature' | 'ocean' | 'studio' | 'yacht';
+export type AlbumName =
+  | 'bali'
+  | 'barbados'
+  | 'borabora'
+  | 'cadiz'
+  | 'cannes'
+  | 'hawaii'
+  | 'ibiza'
+  | 'mallorca'
+  | 'santorini';
 
-const ALBUMS: AlbumName[] = ['city', 'desert', 'nature', 'ocean', 'studio', 'yacht'];
+const ALBUMS: AlbumName[] = [
+  'bali',
+  'barbados',
+  'borabora',
+  'cadiz',
+  'cannes',
+  'hawaii',
+  'ibiza',
+  'mallorca',
+  'santorini',
+];
 
 /**
  * Creates carousel items from an album.
@@ -20,7 +39,7 @@ export function createAlbumItems(album: AlbumName): CarouselItem[] {
     const capitalizedAlbum = album.charAt(0).toUpperCase() + album.slice(1);
     return {
       id: imageIndex,
-      image: `${HOST}/albums/${album}/${imageIndex}.webp`,
+      image: `${HOST}/${album}/${imageIndex}.webp`,
       alt: `${capitalizedAlbum} ${imageIndex}`,
       title: `${capitalizedAlbum} ${imageIndex}`,
     };
@@ -34,4 +53,3 @@ export function createAlbumItems(album: AlbumName): CarouselItem[] {
 export function getAlbums(): AlbumName[] {
   return ALBUMS;
 }
-

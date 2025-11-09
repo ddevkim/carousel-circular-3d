@@ -19,6 +19,7 @@ export function LightboxExample({ album }: LightboxExampleProps) {
       title="Lightbox Example"
       description="Click on any image to view it in fullscreen lightbox. Use arrow keys or swipe to navigate between images."
       carouselProps={{
+        containerHeight: 450,
         items,
         enableLightboxWhenClick: true,
         lightboxOptions: {
@@ -32,10 +33,6 @@ export function LightboxExample({ album }: LightboxExampleProps) {
         geometry: {
           radius: 900,
           depthIntensity: 5,
-        },
-        itemSize: {
-          width: 300,
-          height: 400,
         },
         visualEffect: {
           opacityRange: [0.3, 1],

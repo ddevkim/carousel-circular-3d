@@ -175,38 +175,6 @@
   opacity: 0.9;
 }
 
-.carousel-container {
-  width: 100%;
-  height: 600px;
-  margin: 0 auto;
-}
-
-.carousel-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(20, 20, 20, 0.6);
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  border-radius: 0.75rem;
-  overflow: hidden;
-  /* opacity는 인라인 스타일에서 관리하므로 transition에서 제외 */
-  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.carousel-item:hover {
-  border-color: rgba(212, 175, 55, 0.5);
-  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.15);
-}
-
-.carousel-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* 부모의 opacity 상속 보장 */
-  display: block;
-}
-
 .custom-card {
   padding: 2rem;
   text-align: center;
