@@ -3,7 +3,10 @@
     "allow": [
       "Bash(pnpm type-check:*)",
       "Bash(pnpm build:*)",
-      "Bash(pnpm lint:*)"
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm lint:fix:*)",
+      "Bash(pnpm run lint:fix:*)",
+      "Bash(biome check:*)"
     ],
     "deny": [],
     "ask": []

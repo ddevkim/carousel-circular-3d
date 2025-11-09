@@ -41,9 +41,12 @@ export function calculateItemTransform(params: TransformCalculationParams): Item
   } = params;
 
   // 동적 각도 모드(cumulativeAngle)를 우선 사용, 없으면 고정 각도 모드(anglePerItem) 사용
-  const itemAngle = cumulativeAngle !== undefined
-    ? cumulativeAngle
-    : (anglePerItem !== undefined ? itemIndex * anglePerItem : 0);
+  const itemAngle =
+    cumulativeAngle !== undefined
+      ? cumulativeAngle
+      : anglePerItem !== undefined
+        ? itemIndex * anglePerItem
+        : 0;
 
   // 정규화된 각도 계산
   const totalRotation = normalizeAngle360(finalRotation);

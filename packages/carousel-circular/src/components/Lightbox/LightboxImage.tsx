@@ -1,6 +1,4 @@
-import type { CSSProperties } from 'react';
 import { createImageContainerStyle, createImageStyle } from './styles';
-import { LIGHTBOX_CONSTANTS } from '../../constants';
 
 interface LightboxImageProps {
   imageUrl: string;
@@ -26,4 +24,3 @@ export function LightboxImage({ imageUrl, alt, imageRef, containerPadding }: Lig
     </div>
   );
 }
-

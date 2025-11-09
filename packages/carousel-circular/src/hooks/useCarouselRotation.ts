@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import type { ItemWithOrientation } from '../types';
 import { normalizeAngle180, normalizeAngle360 } from '../utils/helpers';
 import { useAutoRotate } from './useAutoRotate';
@@ -120,24 +120,21 @@ export function useCarouselRotation(params: UseCarouselRotationParams): UseCarou
     },
   });
 
-  // 키보드 회전 상태 (초기값 0)
-  const [keyboardRotation, setKeyboardRotation] = useState(0);
-
-  // 최종 회전 각도 (dragRotation + autoRotation + keyboardRotation)
-  const finalRotation = dragRotation + autoRotation + keyboardRotation;
-
   // 키보드 회전 애니메이션 Hook
   const rotateToIndexHook = useRotateToIndex({
     itemCount,
     itemsMetadata,
-    finalRotation,
+    dragAndAutoRotation: dragRotation + autoRotation,
+    isDragging,
+    isMomentumActive,
     enabled: isBrowser,
   });
 
-  // keyboardRotation 동기화 (useRotateToIndex에서 업데이트된 값 반영)
-  useEffect(() => {
-    setKeyboardRotation(rotateToIndexHook.keyboardRotation);
-  }, [rotateToIndexHook.keyboardRotation]);
+  // 키보드 회전 값을 직접 사용 (불필요한 state 동기화 제거)
+  const keyboardRotation = rotateToIndexHook.keyboardRotation;
+
+  // 최종 회전 각도 (dragRotation + autoRotation + keyboardRotation)
+  const finalRotation = dragRotation + autoRotation + keyboardRotation;
 
   const rotateByDelta = rotateToIndexHook.rotateByDelta;
 

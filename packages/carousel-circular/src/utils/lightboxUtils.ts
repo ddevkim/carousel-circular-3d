@@ -13,4 +13,3 @@ export function extractCarouselItemInfo(carouselItem: HTMLElement | null) {
     imageRect: imgElement ? imgElement.getBoundingClientRect() : null,
   };
 }
-

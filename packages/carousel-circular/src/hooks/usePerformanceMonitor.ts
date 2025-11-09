@@ -26,7 +26,7 @@ interface PerformanceStats {
 
 /**
  * 개발/디버깅용 성능 모니터링 Hook
- * 
+ *
  * @example
  * ```typescript
  * // 개발 환경에서만 활성화
@@ -35,7 +35,7 @@ interface PerformanceStats {
  *   enableLogging: true,
  * });
  * ```
- * 
+ *
  * @param props - usePerformanceMonitor Props
  */
 export function usePerformanceMonitor({
@@ -140,4 +140,3 @@ export const PERFORMANCE_THRESHOLDS = {
   /** 긴 프레임 시간 (33ms 초과 = 30fps 미만) */
   LONG_FRAME_TIME: 33,
 } as const;
-

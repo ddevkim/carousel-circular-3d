@@ -1,4 +1,4 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from 'tsup';
 
 /**
  * tsup configuration for @ddevkim/carousel-circular
@@ -12,10 +12,10 @@ import { defineConfig } from "tsup";
  */
 export default defineConfig({
   // Entry point
-  entry: ["src/index.ts"],
+  entry: ['src/index.ts'],
 
   // Output formats (CJS first for better compatibility)
-  format: ["cjs", "esm"],
+  format: ['cjs', 'esm'],
 
   // TypeScript declarations
   dts: {
@@ -23,7 +23,7 @@ export default defineConfig({
   },
 
   // Output directory
-  outDir: "dist",
+  outDir: 'dist',
 
   // Build options
   splitting: false, // Single bundle for library
@@ -34,13 +34,13 @@ export default defineConfig({
   inlineSourceMaps: true, // Inline source maps for CSS
 
   // Platform target
-  platform: "browser", // Browser-only library
+  platform: 'browser', // Browser-only library
 
   // External dependencies (peer dependencies)
-  external: ["react", "react-dom"],
+  external: ['react', 'react-dom'],
 
   // TypeScript config
-  tsconfig: "./tsconfig.json",
+  tsconfig: './tsconfig.json',
 
   // Build options for Next.js App Router compatibility
   esbuildOptions(options) {
