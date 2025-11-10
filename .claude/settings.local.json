@@ -7,7 +7,10 @@
       "Bash(pnpm lint:fix:*)",
       "Bash(pnpm run lint:fix:*)",
       "Bash(biome check:*)",
-      "Bash(git show:*)"
+      "Bash(git show:*)",
+      "Bash(bash:*)",
+      "Bash(jq:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

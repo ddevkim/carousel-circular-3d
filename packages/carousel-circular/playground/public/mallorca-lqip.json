@@ -1,0 +1,102 @@
+{
+  "mallorca/1-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAABQBACdASoUAB4APwFmrVArJSSit/qoAWAgCWMAvdAhtNwoAXC0Gponf5IAAPuaa/Ucccq89KSYfohZXCbANkNz0m+8Df9LsOa2DiWlpVskggegmwa/gqb5aqTtEyFVSmOXxoAA",
+    "width": 20,
+    "height": 30
+  },
+  "mallorca/2-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAADQAwCdASoUAA8APxFwsFAsJiSisAgBgCIJZgCdMoADTdUeJu+s4gAA/TCqi3VzQdtLoe6Ll20LbwVbBw3Woa+J1ZNxqQxaIAA=",
+    "width": 20,
+    "height": 15
+  },
+  "mallorca/3-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRpQAAABXRUJQVlA4IIgAAADQBQCdASoUACQAPxGAslQsKCQjKrgKAYAiCUAQaAEh5+HSIT9nf826Ab56RfUSw8RS0zVkQegAAP3Opq/zv1JerJgWmxgoBtAq9qYI7+9c/8RHEuQDqOyy8I6XoBksc1U6JusODKs6PQNtwvt2ORlbulvsjTdcUXleMa/TsN+Em7fnb/BA35AA",
+    "width": 20,
+    "height": 36
+  },
+  "mallorca/4-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAQBQCdASoUABsAPxF0r1AsJyQisBgMAYAiCWgAnTLfBSFp7AqeNIaY5NfG1+eOvsgAAP5Zx+ni4mKISniwhWWUD4uwN+qvAcGq88XIS1BxkcaJS6UOuelXQg7TYXlAoMiNmwqK49jzavTbGvM3mfISwYMQBi5AAAA=",
+    "width": 20,
+    "height": 27
+  },
+  "mallorca/5-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAABQBACdASoUAB4APwVsrlArpiSisAwBcCCJYgC2yBBLWp0roeJNk12VmMaEAP3NaGsTwdzzdBjtWmfbXoWvbb+6sgH20t/I9dN9UXwOVVlDVD+BR9Vbl7riaBy2cUyJS7P0iMXKwuAAAA==",
+    "width": 20,
+    "height": 30
+  },
+  "mallorca/6-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAAAwBACdASoUAA0APxF0sVAsJySisAgBgCIJYgCdICXC9f79tZnSNof/zSAA/sVtBmk3aQ1GVQWRVTIVey+t2GVK1x2MoL3DKbly8YMt2mbVhyFcAwAAAA==",
+    "width": 20,
+    "height": 13
+  },
+  "mallorca/7-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAQBACdASoUAA0APxFysFCsJqSisAgBgCIJagCdLwGUAAr24GT6uyi2cADZM3PkvrICECQLGoZEPHEUCkjVCeWZ9T0WEq5P2lmgdnjBUdGYRzl840UNdwwuWAA=",
+    "width": 20,
+    "height": 13
+  },
+  "mallorca/8-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAACwAwCdASoUAA0APxFysVCsJqSisAgBgCIJagCdMoABJ0fFN2wUYAD+5YNhee0ewnUra49cYjf1tHF80zFoLasdtDqMQuVW/4kiwvHUT8AAAA==",
+    "width": 20,
+    "height": 13
+  },
+  "mallorca/9-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAABwAwCdASoUAA0APxF0slCsJqSisAgBgCIJYgCw7BqoqYtx+sAAyxQnhMGNOH0mmZdUpctln7KzWUrCX6v9dTqEm1ShkW3iKZAAAA==",
+    "width": 20,
+    "height": 13
+  },
+  "mallorca/10-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAACwAwCdASoUAA0APxFysFAsJqSisAgBgCIJbACdMoMYAGHoru7h1gD+jv2AXx3IYIVtBOJPxy6Xlr4E1GeshKYuynK3SlL2XRa+UIyXHJfyFokndo6q4IAA",
+    "width": 20,
+    "height": 13
+  },
+  "mallorca/11-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAAAwBQCdASoUABsAPwFgq1ArJSQit/qoAWAgCWoAnQAhCsTr/A8v6bhb8tGiLSkq8ZRxAADwofwrOMTvXHo30jnsSCQMcAm1yYoYSF/e6aoz+bCySkERr0y1P3pYK1bcXu/t9gQH2YqVNCsElj1GrhLzSrIETVwlBtku9oEtyUeAAA==",
+    "width": 20,
+    "height": 27
+  },
+  "mallorca/12-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAACwBACdASoUABsAPxF8sVIsKCSisBgIAYAiCUATpnAQpDcQ4rafvOjWTjKrn33wAPxS98CFEBMCdp95m5/Xcbu8huK6hBXAZMfi/d7jNfnKmAiu7cK3mw9h+rjyXLVjlfK+dgHTRmxc6SAAAAA=",
+    "width": 20,
+    "height": 27
+  },
+  "mallorca/13-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAADQBACdASoUABsAPxF2sFAsJ6SisAgBgCIJZgCdACHMUzTVveg4hAaDS/GnbBYyAAD+j/pN5lSxMh/jZS/YcC0VDqtrlXTvHL6I4VIH4XGbVgnmdqBcHo5reyHjdk89NlnG7oQaWWxRIAZx4wzDQQArZiugkAAA",
+    "width": 20,
+    "height": 27
+  },
+  "mallorca/14-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAABwBACdASoUAA8APxFysVAsJqSisAgBgCIJbACdMoRwACWhp/0ub3FUIMEjIADJ6YZ5gV3EA70WcIaK1eNIjXSfxidkR0OKn8oIq+3dwsOC3fXVmrwAAA==",
+    "width": 20,
+    "height": 15
+  },
+  "mallorca/15-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACQAwCdASoUAA0APxF0sVCsJqSisAgBgCIJQBdgA9GYzi5E493cAP7D8UY9IzxWIyIMXC5OjD1pKZ76pOx8jYw3X7wPM0AA",
+    "width": 20,
+    "height": 13
+  },
+  "mallorca/16-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAACwBQCdASoUACQAPxFwsFAsJiSisBVdUYAiCUAW+y2ggz6HgnTsFub3FUJM6riojolLBHy7LAAA/uc03acrsLDHReugqfRYh2CHvctT3RDJbh+cMAZoI/J3oFmWM+j6UCL2wP9N4NgXPFkzbi3nAYddfhQ6hwATWj3RV2CVsqIAAA==",
+    "width": 20,
+    "height": 36
+  },
+  "mallorca/17-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAABwAwCdASoUAA4APxF4slEsJ6SisAgBgCIJQBOgBDlhRfSG7JgA/fQ00Kq7JwScghtRnekg6GCnF6a3FKEiP9/WnuJbYXgJwAA=",
+    "width": 20,
+    "height": 14
+  },
+  "mallorca/18-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADQAwCdASoUAA0APxF2sVCsJySisAgBgCIJbACdMoADTbn20jRIxWQA/deIZCR5Onepee3S2+EeCmc0DQnpVoEJm+bIG6H/wQg6BywMOwdFG3kAAAA=",
+    "width": 20,
+    "height": 13
+  },
+  "mallorca/19-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAABQBACdASoUABsAPxF6tVOsJ6SiqAqpgCIJQBkTAQhuiUWqZVXeT0KEI9QAAOF205Pqnc4Qm5XbqqZEYtcAe9fbjy6xm3MHbIe3s4X4iOA6RFzgUUV6CA88Su793wAoqQzrdz62y88cgAAA",
+    "width": 20,
+    "height": 27
+  },
+  "mallorca/20-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAABQBQCdASoUABsAPvlorVAqpiSit+gBUB8JZgCdMwTDsB4e8XtezIXtXySWnhcMO6Wm94AA+25BEPKB/V9zQSOBRK7x0wgP79w7w8QruaMXogYHgIypsLCR1OFOqFyHe3xvHWSvq+HlEexioJdH9B7DiqDbWQxyOesd3rAA",
+    "width": 20,
+    "height": 27
+  }
+}

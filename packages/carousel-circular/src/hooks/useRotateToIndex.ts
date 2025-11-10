@@ -114,11 +114,7 @@ export function useRotateToIndex({
       let baseIndex = currentTargetIndex;
       if (isDragging || isMomentumActive) {
         const finalRotation = dragAndAutoRotationRef.current + keyboardRotationRef.current;
-        baseIndex = calculateCenterIndex(
-          itemsMetadataRef.current,
-          finalRotation,
-          itemCount
-        );
+        baseIndex = calculateCenterIndex(itemsMetadataRef.current, finalRotation, itemCount);
       }
 
       const newTargetIndex = (baseIndex + indexDelta + itemCount) % itemCount;
@@ -167,7 +163,15 @@ export function useRotateToIndex({
         }
       );
     },
-    [enabled, itemCount, dragAndAutoRotation, isAnimating, currentTargetIndex, isDragging, isMomentumActive]
+    [
+      enabled,
+      itemCount,
+      dragAndAutoRotation,
+      isAnimating,
+      currentTargetIndex,
+      isDragging,
+      isMomentumActive,
+    ]
   );
 
   /**

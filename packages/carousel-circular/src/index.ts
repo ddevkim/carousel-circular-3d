@@ -15,4 +15,5 @@ export type {
   ItemWithOrientation,
   LightboxOptions,
   LightboxState,
+  LQIPInfo,
 } from './types';

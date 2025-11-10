@@ -1,0 +1,102 @@
+{
+  "cadiz/1-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAACwBACdASoUAB4APwForFArJiQit/qoAWAgCWMAv+wSbSRUnb5jE2JVvWwedYUAAPuSlM5+TG9Hjm0O3pVcdVLdDCUD+ZCelxDQLfR2Ouioobgfi9xVtCaEnxbLogAAAAA=",
+    "width": 20,
+    "height": 30
+  },
+  "cadiz/2-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAwBQCdASoUAB4APwFssFArJiUisAwBYCAJQBYjcdA0Z5n3+gWtvSCod+SQ3jvBfpNYAADKkcp/V19xQ9QTVakMpL6gy87SFEOJ0iGLuK5U3PWDO6SC9QcEJihcN6FHvZ65HDrX6m1AriKgAAA=",
+    "width": 20,
+    "height": 30
+  },
+  "cadiz/3-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACQAwCdASoUAA0APxF0tFAsJyUisAgBgCIJQBWAA9DEEPtJ6oUAAPxaSITaCrb+eGbdFr3FZDQfxaW5kwj3FzbhKsvVwAAA",
+    "width": 20,
+    "height": 13
+  },
+  "cadiz/4-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAACwAwCdASoUAA0APxF0tFEsJqUisAgBgCIJQBYdhA0NbCWCXZx0AAD7kZtso1vbcflhdn6yz1e3zOyGlVgY6QT3pYDMZLF0Xp4AAA==",
+    "width": 20,
+    "height": 13
+  },
+  "cadiz/5-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAADwAwCdASoUAA0APxFwsFAsJiSisAgBgCIJYwC1GoMzGEo9LgMmYE78AP7U706lc8xRNfHQE4Jl8iNNuuFazm1+HA0mP6HmVUAAAA==",
+    "width": 20,
+    "height": 13
+  },
+  "cadiz/6-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAAAQBACdASoUAA4APxF0slCsJqSisAgBgCIJYwCdIL/C6TKIw3xqw1qyAAD9zBykZCwfiDV/GP0lArd8GRJIRc9z+ay5vPWDd1LJJc5qgAA=",
+    "width": 20,
+    "height": 14
+  },
+  "cadiz/7-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAACwBACdASoUABwAPxFwtFMsJaUisBgIAYAiCWUAsOw0b4ti/vKuKpGxa4fzJRrAAP5Q1CcARGKirUJvTRSRt109Sw6qNhJpYZ0dy//JbErsnZlKZjFZUR1NTFoAAA==",
+    "width": 20,
+    "height": 28
+  },
+  "cadiz/8-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAACQAwCdASoUAA0APxFwsFAsJiSisAgBgCIJZQAAXFig4iqGVKAAAP7EvWO0NdQXjRGTz5azunyEkZiN9XEm63qeNJEAAA==",
+    "width": 20,
+    "height": 13
+  },
+  "cadiz/9-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADQAwCdASoUAA0APxFyslCsJqSisAgBgCIJZgCdMoMYABs7rkkntQAA9wStASLlUxmh0Vq0/Ni9EINl+ZHkv6O5zSHpB/HwYz7zkIAA",
+    "width": 20,
+    "height": 13
+  },
+  "cadiz/10-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAAAQBACdASoUAA4APxFwsFAsJiSisAgBgCIJQBOkAwBXOgCKowDwwgqpgAD+2VjaaX48Fyel7BTZSesi8U7wPy0ArQKXCze1le/PAAAA",
+    "width": 20,
+    "height": 14
+  },
+  "cadiz/11-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAABQBQCdASoUAB4APwluqlArpqOisAwBcCEJYgCuHBazDbuQ0gfpnWzYwa6J5WU2njaG4bgAzIFfoRsFhrqMA8hNr5rQjS+IHZ3psn9sK/s4D3ze+Jcc8xXP4tbVMGk8TgOhzsD9/OvK1AAA",
+    "width": 20,
+    "height": 30
+  },
+  "cadiz/12-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACQAwCdASoUAA0APxFysVAsJqSisAgBgCIJYgCdABuAm6C1m4HMAP6eyuPheSmo5aAplsQq8cUFodmFaYvD4/3NrtsYVwAA",
+    "width": 20,
+    "height": 13
+  },
+  "cadiz/13-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAACwBACdASoUABsAPxF8sVQsJ6QjKAqpgCIJQBdmZDAzuyKAP698pEEX+TSguSSAAP5vUPkudFU9RYKzzgifVV8wvP0K4b8huqEY0lUXtI0NdyPJ7B8g3kHyftz36s0SYNaWI6egcIfb2gB/YmQXvg9OiPkvU+8pOOeBc8AA",
+    "width": 20,
+    "height": 27
+  },
+  "cadiz/14-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAACQBQCdASoUACQAPwFuqVArJqOitVgMAWAgCUAX/YQlWWct2K8YyRSWnLb/hVSNjq4xgfQ4AAD+6JfmRJvSq54qwM34IcoUETabggzia3jkMIwWUxBqFKcjukRCKXHwjmtfM4gjA8q1Zgqjva0ZDVYEqqyDxJAA",
+    "width": 20,
+    "height": 36
+  },
+  "cadiz/15-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAABwBgCdASoUACQAPxFysVGsJqSiqrgN+YAiCWQArDPWA24ac6H8XU5CICD1tyzhFLtJsUrN3kvYJpyxFAAA+mUW4n4/KnZJImfrF6mbvlTawrT3hI05LxD1Pl56772KxJl4SNmuUjKu0Z8RlvnMBbKUsSrb3Rs/J/r2SM2cTAAAAA==",
+    "width": 20,
+    "height": 36
+  },
+  "cadiz/16-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAwBQCdASoUAB4APw1yslAsJyUisBgMAYAhiWMArhwRd1SV5ZguDQwO5vdG8UgGb3ggAAD9Ia9NnVseSIE53HFPEWF4cCol3AWuP8/wvHkJjQsa9pCowWMlmSf85nldTxwAA4GUcvNw++0AWzAAAA==",
+    "width": 20,
+    "height": 30
+  },
+  "cadiz/17-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADwAwCdASoUAA0APxFyslCsJqSisAgBgCIJZQC/OBwp+4q7sP+4I1QAAP7WB65LtQEHm34HqGojF/ZgJ3DcC/APDjJsvmbfWkdEI2/0oAA=",
+    "width": 20,
+    "height": 13
+  },
+  "cadiz/18-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRqoAAABXRUJQVlA4IJ4AAABwBQCdASoUABsAPxFys1KsJiSisBgIAYAiCWwAnTLT91hmUN8QRc0xs4q0WvOCKjktIVOAAP5w0Qgo8PYsBuAqAxp9T/nF38zZRbzySW/4Cv+seyvy1M9q29Jcr9GO3fmQXPdiAB5AE/vT3BeYaJrGZaXxjvllrPPc2Pv5WMZpPohBa5biddhjdy4wvHoeCCbM5VrztEEZpaXPH4AAAA==",
+    "width": 20,
+    "height": 27
+  },
+  "cadiz/19-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAAAwBACdASoUAB4APxF2slGsJySiqA1RgCIJQBadAiLC23m80g9sEN2ycsAA/rkMMeYL7iYnd6hievTtJbN0n4IDnlRZ3RcbK4iXhH+rXCNYUsHVa1ry0q1YAyqwZTkAAAA=",
+    "width": 20,
+    "height": 30
+  },
+  "cadiz/20-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAADQAwCdASoUAA0APxF0sFCsJqSisAgBgCIJZQCdACKUYtT0wuoApEAA/lKqGOv3Kdn3K2F7DKa5ULT+H0vJ30IqQAA=",
+    "width": 20,
+    "height": 13
+  }
+}

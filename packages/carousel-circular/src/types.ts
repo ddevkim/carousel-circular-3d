@@ -117,6 +117,18 @@ export interface OrientationRatio {
 }
 
 /**
+ * LQIP (Low Quality Image Placeholder) 정보
+ */
+export interface LQIPInfo {
+  /** LQIP 이미지의 base64 인코딩 문자열 */
+  base64: string;
+  /** LQIP 이미지의 원본 너비 (px) */
+  width: number;
+  /** LQIP 이미지의 원본 높이 (px) */
+  height: number;
+}
+
+/**
  * CarouselItem 베이스 인터페이스
  */
 interface CarouselItemBase {
@@ -147,6 +159,8 @@ export interface CarouselItemWithContent extends CarouselItemBase {
 export interface CarouselItemWithImage extends CarouselItemBase {
   /** 이미지 URL */
   image: string;
+  /** LQIP (Low Quality Image Placeholder) 정보 (선택적) */
+  lqip?: LQIPInfo;
   /** content와 배타적 (사용 불가) */
   content?: never;
 }

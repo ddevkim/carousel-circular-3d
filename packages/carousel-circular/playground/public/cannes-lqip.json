@@ -1,0 +1,102 @@
+{
+  "cannes/1-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAACwAwCdASoUAA0APxF0sFAsJySisAgBgCIJQBOmUABmIOCQfApPAADJr8iZmnP9RDQ/lKEIyNb9YREjjZcXMCxyjOFmvL3raAA=",
+    "width": 20,
+    "height": 13
+  },
+  "cannes/2-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAACwAwCdASoUAAsAPxF2sVAsJ6SisAgBgCIJQBOgA+XsoFbYwwh/IAD8capDX7qCGMV92CqY/WRNjTQMil4/FxWtIM6+tAMHOqHMHasATTZAAA==",
+    "width": 20,
+    "height": 11
+  },
+  "cannes/3-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAAAQBQCdASoUAB4APwVusFArpqUisAwBcCCJYwCdABbeRSUzbgtfJUzzLe6pxMo2DtUAAPx4SUHNiYGIxYsVrPYu00mXpiMJjhSJcAjop7uS5qXgYsnsqEDCF+T7OpWhcENm9NzK1IaDdIS1hYTtR219YyEh4E4A",
+    "width": 20,
+    "height": 30
+  },
+  "cannes/4-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAABQAwCdASoUAA0APxF0slCsJqSisAgBgCIJZACdABbZJt78sAD+3udiwQRh0/LNuTH8VEyG3DMPbojT/YP9aT5i7YawX5TUD4lPvOdqhYJOgAAA",
+    "width": 20,
+    "height": 13
+  },
+  "cannes/5-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAACwBACdASoUACEAPv1oqFArJiOitUgBYB+JQBhfBRJmzf8GKJPe/cqeXBOtCqNgAOEM6USfzD6oU7GqtIc4CeJEQjEey14mvmv5t9XBBFJaQ3O3K2FXli5994qWNCdTd5YPJQnNx9KMcXQAAAA=",
+    "width": 20,
+    "height": 33
+  },
+  "cannes/6-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAAAwBQCdASoUAB4APw10sVAsJySisBgMAYAhiWUAvkgyyMoeD8U/TzdUjpjvW4Yy64gEQAD+3W7HBgyK75UOCekk4Edq0BP/B6HasW/Unxs22/FB9fWvBLRB4765luornV9oDBWXvIF0UWV4hbK/ihHf4AA=",
+    "width": 20,
+    "height": 30
+  },
+  "cannes/7-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAADQAwCdASoUAB4APxF0sVAsJySjMAgBgCIJQBYj2+Bp1Qq9KA16eUAA/suDGjOTRQcM6xswVoghStSbZHZ9fxQUb0tLA9Iq93ZI+Ipw+9JFcpLsZ5cezVtZJy+vk9oc3mAMZZcAAAA=",
+    "width": 20,
+    "height": 30
+  },
+  "cannes/8-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAAAQBACdASoUAAsAPxFysFAsJqSisAgBgCIJaAC7MoADVPhREBeAvrF2AAD6k+lKtNI9HO1Db89aZxpWyCMMNujqMVTGvPhHsrlKiAAA",
+    "width": 20,
+    "height": 11
+  },
+  "cannes/9-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAAAwBQCdASoUAB4APxFysFCsJqSisBgMAYAiCWwAnS91gLgmU7yOTD3jxOb9zsD13Ga/YADdV7yNKXz8obbTQsEd4ieWsy05iFVefUFU0RKFx3CW5p0Z3S0qRtWuWpsvAGX3BcpzNCarjNgrYMRrhNrFk8n0WAE2RrtBzPUQ2Wr4TMU3wAA=",
+    "width": 20,
+    "height": 30
+  },
+  "cannes/10-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAAAQBACdASoUABsAPxFytFCsJqUiqA1RgCIJZAC2yAhzlcp0cwsObhHvQADsdeEhbxEOEdlePZzAXgD6bUYzhLuhNRvAnuXn6FCblIE+OK/diG9FKnfgglKWfYm256ZenSNyqdEqQexxKgAA",
+    "width": 20,
+    "height": 27
+  },
+  "cannes/11-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAABwAwCdASoUAAsAPxF0sVCsJqSisAgBgCIJQBOgAcDyezkN83gA3IeNTauD/oh984SnPu3kHnqyGa+PClgZEKeJ+mcIWjvYAQAAAA==",
+    "width": 20,
+    "height": 11
+  },
+  "cannes/12-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAADwAwCdASoUAA0APxFwsFAsJiSisAgBgCIJZQDChagA5TXFVeh34+/AAPpnWAzoo4vJrh3oqPQ0mNd6Z1YWmjYxjj8DthxwxAQFhqiyHcFedgAA",
+    "width": 20,
+    "height": 13
+  },
+  "cannes/13-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADwAwCdASoUAA0APxFwsFAsJiSisAgBgCIJQBibBD4U/Rh8KL1yMZ2AAP7V5CIl6SVS8LkU0420r3Cr13NLN2ymXFJvAtDvyPKh1fZllbZ4IjogAAA=",
+    "width": 20,
+    "height": 13
+  },
+  "cannes/14-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAADwBACdASoUABsAPxF8tlOsJ6UiqAqpgCIJQBbZBp103YjXbarByDivkq3/ukXAQgAA/sVHqO0iqj/OXy7q0zu4FiyEyWMybLY6IpKqzWNPanPHL5Cv/hGshsoeaJiBw6BZlnziTMQvrRlyRQZcKmEV6XIfNAAA",
+    "width": 20,
+    "height": 27
+  },
+  "cannes/15-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAQBQCdASoUAB4APxF0slEsJqSiqA1RgCIJZACxDQlyqAG7BsnkvfzalZzpr/5wqdUAAPjU6iMdLgx2+CNcLy7KeBRZolnwK91mEmsj9gQvP9RbhkEh41xxOyoPfTD3HOc1ptnKfa+/78LK4jUcF9tDnIE/SjfdXbcYAA==",
+    "width": 20,
+    "height": 30
+  },
+  "cannes/16-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACwAwCdASoUAA0APxF0tFEsJqUisAgBgCIJYwCdACHWvrNTp+rhMAD+sHoIaUDRQfKmltpnBvLwT40UfSkJwLHhTKiRa4AA",
+    "width": 20,
+    "height": 13
+  },
+  "cannes/17-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAABQBACdASoUAB4APxF8tFE/qKUisAgD8CIJYwCnFB5VgiYVfgMuONGLI6oAAK5EOA8aYb4B+TYN0Xp8WXNcl5HdFL7rAM8gmJKw5WCj6DEENTINHY4t8Rq0AAA=",
+    "width": 20,
+    "height": 30
+  },
+  "cannes/18-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADwAwCdASoUAA0APxF0sVAsJySisAgBgCIJQBOgAlJF+p00ltirzAIAAPxS5jCuFRzpo89HJXLjR1iMOLh35f580PjY1SAZTLa0jXQAAAA=",
+    "width": 20,
+    "height": 13
+  },
+  "cannes/19-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAADwAwCdASoUAA0APxFysVAsJqSisAgBgCIJZgCdMoADTfUd0KCXqIjwAP36tG8w3wVeXU3uRZplaRqzrErF5uTBqBmJ0h1wZThXapAxb3fYAA==",
+    "width": 20,
+    "height": 13
+  },
+  "cannes/20-lqip.webp": {
+    "base64": "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAABwBQCdASoUABsAPxF4sVCsJ6SisAgBgCIJYgCdMoADTtJESc6993JCOGh9uz8I1Pby7AYAAP6u77e9THer7K3KtqX83rwW4gxKUMsfF0Ps+HjJQTo3u664YxxATRIAoR4lfjVgu6jdtNB9LWdmglQjyu9giz3AxuLEcWZPhtQsVSet4AA=",
+    "width": 20,
+    "height": 27
+  }
+}

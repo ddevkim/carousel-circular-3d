@@ -1,10 +1,12 @@
 import type { ReactNode } from 'react';
 import React from 'react';
+import { ProgressiveImage } from '../components/ui/ProgressiveImage';
 import type { CarouselItem } from '../types';
 
 /**
  * 아이템 콘텐츠를 렌더링한다.
  * content가 있으면 content를 우선 사용하고, 없으면 image를 사용한다.
+ * LQIP가 제공된 경우 ProgressiveImage를 사용하여 부드러운 로딩 경험을 제공한다.
  * @param item - CarouselItem
  * @param index - 아이템 인덱스
  * @returns 렌더링된 콘텐츠 (ReactNode)
@@ -15,9 +17,21 @@ export function renderItemContent(item: CarouselItem, index: number): ReactNode 
   }
 
   if ('image' in item && item.image) {
+    const alt = item.alt ?? `Carousel item ${index + 1}`;
+
+    // LQIP가 있는 경우 ProgressiveImage 사용
+    if ('lqip' in item && item.lqip) {
+      return React.createElement(ProgressiveImage, {
+        src: item.image,
+        lqip: item.lqip,
+        alt,
+      });
+    }
+
+    // LQIP가 없는 경우 일반 img 태그 사용
     return React.createElement('img', {
       src: item.image,
-      alt: item.alt ?? `Carousel item ${index + 1}`,
+      alt,
     });
   }
 
