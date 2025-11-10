@@ -10,7 +10,8 @@
       "Bash(git show:*)",
       "Bash(bash:*)",
       "Bash(jq:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []

@@ -192,28 +192,54 @@ img.onload = () => {
 ### 3. Progressive Image 컴포넌트
 
 `components/ui/ProgressiveImage.tsx`:
-- LQIP를 먼저 표시 (blur 20px, scale 1.05)
+- LQIP를 먼저 표시 (blur 20px, scale 1.05, opacity 0.95)
 - 원본 이미지 백그라운드 로드
-- 로드 완료 시 부드러운 전환 (500ms cubic-bezier)
+- **최소 300ms LQIP 표시**: 캐시된 이미지도 부드러운 전환 보장
+- 로드 완료 시 luxury한 전환 (600ms cubic-bezier)
 - GPU 가속 활용 (filter, opacity, transform)
 
 ```typescript
+// 최소 LQIP 표시 시간 (300ms) - luxury한 전환을 위해
+const minDisplayTime = 300;
+const startTime = Date.now();
+
+img.onload = () => {
+  const elapsedTime = Date.now() - startTime;
+  const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
+
+  // 최소 시간이 지나지 않았으면 대기 후 전환
+  setTimeout(() => {
+    setCurrentSrc(src);
+    setIsLoaded(true);
+  }, remainingTime);
+};
+
 const style = {
   filter: lqip && !isLoaded ? 'blur(20px)' : 'none',
   transform: lqip && !isLoaded ? 'scale(1.05)' : 'scale(1)',
-  transition: 'filter 0.5s cubic-bezier(0.4, 0, 0.2, 1), ...',
+  opacity: lqip && !isLoaded ? 0.95 : 1,
+  transition: 'filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), ...',
 };
 ```
 
 ### 4. 렌더링 플로우
 
 ```
-[LQIP 있는 경우]
+[LQIP 있는 경우 - Luxury UX]
 1. 컴포넌트 마운트
 2. LQIP로부터 즉시 orientation 계산
 3. 캐러셀 레이아웃 계산 및 렌더링 (blur 처리된 LQIP 표시)
 4. 백그라운드에서 원본 이미지 로드
-5. 로드 완료 시 fade-in으로 원본 이미지 교체
+5. 최소 300ms LQIP 표시 (캐시된 이미지도 부드러운 전환)
+6. 600ms luxury fade-in으로 원본 이미지 교체
+
+[앨범 전환 시 - Luxury UX]
+1. 새 앨범 선택
+2. 상태 초기화 → LQIP로 리셋
+3. 새 앨범 LQIP 즉시 표시 (blur)
+4. 원본 이미지 백그라운드 로드
+5. 최소 300ms 후 부드러운 전환
+→ 갑작스러운 변화가 아닌 점진적 품질 향상
 
 [LQIP 없는 경우 - 기존 방식]
 1. 컴포넌트 마운트

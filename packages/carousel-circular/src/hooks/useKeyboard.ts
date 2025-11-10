@@ -52,13 +52,15 @@ export function useKeyboard({
         onKeyboardInput?.();
 
         // 상대적 인덱스 이동
-        // 방향은 'auto'로 최단 거리 사용 (명시적 방향 지정 시 한 바퀴 도는 문제 발생)
+        // 이미지가 시계방향으로 index 증가 순서로 배치되어 있음
+        // 좌측 화살표: carousel을 반시계방향으로 회전 (이전 이미지, index -1)
+        // 우측 화살표: carousel을 시계방향으로 회전 (다음 이미지, index +1)
         if (e.key === 'ArrowLeft') {
-          // 인덱스 감소
-          onRotateByDelta(-1, 'clockwise');
-        } else {
-          // 인덱스 증가
+          // 인덱스 증가, 반시계방향 회전
           onRotateByDelta(+1, 'counterClockwise');
+        } else {
+          // 인덱스 감소, 시계방향 회전
+          onRotateByDelta(-1, 'clockwise');
         }
       }
     },

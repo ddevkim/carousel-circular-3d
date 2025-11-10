@@ -94,15 +94,13 @@ export function useLightbox({
   /**
    * 이전/다음 이미지로 이동
    * Lightbox 이미지와 Carousel 회전 방향이 반대로 동작
-   * - prev: 이미지는 이전(낮은 index), carousel은 시계방향(+1)
-   * - next: 이미지는 다음(높은 index), carousel은 반시계방향(-1)
    * @param direction - 이동 방향 ('prev' | 'next')
    */
   const navigateLightbox = useCallback(
     (direction: 'prev' | 'next') => {
       if (!lightboxState.isOpen) return;
 
-      const delta = direction === 'prev' ? -1 : 1;
+      const delta = direction === 'prev' ? 1 : -1;
       const newIndex = (lightboxState.selectedIndex + delta + itemCount) % itemCount;
 
       setLightboxState((prev) => ({
@@ -111,7 +109,7 @@ export function useLightbox({
       }));
 
       // Carousel은 반대 방향으로 회전
-      onRotateCarousel(-delta);
+      onRotateCarousel(delta);
     },
     [lightboxState.isOpen, lightboxState.selectedIndex, itemCount, onRotateCarousel]
   );

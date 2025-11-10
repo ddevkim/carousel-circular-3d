@@ -2,32 +2,32 @@
 .carousel-circular-button {
   position: fixed;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(24px) saturate(200%);
   -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  border: 0.5px solid rgba(255, 255, 255, 0.2);
   box-shadow:
-    0 4px 24px 0 rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+    0 4px 24px 0 rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 9999;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.9);
   padding: 0;
-  opacity: 0.6;
+  opacity: 1;
   transition: all var(--button-transition-duration, 200ms) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .carousel-circular-button:hover {
-  background-color: rgba(255, 255, 255, 0.12);
-  border: 0.5px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.18);
+  border: 0.5px solid rgba(255, 255, 255, 0.3);
   box-shadow:
-    0 8px 32px 0 rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+    0 8px 32px 0 rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 1);
-  opacity: 1;
+  transform: scale(1.05);
 }
 
 /* CloseButton 스타일 - 공통 클래스 확장 */
@@ -42,7 +42,8 @@
 }
 
 .carousel-circular-close-button:hover {
-  transform: scale(1.05);
+  /* 공통 hover 스타일에 추가 transform */
+  transform: scale(1.08);
 }
 
 /* NavigationButton 스타일 - 공통 클래스 확장 */
@@ -54,7 +55,8 @@
 }
 
 .carousel-circular-nav-button:hover {
-  transform: translateY(-50%) scale(1.05);
+  /* 공통 hover 스타일에 추가 transform */
+  transform: translateY(-50%) scale(1.08);
 }
 
 .carousel-circular-nav-button--prev {
