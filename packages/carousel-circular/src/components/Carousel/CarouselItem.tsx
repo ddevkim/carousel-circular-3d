@@ -34,6 +34,8 @@ export interface CarouselItemProps {
   shouldPreventClick?: () => boolean;
   /** Lightbox 열기 핸들러 (element와 index 전달) */
   onLightboxOpen?: (index: number, element: HTMLElement) => void;
+  /** 하단 반사 효과 활성화 여부 */
+  enableReflection?: boolean;
 }
 
 /**
@@ -53,21 +55,26 @@ export function CarouselItem({
   onItemClick,
   shouldPreventClick,
   onLightboxOpen,
+  enableReflection = false,
 }: CarouselItemProps) {
   const content = renderItemContent(item, index);
   const ariaLabel = getItemAriaLabel(item, index);
   const isClickable = Boolean(onItemClick) || Boolean(onLightboxOpen);
   const finalClassName = itemClassName ? `carousel-item ${itemClassName}` : 'carousel-item';
 
-  const baseStyle = calculateItemStyle({
-    containerHeight,
-    orientation,
-    transform,
-    scaleRange,
-    perspective,
-    radius,
-    isClickable,
-  });
+  const baseStyle: React.CSSProperties = {
+    ...calculateItemStyle({
+      containerHeight,
+      orientation,
+      transform,
+      scaleRange,
+      perspective,
+      radius,
+      isClickable,
+    }),
+    // reflection이 item 밖으로 나갈 수 있도록 명시적으로 overflow visible 설정
+    overflow: 'visible',
+  };
 
   /**
    * 클릭 핸들러
@@ -92,6 +99,53 @@ export function CarouselItem({
     }
   };
 
+  const itemContent = enableReflection ? (
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        overflow: 'visible',
+      }}
+    >
+      {/* 원본 이미지 컨텐츠 (border-radius 클리핑) */}
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          overflow: 'hidden',
+          borderRadius: '0.75rem',
+        }}
+      >
+        {content}
+      </div>
+
+      {/* Reflection 효과 - 원본 이미지 아래에 뒤집혀서 배치 */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '200%',
+          left: 0,
+          width: '100%',
+          height: '100%',
+          transformOrigin: 'top',
+          transform: 'scaleY(-1)',
+          maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%)',
+          pointerEvents: 'none',
+          overflow: 'hidden',
+          borderRadius: '0.75rem',
+        }}
+        aria-hidden="true"
+      >
+        {content}
+      </div>
+    </div>
+  ) : (
+    content
+  );
+
   if (isClickable) {
     return (
       <button
@@ -103,7 +157,7 @@ export function CarouselItem({
         aria-label={ariaLabel}
         data-carousel-index={index}
       >
-        {content}
+        {itemContent}
       </button>
     );
   }
@@ -116,7 +170,7 @@ export function CarouselItem({
       title={ariaLabel}
       data-carousel-index={index}
     >
-      {content}
+      {itemContent}
     </div>
   );
 }

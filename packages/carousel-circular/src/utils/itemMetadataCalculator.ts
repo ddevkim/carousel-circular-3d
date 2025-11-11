@@ -1,7 +1,7 @@
 import type { OrientationMap } from '../hooks/useImageOrientations';
 import type { CarouselItem, ImageOrientation, ItemWithOrientation } from '../types';
 
-import { calculateContainerSize, ORIENTATION_RATIOS } from './orientationCalculator';
+import { calculateContainerSize } from './orientationCalculator';
 
 /**
  * 아이템 배열과 orientation 맵을 기반으로 각 아이템의 메타데이터를 계산한다.
@@ -30,18 +30,13 @@ export function calculateItemsMetadata(
   });
 
   // 2단계: 전체 원주를 360도로 가정하고, 각 아이템이 차지할 각도를 비율로 계산
-  // 순수한 orientation 비율을 사용 (스케일 팩터 영향 없이)
-  const totalAspectRatio = itemsWithSize.reduce((sum, { orientation }) => {
-    const ratio = ORIENTATION_RATIOS[orientation];
-    const aspectRatio = ratio.width / ratio.height;
-    return sum + aspectRatio;
-  }, 0);
+  // 실제 container width를 기반으로 계산하여 간격이 일정하도록 함
+  const totalWidth = itemsWithSize.reduce((sum, { width }) => sum + width, 0);
 
-  // 각 아이템의 각도 비율 = (해당 아이템의 aspectRatio) / (전체 aspectRatio의 합)
+  // 각 아이템의 각도 비율 = (해당 아이템의 width) / (전체 width의 합) * 360도
+  // 이렇게 하면 각 container의 width + gap이 균등하게 360도를 구성
   const itemsWithAngle = itemsWithSize.map(({ item, orientation, width, height }) => {
-    const ratio = ORIENTATION_RATIOS[orientation];
-    const aspectRatio = ratio.width / ratio.height;
-    const angle = (aspectRatio / totalAspectRatio) * 360;
+    const angle = (width / totalWidth) * 360;
 
     return {
       item,

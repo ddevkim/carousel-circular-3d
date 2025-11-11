@@ -11,7 +11,11 @@
       "Bash(bash:*)",
       "Bash(jq:*)",
       "Bash(cat:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(pnpm --filter @ddevkim/carousel-circular type-check:*)",
+      "Bash(pnpm --filter @ddevkim/carousel-circular build:*)",
+      "Bash(pnpm --filter @ddevkim/carousel-circular-playground build:*)",
+      "Bash(pnpm --filter @ddevkim/carousel-circular-playground type-check:*)"
     ],
     "deny": [],
     "ask": []

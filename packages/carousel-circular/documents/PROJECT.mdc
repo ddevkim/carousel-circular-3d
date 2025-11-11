@@ -165,7 +165,6 @@ interface CarouselCircularProps {
 
   // ========== 접근성 ==========
   ariaLabel?: string; // 컨테이너 aria-label (기본: "Circular Carousel")
-  keyboardRotationStep?: number; // 키보드 방향키 회전량 (기본: 360 / items.length)
 }
 
 /**
@@ -174,7 +173,7 @@ interface CarouselCircularProps {
 interface GeometryConfig {
   radius?: number; // 원형 배치 반지름 (기본: 600px)
   perspective?: number; // 원근 효과 깊이 (기본: radius * 3.33, 최소: radius * 2)
-  cameraAngle?: number; // 카메라 위아래 각도 (기본: 0, 범위: 0-30, 추천: 8-15)
+  cameraAngle?: number; // 카메라 위아래 각도 (기본: 0, 범위: 0~15, 추천: 8~12)
   depthIntensity?: number; // Z축 깊이 변동 강도 (기본: 0, 범위: 0-3, 추천: 1.0-2.0)
 }
 
@@ -679,9 +678,11 @@ angle = (width / (2 * Math.PI * radius)) * 360;
 
 함수: onKeyDown(event)
   if (event.key === 'ArrowLeft'):
-    rotation -= keyboardRotationStep  // 기본: 360 / items.length
+    // 이전 아이템으로 이동 (시계방향 회전)
+    rotateByDelta(-1, 'clockwise')
   else if (event.key === 'ArrowRight'):
-    rotation += keyboardRotationStep
+    // 다음 아이템으로 이동 (반시계방향 회전)
+    rotateByDelta(+1, 'counterClockwise')
 ```
 
 ### 구현 고려사항

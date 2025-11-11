@@ -46,6 +46,8 @@ export interface VisualEffectConfig {
   opacityRange?: [number, number];
   /** 크기 스케일 범위 [최소, 최대] (기본: [0.7, 1.0]) */
   scaleRange?: [number, number];
+  /** 하단 반사 효과 활성화 여부 (기본: false) */
+  enableReflection?: boolean;
 }
 
 /**
@@ -99,8 +101,6 @@ export interface CarouselCircularProps {
   // ========== 접근성 ==========
   /** 컨테이너 ARIA 레이블 (스크린 리더용, 기본: "Circular Carousel") */
   ariaLabel?: string;
-  /** 키보드 방향키 회전 각도 (기본: 360 / items.length) */
-  keyboardRotationStep?: number;
 }
 
 /**

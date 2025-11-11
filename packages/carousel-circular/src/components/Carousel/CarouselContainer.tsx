@@ -57,14 +57,15 @@ export function CarouselContainer({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
+    overflow: 'visible',
   };
 
   const rotationContainerStyle: React.CSSProperties = {
     transformStyle: 'preserve-3d',
     width: '100%',
-    height: '100%',
+    height: `${pxToRem(height)}rem`,
     position: 'relative',
+    marginTop: 0,
   };
 
   // 브라우저 환경에서는 상호작용 활성화

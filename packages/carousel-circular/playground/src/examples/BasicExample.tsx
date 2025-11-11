@@ -47,8 +47,8 @@ export function BasicExample({ album }: BasicExampleProps) {
 
   return (
     <ExampleContainer
-      title="Basic Usage - Image Carousel"
-      description="Basic circular carousel with image items. Click items to interact. Configured with large radius (900px), depth effects, and scale transitions."
+      title="Basic Usage - Image Carousel with Reflection"
+      description="Basic circular carousel with image items and bottom reflection effect. Click items to interact. Configured with large radius (900px), depth effects, scale transitions, and natural reflection."
       carouselProps={{
         containerHeight: 400,
         items,
@@ -58,7 +58,10 @@ export function BasicExample({ album }: BasicExampleProps) {
           cameraAngle: 0, // Camera angle for depth perception (0-30deg)
           depthIntensity: 5, // Individual item Z-depth variation (0-3)
         },
-        visualEffect: { scaleRange: [0.5, 1] },
+        visualEffect: {
+          scaleRange: [0.5, 1],
+          enableReflection: true, // Enable bottom reflection effect
+        },
         onItemClick: handleItemClick,
       }}
     />

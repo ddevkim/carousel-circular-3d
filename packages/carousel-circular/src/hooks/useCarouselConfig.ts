@@ -31,6 +31,7 @@ export interface NormalizedCarouselConfig {
   // 시각 효과
   opacityRange: [number, number];
   scaleRange: [number, number];
+  enableReflection: boolean;
 
   // 스타일
   className?: string;
@@ -44,7 +45,6 @@ export interface NormalizedCarouselConfig {
   // 콜백 및 접근성
   onItemClick?: (item: CarouselItem, index: number) => void;
   ariaLabel: string;
-  keyboardRotationStep?: number;
 }
 
 /**
@@ -101,9 +101,10 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
   const autoRotateResumeDelay =
     props.autoRotateConfig?.resumeDelay ?? DEFAULT_PROPS.AUTO_ROTATE_RESUME_DELAY;
 
-  // 시각 효과 설정 (투명도, 스케일)
+  // 시각 효과 설정 (투명도, 스케일, 반사)
   const opacityRange = props.visualEffect?.opacityRange ?? DEFAULT_PROPS.OPACITY_RANGE;
   const scaleRange = props.visualEffect?.scaleRange ?? DEFAULT_PROPS.SCALE_RANGE;
+  const enableReflection = props.visualEffect?.enableReflection ?? false;
 
   // 스타일 설정 (CSS 클래스명)
   const className = props.style?.className;
@@ -117,7 +118,6 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
   // 콜백 및 접근성
   const onItemClick = props.onItemClick;
   const ariaLabel = props.ariaLabel ?? DEFAULT_PROPS.ARIA_LABEL;
-  const keyboardRotationStep = props.keyboardRotationStep;
 
   return {
     items,
@@ -134,6 +134,7 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
     autoRotateResumeDelay,
     opacityRange,
     scaleRange,
+    enableReflection,
     className,
     itemClassName,
     containerHeight,
@@ -141,6 +142,5 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
     lightboxOptions,
     onItemClick,
     ariaLabel,
-    keyboardRotationStep,
   };
 }

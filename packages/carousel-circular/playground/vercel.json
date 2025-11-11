@@ -1,0 +1,12 @@
+{
+  "buildCommand": "cd ../.. && pnpm install && cd packages/carousel-circular && pnpm build && cd playground && pnpm build",
+  "outputDirectory": "dist",
+  "installCommand": "cd ../.. && pnpm install",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

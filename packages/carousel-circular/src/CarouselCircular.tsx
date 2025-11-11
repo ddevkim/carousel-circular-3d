@@ -151,6 +151,7 @@ export function CarouselCircular(props: CarouselCircularProps) {
           }}
           shouldPreventClick={shouldPreventItemClick}
           onLightboxOpen={config.enableLightboxWhenClick ? handleLightboxOpen : undefined}
+          enableReflection={config.enableReflection}
         />
       );
     },
