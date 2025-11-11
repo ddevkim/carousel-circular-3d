@@ -101,9 +101,9 @@ export const CarouselItem = memo(function CarouselItem({
   onLightboxOpen,
   enableReflection = false,
 }: CarouselItemProps) {
-  // 원본 이미지 컨텐츠: 항상 LQIP 경유 (skipLQIPIfCached = false)
+  // 원본 이미지 컨텐츠: 캐시된 이미지는 LQIP 건너뛰기 (skipLQIPIfCached = true)
   // useMemo로 메모이제이션하여 불필요한 재계산 방지
-  const content = useMemo(() => renderItemContent(item, index, false), [item, index]);
+  const content = useMemo(() => renderItemContent(item, index, true), [item, index]);
 
   const ariaLabel = getItemAriaLabel(item, index);
   const isClickable = Boolean(onItemClick) || Boolean(onLightboxOpen);
