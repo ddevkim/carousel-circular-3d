@@ -53,13 +53,13 @@ export function useKeyboard({
 
         // 상대적 인덱스 이동
         // 이미지가 시계방향으로 index 증가 순서로 배치되어 있음
-        // 좌측 화살표: carousel을 반시계방향으로 회전 (이전 이미지, index -1)
-        // 우측 화살표: carousel을 시계방향으로 회전 (다음 이미지, index +1)
-        if (e.key === 'ArrowLeft') {
-          // 인덱스 증가, 반시계방향 회전
+        // 우측 화살표: carousel을 반시계방향으로 회전 → 다음 이미지 (index +1)
+        // 좌측 화살표: carousel을 시계방향으로 회전 → 이전 이미지 (index -1)
+        if (e.key === 'ArrowRight') {
+          // 다음 이미지로 이동: index +1, carousel은 반시계방향 회전
           onRotateByDelta(+1, 'counterClockwise');
         } else {
-          // 인덱스 감소, 시계방향 회전
+          // 이전 이미지로 이동: index -1, carousel은 시계방향 회전
           onRotateByDelta(-1, 'clockwise');
         }
       }
