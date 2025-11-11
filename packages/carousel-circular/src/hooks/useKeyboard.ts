@@ -35,6 +35,10 @@ export function useKeyboard({
       if (!enabled) return;
 
       if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        // 브라우저 기본 동작(스크롤 등) 방지를 먼저 수행
+        // Debounce로 무시되는 이벤트에서도 스크롤 방지 필요
+        e.preventDefault();
+
         const now = Date.now();
         const timeSinceLastKeyDown = now - lastKeyDownTimeRef.current;
 
@@ -45,8 +49,6 @@ export function useKeyboard({
 
         // Debounce 시간 경과 후에만 이벤트 처리
         lastKeyDownTimeRef.current = now;
-
-        e.preventDefault();
 
         // 키보드 입력 콜백 호출 (자동 회전 pause용)
         onKeyboardInput?.();
