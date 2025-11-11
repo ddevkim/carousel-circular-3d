@@ -33,6 +33,38 @@ export interface ProgressiveImageProps {
  * - LQIP가 없는 경우: useImageOrientations에서 먼저 다운로드하고,
  *   이 컴포넌트에서는 브라우저 캐시를 사용 (실제 다운로드 1번)
  */
+/**
+ * 초기 이미지 상태 결정 함수
+ * 캐시된 이미지를 미리 감지하여 올바른 초기 상태를 반환
+ */
+const getInitialImageState = (
+  imageSrc: string,
+  lqipData?: LQIPInfo,
+  skipLQIPIfCachedFlag = false
+): { src: string; isLoaded: boolean } => {
+  // LQIP가 없으면 원본 이미지만 사용
+  if (!lqipData) {
+    return { src: imageSrc, isLoaded: false };
+  }
+
+  // 스마트 로딩: 이미지가 이미 캐시되어 있으면 LQIP를 건너뛰고 원본으로 시작
+  if (skipLQIPIfCachedFlag) {
+    const img = new Image();
+    img.src = imageSrc;
+
+    if (img.complete && img.naturalWidth > 0) {
+      // 캐시된 이미지: 원본으로 바로 시작하고 로드 완료 표시
+      return { src: imageSrc, isLoaded: true };
+    }
+  }
+
+  // 캐시되지 않은 이미지: LQIP부터 시작
+  return {
+    src: `data:image/jpeg;base64,${lqipData.base64}`,
+    isLoaded: false,
+  };
+};
+
 export function ProgressiveImage({
   src,
   lqip,
@@ -40,10 +72,9 @@ export function ProgressiveImage({
   className,
   skipLQIPIfCached = false,
 }: ProgressiveImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [currentSrc, setCurrentSrc] = useState<string>(
-    lqip ? `data:image/jpeg;base64,${lqip.base64}` : src
-  );
+  const initial = getInitialImageState(src, lqip, skipLQIPIfCached);
+  const [isLoaded, setIsLoaded] = useState(initial.isLoaded);
+  const [currentSrc, setCurrentSrc] = useState<string>(initial.src);
 
   useEffect(() => {
     // LQIP가 없으면 원본 이미지만 사용 (브라우저가 자동으로 로드)
@@ -51,11 +82,25 @@ export function ProgressiveImage({
       return;
     }
 
+    // 스마트 로딩: 이미지가 이미 캐시되어 있는지 확인
+    if (skipLQIPIfCached) {
+      const img = new Image();
+      img.src = src;
+
+      // 이미지가 이미 로드되어 있으면 (complete && naturalWidth > 0)
+      if (img.complete && img.naturalWidth > 0) {
+        // LQIP를 건너뛰고 바로 원본 이미지 표시
+        setCurrentSrc(src);
+        setIsLoaded(true);
+        return;
+      }
+    }
+
     // 상태 초기화 (앨범 전환 시 또는 캐시되지 않은 경우)
     setIsLoaded(false);
     setCurrentSrc(`data:image/jpeg;base64,${lqip.base64}`);
 
-    // 원본 이미지 로드
+    // LQIP가 있는 경우: 백그라운드에서 원본 이미지 로드
     const img = new Image();
     img.src = src;
 
@@ -67,30 +112,27 @@ export function ProgressiveImage({
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     /**
-     * 이미지 로드 완료 처리
-     * 캐시된 이미지(complete && naturalWidth > 0)도 이 핸들러를 통해 처리됨
-     * skipLQIPIfCached가 true인 경우 최소 표시 시간을 0으로 설정하여 즉시 표시
+     * 이미지 로드 완료 핸들러
+     * 캐시된 이미지와 비캐시 이미지 모두 처리
      */
     const handleImageLoad = () => {
-      // skipLQIPIfCached인 경우 최소 표시 시간 없이 즉시 전환
       const elapsedTime = Date.now() - startTime;
       const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
 
+      // 최소 시간이 지나지 않았으면 대기 후 전환
       timeoutId = setTimeout(() => {
         setCurrentSrc(src);
         setIsLoaded(true);
       }, remainingTime);
     };
 
-    // 이미지가 이미 캐시되어 있으면 동기적으로 onload 이벤트 발생
-    // (complete && naturalWidth > 0이면 onload 핸들러가 즉시 호출됨)
     img.onload = handleImageLoad;
     img.onerror = () => {
       // 로드 실패 시 LQIP 유지 (조용히 실패)
     };
 
-    // complete 체크: 이미지가 이미 로드된 경우 (동기적 발생)
-    // onload 이벤트가 등록되기 전에 complete 상태였던 경우를 위해
+    // 동기적으로 캐시 상태 확인
+    // onload 핸들러가 등록되기 전에 이미지가 완료된 경우를 처리
     if (img.complete && img.naturalWidth > 0) {
       handleImageLoad();
     }
