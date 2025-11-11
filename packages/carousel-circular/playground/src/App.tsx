@@ -59,13 +59,6 @@ export function App() {
           >
             Lightbox
           </button>
-          <button
-            type="button"
-            className={activeExample === 'custom-content' ? 'active' : ''}
-            onClick={() => setActiveExample('custom-content')}
-          >
-            Custom Content
-          </button>
         </div>
       </nav>
 
