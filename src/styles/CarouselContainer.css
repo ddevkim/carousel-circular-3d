@@ -1,0 +1,13 @@
+/**
+ * Carousel Container Base Styles
+ * Default styling for the carousel container
+ */
+
+.carousel-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}

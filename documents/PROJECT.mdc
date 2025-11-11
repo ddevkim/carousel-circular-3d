@@ -1,0 +1,1055 @@
+---
+alwaysApply: true
+---
+
+## 🛠 기술 스택
+
+### 핵심 도구
+
+- **패키지 매니저**: pnpm
+- **언어**: TypeScript
+- **번들러**: tsup
+- **버전 관리**: Changesets
+- **코드 품질**: Biome (linting + formatting)
+
+### 개발 환경
+
+- **Monorepo**: pnpm workspace
+- **프레임워크**: React 18+
+- **CI/CD**: GitHub Actions
+- **테스트 도구**: Playground (Vite)
+
+---
+
+## 📦 Monorepo 구조
+
+```
+carousel-project/
+├── packages/
+│   └── carousel-circular/          # 배포 패키지
+│       ├── src/
+│       │   ├── index.ts           # Public API
+│       │   ├── CarouselCircular.tsx
+│       │   ├── types.ts
+│       │   ├── components/
+│       │   │   ├── Carousel/      # 캐러셀 컴포넌트
+│       │   │   ├── Lightbox/      # 라이트박스 컴포넌트
+│       │   │   └── ui/            # 재사용 UI 컴포넌트
+│       │   │       └── ProgressiveImage.tsx  # LQIP 지원
+│       │   ├── hooks/             # 10개 커스텀 훅
+│       │   │   ├── useCarouselConfig.ts
+│       │   │   ├── useCarouselRotation.ts
+│       │   │   ├── useDrag.ts
+│       │   │   ├── useAutoRotate.ts
+│       │   │   ├── useRotateToIndex.ts
+│       │   │   ├── useKeyboard.ts
+│       │   │   ├── useLightbox.ts
+│       │   │   ├── useLightboxAnimation.ts
+│       │   │   ├── useImageOrientations.ts  # 방향 분석
+│       │   │   └── usePerformanceMonitor.ts
+│       │   ├── utils/             # 9개 유틸리티 파일
+│       │   │   ├── transformCalculator.ts
+│       │   │   ├── itemMetadataCalculator.ts
+│       │   │   ├── itemStyleCalculator.ts
+│       │   │   ├── itemContentRenderer.ts
+│       │   │   ├── orientationCalculator.ts
+│       │   │   ├── rotationAnimation.ts
+│       │   │   ├── easingAnimation.ts
+│       │   │   ├── lightboxUtils.ts
+│       │   │   └── helpers.ts
+│       │   ├── constants/         # 8개 상수 파일
+│       │   │   ├── defaults.ts
+│       │   │   ├── animation.ts
+│       │   │   ├── drag.ts
+│       │   │   ├── keyboard.ts
+│       │   │   ├── lightbox.ts
+│       │   │   ├── perspective.ts
+│       │   │   ├── conversion.ts
+│       │   │   └── index.ts
+│       │   └── styles/
+│       │       └── index.css
+│       ├── documents/
+│       │   ├── PROJECT.mdc        # 이 문서
+│       │   ├── LQIP_FEATURE.md    # LQIP 가이드
+│       │   └── ...
+│       ├── package.json
+│       ├── tsconfig.json
+│       └── tsup.config.ts
+│
+├── playground/                     # 개발 테스트 환경
+│   ├── src/
+│   │   ├── App.tsx               # 앨범 선택기 (9개 앨범)
+│   │   ├── examples/             # 4가지 예제
+│   │   │   ├── BasicExample.tsx
+│   │   │   ├── AutoRotateExample.tsx
+│   │   │   ├── LightboxExample.tsx
+│   │   │   └── CustomContentExample.tsx
+│   │   └── utils/
+│   │       └── albumHelper.ts    # LQIP 통합 앨범 생성
+│   ├── public/
+│   │   ├── bali-lqip.json        # LQIP 데이터 (각 앨범별)
+│   │   └── ... (9개 앨범)
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── scripts/                        # LQIP 생성 스크립트
+│   ├── generate-lqip.sh
+│   └── generate-lqip-batch.sh
+│
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                # Lint + Build
+│       └── publish.yml           # NPM 자동 배포
+│
+├── package.json                   # Root workspace
+├── pnpm-workspace.yaml
+├── tsconfig.base.json
+├── biome.json
+└── .changeset/                   # Version 관리
+```
+
+---
+
+## 🔧 개발 방법론
+
+### 패키지 버전 관리
+
+- `package.json`에 버전 명시 금지
+- 항상 `pnpm add <package>` 로 최신 버전 설치
+- Changesets로 시맨틱 버저닝 자동화
+
+### 번들링 전략
+
+- `tsup`으로 ESM + CJS 동시 출력
+- `react`, `react-dom`을 external로 처리 (peerDependencies)
+- Tree-shaking 최적화
+- Next.js 호환성: `"use client"` 배너 자동 추가
+
+### 스타일링 철학
+
+- **최소 강제**: 필수 3D transform 스타일만 인라인
+- **className 기반**: 소비자가 자유롭게 커스터마이징
+- **기본 스타일 없음**: 레이아웃/색상/테마 강제 금지
+
+---
+
+## 📐 컴포넌트 API 설계
+
+### Props Interface
+
+```typescript
+interface CarouselCircularProps {
+  // ========== 필수 ==========
+  items: CarouselItem[]; // 최대 30개 권장 (초과 시 자동 slice + warning)
+
+  // ========== 3D 기하학 ==========
+  geometry?: GeometryConfig; // radius, perspective, cameraAngle, depthIntensity
+
+  // ========== 상호작용 ==========
+  interaction?: InteractionConfig; // dragSensitivity, enableMomentum, momentumFriction
+  autoRotateConfig?: AutoRotateConfig; // enabled, speed, resumeDelay
+
+  // ========== 시각 효과 ==========
+  visualEffect?: VisualEffectConfig; // opacityRange, scaleRange
+
+  // ========== 스타일링 ==========
+  style?: StyleConfig; // className, itemClassName
+  containerHeight?: number; // 컨테이너 높이 (기본: 600px)
+
+  // ========== Lightbox ==========
+  enableLightboxWhenClick?: boolean; // 클릭 시 라이트박스 활성화 (기본: false)
+  lightboxOptions?: LightboxOptions; // 라이트박스 옵션
+
+  // ========== 인터랙션 ==========
+  onItemClick?: (item: CarouselItem, index: number) => void;
+
+  // ========== 접근성 ==========
+  ariaLabel?: string; // 컨테이너 aria-label (기본: "Circular Carousel")
+}
+
+/**
+ * 3D 기하학적 구조 설정
+ */
+interface GeometryConfig {
+  radius?: number; // 원형 배치 반지름 (기본: 600px)
+  perspective?: number; // 원근 효과 깊이 (기본: radius * 3.33, 최소: radius * 2)
+  cameraAngle?: number; // 카메라 위아래 각도 (기본: 0, 범위: 0~15, 추천: 8~12)
+  depthIntensity?: number; // Z축 깊이 변동 강도 (기본: 0, 범위: 0-3, 추천: 1.0-2.0)
+}
+
+/**
+ * 드래그 및 관성 상호작용 설정
+ */
+interface InteractionConfig {
+  dragSensitivity?: number; // 드래그 민감도 배율 (기본: 1.0)
+  enableMomentum?: boolean; // 관성 효과 활성화 (기본: true)
+  momentumFriction?: number; // 관성 마찰 계수 (기본: 0.95)
+}
+
+/**
+ * 자동 회전 설정
+ */
+interface AutoRotateConfig {
+  enabled?: boolean; // 자동 회전 활성화 (기본: false)
+  speed?: number; // 회전 속도 deg/frame (기본: 0.1)
+  resumeDelay?: number; // 사용자 상호작용 후 재개 딜레이 (기본: 3000ms)
+}
+
+/**
+ * 시각적 효과 설정
+ */
+interface VisualEffectConfig {
+  opacityRange?: [number, number]; // [min, max] (기본: [0.3, 1.0])
+  scaleRange?: [number, number]; // [min, max] (기본: [0.7, 1.0])
+}
+
+/**
+ * Lightbox 옵션 설정
+ */
+interface LightboxOptions {
+  enableKeyboardNavigation?: boolean; // 키보드 네비게이션 (기본: true)
+  closeOnEsc?: boolean; // ESC로 닫기 (기본: true)
+  backgroundBlur?: number; // 배경 blur 강도 (기본: 8px)
+  animationDuration?: number; // 애니메이션 지속 시간 (기본: 500ms)
+}
+
+/**
+ * CarouselItem: content 또는 image 중 하나는 필수
+ * content가 제공되면 image는 무시됨
+ */
+type CarouselItem = CarouselItemWithContent | CarouselItemWithImage;
+
+interface CarouselItemBase {
+  id: string | number; // 고유 식별자
+  alt?: string; // 이미지 alt text 또는 aria-label
+  title?: string; // 아이템 제목
+  [key: string]: any; // 추가 메타데이터
+}
+
+interface CarouselItemWithContent extends CarouselItemBase {
+  content: React.ReactNode; // 커스텀 콘텐츠 (우선순위 높음)
+  image?: never; // image와 배타적
+}
+
+interface CarouselItemWithImage extends CarouselItemBase {
+  image: string; // 이미지 URL
+  lqip?: LQIPInfo; // LQIP 정보 (선택적) ⭐
+  content?: never; // content와 배타적
+}
+
+/**
+ * LQIP (Low Quality Image Placeholder) 정보 ⭐
+ */
+interface LQIPInfo {
+  base64: string; // LQIP 이미지 base64 인코딩 문자열
+  width: number; // LQIP 원본 너비 (px)
+  height: number; // LQIP 원본 높이 (px)
+}
+
+/**
+ * 이미지 방향 타입 ⭐
+ */
+type ImageOrientation = 'square' | 'portrait' | 'landscape';
+```
+
+---
+
+## 🆕 LQIP (Low Quality Image Placeholder) 기능
+
+### 개요
+
+LQIP는 고화질 이미지 로딩 전에 극저용량의 블러 처리된 이미지를 먼저 표시하여 **즉각적인 렌더링**과 **부드러운 전환**을 제공하는 Progressive Image Loading 기법입니다.
+
+### 주요 이점
+
+1. **즉시 렌더링**: 이미지 다운로드 없이 LQIP 정보만으로 orientation 계산 → 0ms 대기
+2. **Luxury 전환**: Blur → Fade-in 애니메이션으로 프리미엄 사용자 경험
+3. **네트워크 최적화**: base64 인라인으로 추가 HTTP 요청 없음
+4. **후방 호환성**: LQIP 선택적 제공, 없어도 기존 방식으로 동작
+
+### 사용 예제
+
+```typescript
+// LQIP 포함
+const items = [
+  {
+    id: 1,
+    image: 'https://example.com/image.jpg',
+    lqip: {
+      base64: 'data:image/webp;base64,UklGRlYAAAB...',
+      width: 20,
+      height: 13,
+    },
+    alt: 'Beautiful landscape',
+  },
+];
+
+<CarouselCircular items={items} />;
+```
+
+### LQIP 생성 방법
+
+#### 1. 단일 이미지 생성
+
+```bash
+# /scripts/generate-lqip.sh 사용
+./scripts/generate-lqip.sh input.jpg output-lqip.webp
+
+# 결과: output-lqip.webp (20px 너비, WebP, 품질 10)
+```
+
+#### 2. 배치 생성 (추천)
+
+```bash
+# /scripts/generate-lqip-batch.sh 사용
+./scripts/generate-lqip-batch.sh /path/to/images output.json
+
+# 결과: output.json
+# {
+#   "image1.jpg": {
+#     "base64": "data:image/webp;base64,...",
+#     "width": 20,
+#     "height": 13
+#   },
+#   ...
+# }
+```
+
+#### 3. Playground 통합 예시
+
+```typescript
+// playground/utils/albumHelper.ts
+async function createAlbumItems(albumName: string): Promise<CarouselItem[]> {
+  // 1. LQIP 데이터 로드
+  const lqipData = await fetch(`/${albumName}-lqip.json`).then((r) =>
+    r.json()
+  );
+
+  // 2. 이미지 URL 생성
+  const items = Array.from({ length: 20 }, (_, i) => {
+    const imagePath = `${albumName}/${i + 1}-lqip.webp`;
+    return {
+      id: `${albumName}-${i + 1}`,
+      image: `https://r2.example.com/${albumName}/${i + 1}.jpg`,
+      lqip: lqipData[imagePath], // LQIP 연결
+      alt: `${albumName} photo ${i + 1}`,
+    };
+  });
+
+  return items;
+}
+```
+
+### 구현 세부사항
+
+#### ProgressiveImage 컴포넌트
+
+```typescript
+// src/components/ui/ProgressiveImage.tsx
+function ProgressiveImage({ src, lqip, alt }: Props) {
+  // 1. LQIP 먼저 표시 (blur 효과)
+  // 2. 고화질 이미지 로드 완료 확인
+  // 3. 최소 300ms LQIP 표시 보장 (너무 빠른 전환 방지)
+  // 4. 600ms fade-in 애니메이션
+  // 5. GPU 가속 (will-change, transform)
+}
+```
+
+#### 즉시 Orientation 계산
+
+```typescript
+// hooks/useImageOrientations.ts
+function useImageOrientations(items: CarouselItem[]) {
+  // LQIP가 있는 경우
+  if (item.lqip) {
+    const aspectRatio = lqip.width / lqip.height;
+    orientation = determineOrientation(aspectRatio); // 즉시 계산
+  }
+  // LQIP가 없는 경우
+  else {
+    const img = new Image();
+    img.onload = () => {
+      /* 비동기 계산 */
+    };
+    img.src = item.image;
+  }
+}
+```
+
+### 성능 비교
+
+| 지표                     | LQIP 없음        | LQIP 있음 (⭐) |
+| ------------------------ | ---------------- | -------------- |
+| 초기 렌더링 대기 시간    | ~2000ms          | 0ms            |
+| "Loading images..." 표시 | 있음             | 없음           |
+| 추가 HTTP 요청           | 0                | 0 (인라인)     |
+| 사용자 체감 품질         | 갑작스러운 표시  | 부드러운 전환  |
+| 번들 크기 증가           | -                | ~50 bytes/item |
+
+### 베스트 프랙티스
+
+1. **LQIP 크기**: 20px 너비 권장 (충분한 블러 효과 + 최소 용량)
+2. **포맷**: WebP 권장 (JPEG 대비 ~30% 작음)
+3. **품질**: 10-20 권장 (블러 처리되므로 낮아도 무방)
+4. **Aspect Ratio 유지**: 원본 비율 정확히 유지 (orientation 계산용)
+5. **배치 생성**: 프로젝트 전체 이미지를 한 번에 생성 후 JSON 관리
+
+### 트러블슈팅
+
+**Q: LQIP가 있는데도 "Loading images..." 표시됨**
+A: `lqip.base64`가 유효한 data URL인지 확인 (`data:image/webp;base64,...` 형식)
+
+**Q: Orientation이 잘못 계산됨**
+A: `lqip.width`와 `lqip.height`가 원본 비율과 일치하는지 확인
+
+**Q: LQIP 전환이 너무 빠름**
+A: `MIN_LQIP_DISPLAY_DURATION` (300ms) 보장됨, 의도된 동작
+
+---
+
+## 🖼 동적 아이템 크기 및 방향 처리
+
+### 개요
+
+각 이미지의 비율을 자동으로 분석하여 **방향(Orientation)**을 결정하고, `containerHeight` 기준으로 **동적 크기**를 계산합니다.
+
+### 방향 결정 로직
+
+```typescript
+// utils/orientationCalculator.ts
+function determineOrientation(aspectRatio: number): ImageOrientation {
+  if (aspectRatio >= 0.95 && aspectRatio <= 1.05) return 'square'; // 정사각형
+  if (aspectRatio < 0.95) return 'portrait'; // 세로
+  return 'landscape'; // 가로
+}
+```
+
+### 동적 크기 계산
+
+```typescript
+// utils/itemMetadataCalculator.ts
+function calculateItemSize(
+  orientation: ImageOrientation,
+  containerHeight: number
+): { width: number; height: number } {
+  switch (orientation) {
+    case 'square':
+      return {
+        height: containerHeight * 0.6, // 60%
+        width: containerHeight * 0.6,
+      };
+    case 'portrait':
+      return {
+        height: containerHeight * 0.6, // 60%
+        width: containerHeight * 0.5, // 50% (더 좁게)
+      };
+    case 'landscape':
+      return {
+        height: containerHeight * 0.6, // 60%
+        width: containerHeight * 0.7, // 70% (더 넓게)
+      };
+  }
+}
+```
+
+### Props 변경
+
+```typescript
+// 이전 방식 (고정 크기)
+interface CarouselCircularProps {
+  itemSize: { width: 300; height: 400 }; // 필수
+}
+
+// 현재 방식 (동적 크기) ⭐
+interface CarouselCircularProps {
+  containerHeight?: number; // 기본: 600px, 선택적
+  // → 크기는 자동 계산
+}
+```
+
+### 동적 각도 계산
+
+각 아이템의 너비에 따라 차지하는 각도도 동적으로 계산됩니다:
+
+```typescript
+// 각 아이템이 차지하는 각도 = (아이템 너비 / 원의 둘레) * 360도
+angle = (width / (2 * Math.PI * radius)) * 360;
+
+// 예시:
+// - radius: 600px → 둘레: 3769px
+// - portrait (300px): 28.6도
+// - square (360px): 34.3도
+// - landscape (420px): 40.1도
+```
+
+### 결과
+
+- **최적화된 레이아웃**: 각 이미지가 자신의 비율에 맞는 크기로 표시
+- **일관된 높이**: 모든 아이템이 동일한 높이 유지 (시각적 균형)
+- **Zero Config**: 개발자가 크기를 지정할 필요 없음
+
+---
+
+## 🧮 핵심 로직: 3D 위치 및 시각 효과 계산
+
+### 의사 코드 (Pseudocode)
+
+```
+함수: calculateItemTransform(itemIndex, currentRotation, totalItems, radius, opacityRange, scaleRange, depthIntensity, cameraAngle)
+  입력:
+    - itemIndex: 아이템 인덱스 (0부터 시작, index 0이 초기 중앙)
+    - currentRotation: 현재 carousel 회전 각도 (degree, 양수 = 시계방향)
+    - totalItems: 전체 아이템 수
+    - radius: 원의 반지름 (px)
+    - opacityRange, scaleRange: 시각 효과 범위
+    - depthIntensity: Z축 깊이 변동 강도 (0-3)
+    - cameraAngle: 카메라 위아래 각도 (0-30)
+
+  계산:
+    anglePerItem = 360 / totalItems
+    itemAngle = itemIndex * anglePerItem
+
+    // 정규화된 각도 계산 (0-360 범위)
+    totalRotation = currentRotation % 360
+    relativeAngle = (itemAngle + totalRotation + 360) % 360
+
+    // 절대 각도 계산 (0-180 범위로 정규화)
+    // 180도 이상이면 360에서 빼서 거울 대칭
+    normalizedAngle = abs(relativeAngle > 180 ? 360 - relativeAngle : relativeAngle)
+
+    // Z축 깊이 계산 (depthIntensity 적용)
+    depthOffset = calculateDepthOffset(itemAngle, currentRotation, depthIntensity, radius)
+
+    // 카메라 각도 적용
+    cameraTransform = cameraAngle > 0 ? `rotateX(${cameraAngle}deg)` : ''
+
+  출력:
+    {
+      transform: `${cameraTransform} rotateY(${itemAngle}deg) translateZ(${radiusInRem + depthOffset}rem)`,
+      opacity: calculateOpacity(normalizedAngle, opacityRange),
+      scale: calculateScale(normalizedAngle, scaleRange),
+      zIndex: calculateZIndex(itemAngle, currentRotation)
+    }
+
+함수: calculateDepthOffset(itemAngle, currentRotation, depthIntensity, radius)
+  // Z축 거리 변동으로 3D 깊이감 강조
+  radian = (itemAngle - currentRotation) * (PI / 180)
+  depthVariation = cos(radian) * depthIntensity  // -depthIntensity ~ +depthIntensity
+  depthOffsetInRem = pxToRem(depthVariation * radius * 0.1)  // radius의 최대 10% 변동
+
+  반환: depthOffsetInRem
+
+함수: calculateOpacity(normalizedAngle, opacityRange)
+  // normalizedAngle: 0-180 범위
+  // opacityRange: [min, max] 예: [0.3, 1]
+
+  ratio = normalizedAngle / 180
+  opacity = max(opacityRange[0], opacityRange[1] - (ratio * (opacityRange[1] - opacityRange[0])))
+
+  반환: opacity
+
+함수: calculateScale(normalizedAngle, scaleRange)
+  // scaleRange: [min, max] 예: [0.7, 1]
+
+  ratio = normalizedAngle / 180
+  scale = max(scaleRange[0], scaleRange[1] - (ratio * (scaleRange[1] - scaleRange[0])))
+
+  반환: scale
+
+함수: calculateZIndex(itemAngle, currentRotation)
+  // Z축 거리 기반 z-index 계산 (-100 ~ 100 범위로 정규화)
+  radian = (itemAngle - currentRotation) * (PI / 180)
+  z = cos(radian) * 100  // -100 ~ 100 범위
+
+  반환: round(z)
+
+함수: pxToRem(px)
+  // 1rem = 16px 기준
+  반환: px / 16
+```
+
+### 핵심 원리
+
+1. **원형 배치**: `rotateY(angle) + translateZ(radius)`로 원주 상에 아이템 배치
+2. **각도 정규화**: 회전 각도를 0-180 범위로 정규화하여 앞/뒤 대칭 처리
+3. **거리 기반 효과**: 정규화된 각도로 opacity/scale 선형 보간
+4. **정규화된 z-index**: -100 ~ 100 범위로 제한하여 CSS 호환성 보장
+5. **Z축 깊이 변동**: depthIntensity로 앞뒤 아이템 간 거리감 강조
+6. **카메라 각도**: rotateX로 위에서 아래로 내려다보는 시점 제공
+7. **rem 단위**: px props를 받아 내부적으로 rem으로 변환 (1rem = 16px)
+
+---
+
+## 🖱 드래그 핸들러 구현 전략
+
+### 의사 코드
+
+```
+상수:
+  - MOMENTUM_START_THRESHOLD = 0.5      // 관성 시작 최소 속도
+  - MOMENTUM_STOP_THRESHOLD = 0.01      // 관성 종료 속도
+  - DRAG_START_DISTANCE = 5             // 클릭과 구분하기 위한 최소 이동 거리 (px)
+
+상태:
+  - rotation: 현재 회전 각도 (degree)
+  - isDragging: 드래그 중 여부
+  - dragStartX: 드래그 시작 X 좌표
+  - lastRotation: 드래그 시작 시 회전 각도
+  - velocity: 현재 속도 (degree/frame)
+  - momentumAnimationId: 관성 애니메이션 requestAnimationFrame ID
+  - autoRotateTimeoutId: 자동 회전 재개 타이머 ID
+
+함수: onMouseEnter()
+  if (autoRotate.enabled):
+    자동회전 일시정지
+
+함수: onMouseLeave()
+  if (autoRotate.enabled && !isDragging && !isMomentumActive):
+    autoRotateTimeoutId = setTimeout(() => {
+      자동회전 재개
+    }, autoRotate.resumeDelay)  // 기본 3000ms
+
+함수: onDragStart(event)
+  // 관성 애니메이션 중이면 즉시 중단
+  if (momentumAnimationId):
+    cancelAnimationFrame(momentumAnimationId)
+    momentumAnimationId = null
+
+  // 멀티터치는 첫 번째만 추적
+  dragStartX = event.clientX 또는 event.touches[0].clientX
+  lastRotation = rotation
+  velocity = 0
+  isDragging = true
+
+함수: onDragMove(event)
+  if (!isDragging): 반환
+
+  // 멀티터치는 첫 번째만 추적
+  currentX = event.clientX 또는 event.touches[0].clientX
+  deltaX = currentX - dragStartX
+
+  // 최소 이동 거리 확인 (클릭 오동작 방지)
+  if (abs(deltaX) < DRAG_START_DISTANCE && !hasMoved):
+    반환
+
+  hasMoved = true
+
+  // 드래그 거리를 회전 각도로 변환
+  // 원의 둘레 기준: 2πr만큼 드래그 = 360도 회전
+  circumference = 2 * PI * radius
+  deltaRotation = (deltaX / circumference) * 360 * dragSensitivity
+  newRotation = lastRotation + deltaRotation
+
+  // 속도 계산 (관성용)
+  velocity = deltaRotation - previousDeltaRotation
+  previousDeltaRotation = deltaRotation
+
+  rotation = newRotation
+
+함수: onDragEnd()
+  isDragging = false
+  hasMoved = false
+
+  if (enableMomentum && abs(velocity) > MOMENTUM_START_THRESHOLD):
+    startMomentumAnimation()
+  else:
+    // 관성 없이 종료 시 자동 회전 재개 스케줄
+    if (autoRotate.enabled):
+      autoRotateTimeoutId = setTimeout(() => {
+        자동회전 재개
+      }, autoRotate.resumeDelay)
+
+함수: startMomentumAnimation()
+  함수 animateMomentum():
+    rotation += velocity
+    velocity *= momentumFriction  // 기본: 0.95
+
+    if (abs(velocity) < MOMENTUM_STOP_THRESHOLD):
+      // 관성 종료 시 자동 회전 재개 스케줄
+      if (autoRotate.enabled):
+        autoRotateTimeoutId = setTimeout(() => {
+          자동회전 재개
+        }, autoRotate.resumeDelay)
+      반환
+
+    momentumAnimationId = requestAnimationFrame(animateMomentum)
+
+  momentumAnimationId = requestAnimationFrame(animateMomentum)
+
+함수: onKeyDown(event)
+  if (event.key === 'ArrowLeft'):
+    // 이전 아이템으로 이동 (시계방향 회전)
+    rotateByDelta(-1, 'clockwise')
+  else if (event.key === 'ArrowRight'):
+    // 다음 아이템으로 이동 (반시계방향 회전)
+    rotateByDelta(+1, 'counterClockwise')
+```
+
+### 구현 고려사항
+
+- **마우스 + 터치**: 통합 이벤트 핸들러 (첫 번째 터치만 추적)
+- **멀티터치 방지**: `touches[0]`만 사용, 핀치줌 preventDefault
+- **전역 리스너**: document에 mousemove/mouseup 등록 (컴포넌트 밖 드래그 추적)
+- **Passive listener**: touchstart/touchmove는 non-passive로 preventDefault 지원
+- **메모리 관리**: useEffect cleanup에서 모든 리스너 제거
+- **requestAnimationFrame**: 관성 및 자동 회전 모두 RAF 사용
+- **타이머 관리**: autoRotateTimeoutId 적절히 clear
+
+---
+
+## 🎨 스타일링 가이드라인
+
+### 컴포넌트가 제공하는 최소 스타일
+
+```css
+/* 컨테이너: 3D 컨텍스트만 설정 */
+.carousel-container {
+  perspective: {perspectiveInRem}rem; /* 기본: radius * 3.33, 최소 radius * 2 */
+  position: relative;
+  /* 크기는 부모에 맡김 */
+}
+
+/* 회전 래퍼: 3D 변형 유지 */
+.carousel-rotator {
+  transform-style: preserve-3d;
+  transform: rotateY({rotation}deg);
+  transition: transform 0s; /* 드래그 시 즉각 반응 */
+}
+
+/* 아이템: 3D 배치만 제어 */
+.carousel-item {
+  position: absolute;
+  width: {itemWidthInRem}rem;
+  height: {itemHeightInRem}rem;
+  transform: rotateY({itemAngle}deg) translateZ({radiusInRem}rem)
+    scale({calculatedScale});
+  opacity: {calculatedOpacity};
+  z-index: {calculatedZIndex}; /* -100 ~ 100 범위 */
+  /* 비주얼 스타일은 itemClassName으로 커스터마이징 */
+}
+```
+
+### 소비자가 제어하는 부분
+
+- **컨테이너 크기**: `className`으로 width, height 지정
+- **아이템 스타일**: `itemClassName`으로 border, shadow, border-radius, background 등
+- **배경, 색상, 타이포그래피**: 완전히 자유
+- **레이아웃**: padding, margin 등
+- **반응형 breakpoint**: 미디어 쿼리로 자유롭게 조정
+
+### rem 변환 규칙
+
+- **1rem = 16px** 기준
+- Props는 px 단위로 받음 (직관적)
+- 내부적으로 rem으로 변환하여 스타일 적용
+- 예: `radius={600}` → `37.5rem`
+
+---
+
+## 🔄 CI/CD 파이프라인
+
+### GitHub Actions 워크플로우
+
+#### 1. CI (`.github/workflows/ci.yml`)
+
+**트리거**: Push to main/develop, Pull Request
+**작업**:
+
+- pnpm 설치 및 의존성 복원
+- Biome lint 실행
+- TypeScript 타입 체크
+- 패키지 빌드 (tsup)
+
+#### 2. Publish (`.github/workflows/publish.yml`)
+
+**트리거**: Push to main (changesets 감지)
+**작업**:
+
+- Changesets가 버전 업데이트 PR 생성
+- PR 머지 시 자동으로:
+  - 패키지 빌드
+  - NPM 배포 (`npm publish`)
+  - GitHub Release 생성
+
+### NPM Token 설정 방법
+
+1. **NPM에서 Token 생성**
+
+   - https://www.npmjs.com 로그인
+   - Profile → Access Tokens → Generate New Token
+   - Type: **Automation** 선택
+   - Token 복사 (한 번만 표시됨)
+
+2. **GitHub Secrets 등록**
+
+   - Repository → Settings → Secrets and variables → Actions
+   - New repository secret
+   - Name: `NPM_TOKEN`
+   - Value: 복사한 Token
+   - Add secret
+
+3. **Scope 설정**
+   - NPM에서 `@ddevkim` organization 생성
+   - 또는 개인 scope 사용 (username이 자동으로 scope)
+
+---
+
+## 🧪 Playground 구성
+
+### 목적
+
+- 개발 중 실시간 테스트
+- 다양한 props 조합 검증
+- 성능 프로파일링
+- **테스트 전략**: 단위 테스트 생략, Playground로 직접 확인
+
+### 9개 앨범 시스템 ⭐
+
+**지원 앨범**: bali, barbados, borabora, cadiz, cannes, hawaii, ibiza, mallorca, santorini
+**각 앨범**: 20개 이미지 + LQIP 데이터 (JSON)
+**호스팅**: Cloudflare R2
+
+**앨범 헬퍼 기능**:
+
+```typescript
+// playground/utils/albumHelper.ts
+async function createAlbumItems(albumName: string): Promise<CarouselItem[]> {
+  // 1. LQIP 데이터 로드
+  const lqipData = await fetch(`/${albumName}-lqip.json`).then((r) =>
+    r.json()
+  );
+
+  // 2. 이미지 URL 생성 + LQIP 연결
+  const items = Array.from({ length: 20 }, (_, i) => ({
+    id: `${albumName}-${i + 1}`,
+    image: `https://r2.example.com/${albumName}/${i + 1}.jpg`,
+    lqip: lqipData[`${albumName}/${i + 1}-lqip.webp`],
+    alt: `${albumName} photo ${i + 1}`,
+  }));
+
+  return items;
+}
+
+// 사용
+const items = await createAlbumItems('bali');
+<CarouselCircular items={items} />;
+```
+
+### 포함된 예시
+
+1. **BasicExample**: 최소 설정 (이미지 carousel)
+2. **AutoRotateExample**: 자동 회전 + 마우스 인터랙션 데모
+3. **LightboxExample**: 클릭 → 전체화면 확대
+4. **CustomContentExample**: ReactNode 사용 (카드, 비디오 등)
+
+---
+
+## 📋 개발 체크리스트
+
+### Phase 1: 프로젝트 설정
+
+- [x] Monorepo 구조 생성
+- [x] Root workspace 설정 (pnpm-workspace.yaml)
+- [x] TypeScript 설정 (tsconfig.base.json)
+- [x] Biome 설정
+- [x] Changesets 초기화
+
+### Phase 2: 패키지 구현
+
+- [x] 상수 정의 (constants/) - 8개 파일
+- [x] 타입 정의 (types.ts) - Union type으로 명료화
+- [x] 유틸리티 함수 (utils/helpers.ts) - pxToRem, 각도 계산 등
+- [x] 3D 계산 유틸리티 (utils/transformCalculator.ts) - 정규화된 z-index
+- [x] 드래그 핸들러 hook (hooks/useDrag.ts) - 관성, 임계값
+- [x] 자동 회전 hook (hooks/useAutoRotate.ts) - RAF 기반
+- [x] 키보드 네비게이션 hook (hooks/useKeyboard.ts)
+- [x] 이미지 방향 분석 hook (hooks/useImageOrientations.ts) - LQIP 지원 ⭐
+- [x] 라이트박스 hook (hooks/useLightbox.ts, hooks/useLightboxAnimation.ts)
+- [x] CarouselCircular 컴포넌트 - 접근성, SSR-safe
+- [x] ProgressiveImage 컴포넌트 - LQIP 지원 ⭐
+- [x] Lightbox 컴포넌트 - 전체화면 이미지 뷰어
+- [x] Public API export (index.ts)
+
+### Phase 3: Playground
+
+- [x] Vite 설정
+- [x] 기본 예시 작성 (4개)
+- [x] 앨범 시스템 통합 (9개 앨범, LQIP) ⭐
+- [x] 다양한 props 조합 테스트
+
+### Phase 4: 빌드 & 배포
+
+- [x] tsup 설정 (ESM + CJS, external 최적화, Next.js 호환)
+- [x] package.json 메타데이터 (버전 명시 금지, peerDependencies)
+- [x] GitHub Actions CI 설정 (lint, type-check, build)
+- [x] GitHub Actions Publish 설정 (changesets 기반)
+- [x] NPM Token 등록 (@ddevkim scope)
+
+### Phase 5: 문서화
+
+- [x] README.md (설치, 사용법, API, SSR 가이드)
+- [x] CHANGELOG.md (Changesets 자동 생성)
+- [x] JSDoc 주석 (모든 공개 API)
+- [x] 라이선스 (MIT)
+- [x] 3D_TRANSFORM_EXPLANATION.md (3D 수학 원리)
+- [x] PERFORMANCE_OPTIMIZATION.md (성능 최적화 가이드)
+- [x] LQIP_FEATURE.md (LQIP 완전 가이드) ⭐
+- [x] PROJECT.mdc (프로젝트 컨텍스트, 이 문서)
+
+---
+
+## 🚀 배포 워크플로우
+
+### 개발 → 배포 프로세스
+
+```bash
+# 1. 기능 개발
+git checkout -b feature/new-feature
+# ... 코드 작성 ...
+
+# 2. Changeset 생성
+pnpm changeset
+# - patch: 버그 수정
+# - minor: 새 기능
+# - major: Breaking changes
+
+# 3. 커밋 & 푸시
+git add .
+git commit -m "feat: add new feature"
+git push
+
+# 4. PR 생성 & 머지
+# - CI 자동 실행 (lint, build)
+# - main 브랜치 머지
+
+# 5. 자동 배포
+# - Changesets가 버전 업데이트 PR 생성
+# - PR 머지 시 자동으로 NPM 배포
+```
+
+---
+
+## 🎯 성공 지표
+
+### 기술적 목표
+
+- [x] TypeScript 타입 안전성 100% (strict mode)
+- [x] Tree-shaking 지원 (ESM)
+- [x] 번들 크기 < 50KB (gzipped)
+- [x] React 18+ 호환
+- [x] Next.js SSR 지원
+- [x] 최대 30개 아이템 성능 보장 (60fps)
+- [x] LQIP 지원으로 즉시 렌더링 (0ms 대기) ⭐
+- [x] 동적 아이템 크기 계산 (Zero Config) ⭐
+
+### 사용성 목표
+
+- [x] 직관적인 API (5분 내 통합 가능)
+- [x] 명확한 문서화 (SSR, LQIP 가이드 포함)
+- [x] 최소 스타일 강제 (3D transform만)
+- [x] 다양한 사용 예시 제공 (Playground, 9개 앨범)
+- [x] 접근성 준수 (키보드, ARIA)
+
+---
+
+## 📚 참고 자료 및 설계 원칙
+
+### 구현 시 참고할 핵심 로직
+
+- **3D 변환**: `rotateY()` + `translateZ()` 조합
+- **각도 정규화**: 360도 순환 → 0-180 범위로 매핑
+- **선형 보간**: 거리 기반 opacity/scale 계산
+- **드래그 추적**: 전역 이벤트 리스너 + 관성 애니메이션
+- **물리 기반 회전**: 원의 둘레(2πr) 기준 드래그-회전 매핑
+- **Progressive Loading**: LQIP → 고화질 전환 (300ms + 600ms fade) ⭐
+
+### 외부 의존성 최소화
+
+- React hooks만 사용 (외부 라이브러리 지양)
+- 순수 CSS 3D transforms
+- 브라우저 네이티브 API 활용 (requestAnimationFrame)
+- peerDependencies: react, react-dom만
+
+### 핵심 설계 결정 요약
+
+1. **물리 기반**: 드래그는 물리적 원형 구조 기반 (외부 제어 불가)
+2. **자동 재개**: 마우스 leave/관성 종료 후 3초 딜레이
+3. **멀티터치**: 첫 번째 터치만 추적, 핀치줌 방지
+4. **아이템 제한**: 30개 초과 시 slice + warning
+5. **SSR-safe**: typeof window 체크, 기본값 제공
+6. **접근성 우선**: 키보드 네비게이션, ARIA 속성
+7. **타입 안전**: Union type으로 content/image 배타적 정의
+8. **성능 최적화**: requestAnimationFrame, useMemo, useCallback
+9. **Zero Config**: 이미지 비율 자동 감지, 동적 크기 계산 ⭐
+10. **Progressive Enhancement**: LQIP로 점진적 품질 향상 ⭐
+11. **Luxury UX**: 최소 표시 시간으로 부드러운 전환 보장 ⭐
+
+---
+
+## 🔧 최근 주요 변경 사항 (2025-11-08 이후)
+
+### 1. LQIP 기능 추가 (Commit: dbca220) ⭐
+
+**새로운 파일**:
+
+- `src/components/ui/ProgressiveImage.tsx` (101줄)
+- `documents/LQIP_FEATURE.md` (333줄)
+- `scripts/generate-lqip.sh`
+- `scripts/generate-lqip-batch.sh`
+
+**수정된 파일**:
+
+- `src/types.ts`: `LQIPInfo` 인터페이스, `CarouselItemWithImage.lqip` 필드
+- `src/hooks/useImageOrientations.ts`: LQIP 기반 즉시 계산
+- `src/utils/itemContentRenderer.ts`: LQIP 감지 및 ProgressiveImage 적용
+- `playground/utils/albumHelper.ts`: LQIP 로드 및 통합
+
+**영향**:
+
+- 초기 렌더링 대기 시간: ~2000ms → 0ms
+- "Loading images..." 표시 제거
+- Luxury blur → fade-in 전환 추가
+
+### 2. 동적 아이템 크기 기능 (Commit: 794ce94) ⭐
+
+**변경 사항**:
+
+- Props: `itemSize` (고정) → `containerHeight` (동적 기준)
+- 이미지 비율 자동 감지 및 orientation 분류
+- 방향별 최적화된 크기 비율 (square: 0.6, portrait: 0.5, landscape: 0.7)
+- 동적 각도 계산 (아이템 너비에 따라)
+
+**결과**:
+
+- Zero Config 구현 (크기 지정 불필요)
+- 최적화된 레이아웃 자동 생성
+- 일관된 높이 유지
+
+### 3. Lightbox 접근성 개선 (Commit: ad0d75c)
+
+**개선 사항**:
+
+- Fallback alt text 처리 (`getReadableText`)
+- ARIA label 자동 생성 (`Image N of M: Title`)
+- 키보드 포커스 관리 강화
+- 스크린 리더 지원 향상
+
+---
+
+## 📊 프로젝트 통계
+
+- **총 코드 라인**: 3,812줄 (TypeScript/TSX)
+- **컴포넌트**: 10개 (Carousel 3개, Lightbox 4개, UI 3개)
+- **커스텀 훅**: 10개
+- **유틸리티 파일**: 9개
+- **상수 파일**: 8개
+- **타입 정의**: 20+ 인터페이스/타입
+- **예제**: 4개 (playground)
+- **지원 앨범**: 9개 (각 20장, 총 180장)
+- **문서**: 6개 (README, API 가이드, 성능 최적화, LQIP 등)
+
+---
+
+**마지막 업데이트**: 2025-11-10
+**현재 버전**: 최신 (Changesets 기반 자동 버전 관리)
+**상태**: Production Ready ✅
