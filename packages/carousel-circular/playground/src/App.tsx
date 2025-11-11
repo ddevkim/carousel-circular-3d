@@ -264,7 +264,7 @@ export function App() {
                 autoRotateConfig={{
                   enabled: autoRotateEnabled,
                   speed: 0.02,
-                  resumeDelay: 3000,
+                  resumeDelay: 1500,
                 }}
               />
             )}
