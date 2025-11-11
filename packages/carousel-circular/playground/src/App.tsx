@@ -131,6 +131,22 @@ export function App() {
             </div>
           </div>
 
+          {/* Reset Button */}
+          <div className="control-group control-group-toggle">
+            <button
+              type="button"
+              className="reset-button"
+              onClick={() => {
+                setGeometry(DEFAULT_GEOMETRY);
+                setEnableReflection(true);
+                setAutoRotateEnabled(true);
+              }}
+              aria-label="Reset all controls to default values"
+            >
+              Reset
+            </button>
+          </div>
+
           {/* Reflection Toggle */}
           <div className="control-group control-group-toggle">
             <label htmlFor="reflection-toggle">Reflection</label>
@@ -198,8 +214,8 @@ export function App() {
             <input
               id="camera-angle-control"
               type="range"
-              min="-3"
-              max="3"
+              min="-5"
+              max="5"
               step="0.1"
               value={geometry.cameraAngle}
               onChange={(e) => handleGeometryChange('cameraAngle', Number(e.target.value))}
