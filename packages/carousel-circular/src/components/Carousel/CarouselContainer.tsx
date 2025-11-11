@@ -71,7 +71,7 @@ export function CarouselContainer({
   // 브라우저 환경에서는 상호작용 활성화
   if (isBrowser) {
     containerStyle.isolation = 'isolate';
-    rotationContainerStyle.transform = `rotateX(-${cameraAngle}deg) rotateY(${finalRotation}deg)`;
+    rotationContainerStyle.transform = `rotateX(${-cameraAngle}deg) rotateY(${finalRotation}deg)`;
     rotationContainerStyle.transition = 'transform 0s';
     rotationContainerStyle.willChange = 'transform';
   } else {

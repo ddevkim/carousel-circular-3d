@@ -8,7 +8,7 @@ export interface GeometryConfig {
   radius?: number;
   /** 3D 원근 효과 깊이 (px, 기본: radius * 3.33, 최소: radius * 2) */
   perspective?: number;
-  /** 카메라 위아래 각도 (degree, 기본: 0, 범위: 0-30, 추천: 8-15) */
+  /** 카메라 위아래 각도 (degree, 기본: 0, 범위: -30~30, 음수: 아래쪽, 양수: 위쪽, 추천: ±8~15) */
   cameraAngle?: number;
   /** 개별 아이템 Z축 깊이 변동 강도 (기본: 0, 범위: 0-3, 추천: 1.0-2.0) */
   depthIntensity?: number;
