@@ -135,7 +135,7 @@ export function App() {
           <div className="control-group control-group-toggle">
             <button
               type="button"
-              className="reset-button"
+              className="toggle-button"
               onClick={() => {
                 setGeometry(DEFAULT_GEOMETRY);
                 setEnableReflection(true);
