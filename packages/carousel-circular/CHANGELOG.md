@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+### Patch Changes
+
+- remove repo url
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
@@ -25,25 +31,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Features
 
 **3D Geometry Configuration:**
+
 - Adjustable radius, perspective, camera angle
 - Depth intensity for Z-axis variation
 
 **Interaction:**
+
 - Drag sensitivity control
 - Momentum physics with friction
 - Touch-friendly on mobile devices
 
 **Visual Effects:**
+
 - Opacity and scale gradients
 - Bottom reflection effect
 - Smooth transitions with easing functions
 
 **Lightbox:**
+
 - Full-screen image viewer
 - Keyboard navigation (Arrow keys, ESC)
 - Smooth enter/exit animations
 
 **Performance:**
+
 - GPU-accelerated CSS transforms
 - Optimized bundle size
 - Tree-shakeable ESM/CJS exports

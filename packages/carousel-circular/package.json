@@ -1,6 +1,6 @@
 {
   "name": "@ddevkim/carousel-circular-3d",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A luxury 3D circular carousel component for React with smooth animations, drag interactions, and premium visual effects",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -61,14 +61,6 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ddevkim/packages",
-    "directory": "packages/carousel-circular"
-  },
-  "bugs": {
-    "url": "https://github.com/ddevkim/packages/issues"
   },
   "homepage": "https://carousel-circular.vercel.app",
   "peerDependencies": {
