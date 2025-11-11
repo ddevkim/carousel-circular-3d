@@ -13,6 +13,8 @@ export interface ProgressiveImageProps {
   alt?: string;
   /** 추가 클래스명 */
   className?: string;
+  /** 스마트 로딩: 이미지가 이미 캐시되어 있으면 LQIP를 건너뛰고 바로 원본 표시 (기본: false) */
+  skipLQIPIfCached?: boolean;
 }
 
 /**
@@ -22,7 +24,8 @@ export interface ProgressiveImageProps {
  *
  * Luxury UX:
  * - LQIP는 최소 300ms 동안 표시되어 부드러운 전환 경험 제공
- * - 이미지가 캐시되어 즉시 로드되어도 LQIP 단계를 거침
+ * - skipLQIPIfCached=false: 이미지가 캐시되어 즉시 로드되어도 LQIP 단계를 거침
+ * - skipLQIPIfCached=true: 캐시된 이미지는 바로 표시 (reflection 등에 유용)
  * - 갑작스러운 변화가 아닌 점진적 품질 향상 경험
  *
  * 이미지 다운로드 최적화:
@@ -30,7 +33,13 @@ export interface ProgressiveImageProps {
  * - LQIP가 없는 경우: useImageOrientations에서 먼저 다운로드하고,
  *   이 컴포넌트에서는 브라우저 캐시를 사용 (실제 다운로드 1번)
  */
-export function ProgressiveImage({ src, lqip, alt = '', className }: ProgressiveImageProps) {
+export function ProgressiveImage({
+  src,
+  lqip,
+  alt = '',
+  className,
+  skipLQIPIfCached = false,
+}: ProgressiveImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string>(
     lqip ? `data:image/jpeg;base64,${lqip.base64}` : src
@@ -42,34 +51,49 @@ export function ProgressiveImage({ src, lqip, alt = '', className }: Progressive
       return;
     }
 
-    // 상태 초기화 (앨범 전환 시)
+    // 상태 초기화 (앨범 전환 시 또는 캐시되지 않은 경우)
     setIsLoaded(false);
     setCurrentSrc(`data:image/jpeg;base64,${lqip.base64}`);
 
-    // LQIP가 있는 경우: 백그라운드에서 원본 이미지 로드
+    // 원본 이미지 로드
     const img = new Image();
     img.src = src;
 
     // 최소 LQIP 표시 시간 (300ms) - luxury한 전환을 위해
-    const minDisplayTime = 300;
+    // skipLQIPIfCached인 경우 최소 시간 적용 안 함
+    const minDisplayTime = skipLQIPIfCached ? 0 : 300;
     const startTime = Date.now();
 
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-    img.onload = () => {
+    /**
+     * 이미지 로드 완료 처리
+     * 캐시된 이미지(complete && naturalWidth > 0)도 이 핸들러를 통해 처리됨
+     * skipLQIPIfCached가 true인 경우 최소 표시 시간을 0으로 설정하여 즉시 표시
+     */
+    const handleImageLoad = () => {
+      // skipLQIPIfCached인 경우 최소 표시 시간 없이 즉시 전환
       const elapsedTime = Date.now() - startTime;
       const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
 
-      // 최소 시간이 지나지 않았으면 대기 후 전환
       timeoutId = setTimeout(() => {
         setCurrentSrc(src);
         setIsLoaded(true);
       }, remainingTime);
     };
 
+    // 이미지가 이미 캐시되어 있으면 동기적으로 onload 이벤트 발생
+    // (complete && naturalWidth > 0이면 onload 핸들러가 즉시 호출됨)
+    img.onload = handleImageLoad;
     img.onerror = () => {
       // 로드 실패 시 LQIP 유지 (조용히 실패)
     };
+
+    // complete 체크: 이미지가 이미 로드된 경우 (동기적 발생)
+    // onload 이벤트가 등록되기 전에 complete 상태였던 경우를 위해
+    if (img.complete && img.naturalWidth > 0) {
+      handleImageLoad();
+    }
 
     return () => {
       // Cleanup: 이미지 로더와 타이머 정리
@@ -79,7 +103,7 @@ export function ProgressiveImage({ src, lqip, alt = '', className }: Progressive
         clearTimeout(timeoutId);
       }
     };
-  }, [src, lqip]);
+  }, [src, lqip, skipLQIPIfCached]);
 
   const style: React.CSSProperties = {
     width: '100%',

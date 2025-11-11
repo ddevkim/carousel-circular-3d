@@ -9,9 +9,14 @@ import type { CarouselItem } from '../types';
  * LQIP가 제공된 경우 ProgressiveImage를 사용하여 부드러운 로딩 경험을 제공한다.
  * @param item - CarouselItem
  * @param index - 아이템 인덱스
+ * @param skipLQIPIfCached - 스마트 로딩: 캐시된 이미지는 LQIP 건너뛰기 (기본: false)
  * @returns 렌더링된 콘텐츠 (ReactNode)
  */
-export function renderItemContent(item: CarouselItem, index: number): ReactNode {
+export function renderItemContent(
+  item: CarouselItem,
+  index: number,
+  skipLQIPIfCached = false
+): ReactNode {
   if ('content' in item && item.content) {
     return item.content;
   }
@@ -25,6 +30,7 @@ export function renderItemContent(item: CarouselItem, index: number): ReactNode 
         src: item.image,
         lqip: item.lqip,
         alt,
+        skipLQIPIfCached,
       });
     }
 

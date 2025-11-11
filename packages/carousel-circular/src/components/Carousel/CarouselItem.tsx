@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import type {
   CarouselItem as CarouselItemType,
   ImageOrientation,
@@ -5,6 +6,61 @@ import type {
 } from '../../types';
 import { getItemAriaLabel, renderItemContent } from '../../utils/itemContentRenderer';
 import { calculateItemStyle } from '../../utils/itemStyleCalculator';
+
+/**
+ * Reflection 컴포넌트 Props
+ */
+interface ReflectionProps {
+  /** 아이템 데이터 */
+  item: CarouselItemType;
+  /** 아이템 인덱스 */
+  index: number;
+}
+
+/**
+ * Reflection 효과만 담당하는 컴포넌트
+ * enableReflection 변경 시 이 컴포넌트만 마운트/언마운트됨
+ * 이미지가 이미 로드되어 있으면 LQIP를 건너뛰고 바로 원본 이미지 표시
+ *
+ * memo의 동등성 비교:
+ * - item.id와 index를 기준으로만 비교하여 불필요한 리렌더링 방지
+ * - item 객체의 다른 필드가 변경되었을 때는 리렌더링하지 않음
+ */
+const Reflection = memo(
+  function Reflection({ item, index }: ReflectionProps) {
+    // 스마트 로딩: 이미 캐시된 이미지는 LQIP 건너뛰기
+    const reflectionContent = useMemo(
+      () => renderItemContent(item, index, true),
+      [item, index]
+    );
+
+    return (
+      <div
+        style={{
+          position: 'absolute',
+          top: '200%',
+          left: 0,
+          width: '100%',
+          height: '100%',
+          transformOrigin: 'top',
+          transform: 'scaleY(-1)',
+          maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%)',
+          pointerEvents: 'none',
+          overflow: 'hidden',
+          borderRadius: '0.75rem',
+        }}
+        aria-hidden="true"
+      >
+        {reflectionContent}
+      </div>
+    );
+  },
+  (prevProps, nextProps) => {
+    // memo 동등성 비교: item.id와 index만 비교
+    return prevProps.item.id === nextProps.item.id && prevProps.index === nextProps.index;
+  }
+);
 
 /**
  * CarouselItem 컴포넌트 Props
@@ -41,8 +97,9 @@ export interface CarouselItemProps {
 /**
  * 캐러셀 아이템 컴포넌트
  * 개별 아이템의 렌더링을 담당한다.
+ * React.memo로 최적화하여 props가 변경된 경우에만 리렌더링
  */
-export function CarouselItem({
+export const CarouselItem = memo(function CarouselItem({
   item,
   index,
   transform,
@@ -57,7 +114,10 @@ export function CarouselItem({
   onLightboxOpen,
   enableReflection = false,
 }: CarouselItemProps) {
-  const content = renderItemContent(item, index);
+  // 원본 이미지 컨텐츠: 항상 LQIP 경유 (skipLQIPIfCached = false)
+  // useMemo로 메모이제이션하여 불필요한 재계산 방지
+  const content = useMemo(() => renderItemContent(item, index, false), [item, index]);
+
   const ariaLabel = getItemAriaLabel(item, index);
   const isClickable = Boolean(onItemClick) || Boolean(onLightboxOpen);
   const finalClassName = itemClassName ? `carousel-item ${itemClassName}` : 'carousel-item';
@@ -99,7 +159,23 @@ export function CarouselItem({
     }
   };
 
-  const itemContent = enableReflection ? (
+  // 원본 이미지 컨텐츠 (항상 LQIP 경유 - 부드러운 전환)
+  const imageContent = (
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        borderRadius: '0.75rem',
+      }}
+    >
+      {content}
+    </div>
+  );
+
+  // Wrapper: reflection 여부와 관계없이 동일한 구조
+  const itemContent = (
     <div
       style={{
         position: 'relative',
@@ -108,42 +184,13 @@ export function CarouselItem({
         overflow: 'visible',
       }}
     >
-      {/* 원본 이미지 컨텐츠 (border-radius 클리핑) */}
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          height: '100%',
-          overflow: 'hidden',
-          borderRadius: '0.75rem',
-        }}
-      >
-        {content}
-      </div>
+      {/* 원본 이미지 컨텐츠 */}
+      {imageContent}
 
-      {/* Reflection 효과 - 원본 이미지 아래에 뒤집혀서 배치 */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '200%',
-          left: 0,
-          width: '100%',
-          height: '100%',
-          transformOrigin: 'top',
-          transform: 'scaleY(-1)',
-          maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%)',
-          pointerEvents: 'none',
-          overflow: 'hidden',
-          borderRadius: '0.75rem',
-        }}
-        aria-hidden="true"
-      >
-        {content}
-      </div>
+      {/* Reflection: enableReflection이 true일 때만 렌더링 */}
+      {/* 스마트 로딩: 이미 로드된 이미지는 LQIP 건너뛰기 */}
+      {enableReflection && <Reflection item={item} index={index} />}
     </div>
-  ) : (
-    content
   );
 
   if (isClickable) {
@@ -173,4 +220,4 @@ export function CarouselItem({
       {itemContent}
     </div>
   );
-}
+});

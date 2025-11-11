@@ -165,11 +165,10 @@ export function CarouselCircular(props: CarouselCircularProps) {
       config.itemClassName,
       config.onItemClick,
       config.enableLightboxWhenClick,
+      config.enableReflection,
       shouldPreventItemClick,
       handleLightboxOpen,
       rotation.resetSignificantDrag,
-      rotation,
-      config,
     ]
   );
 

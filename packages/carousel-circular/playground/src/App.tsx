@@ -31,7 +31,7 @@ export function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [geometry, setGeometry] = useState<GeometryControls>(DEFAULT_GEOMETRY);
   const [enableReflection, setEnableReflection] = useState(true);
-  const [autoRotateEnabled, setAutoRotateEnabled] = useState(false);
+  const [autoRotateEnabled, setAutoRotateEnabled] = useState(true);
   const [isAlbumDropdownOpen, setIsAlbumDropdownOpen] = useState(false);
 
   // 컨테이너 기본 높이
