@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.1.3
+
+### Patch Changes
+
+- ## 🚀 Build Optimization
+
+  - **Minification**: Enabled esbuild minification for production builds
+  - **Sourcemaps**: Removed from production builds to reduce package size
+  - **Bundle size**: Reduced by ~64% (from ~475KB to ~170KB)
+  - **Output files**: Optimized from 8 files to 5 files
+  - **npm files**: Excluded .map files from npm package
+
+  ### Technical Changes
+
+  - Set `sourcemap: false` for production builds
+  - Set `minify: true` using esbuild built-in minification
+  - Updated `package.json` files field to exclude `!dist/**/*.map`
+  - Removed conditional build logic for simpler, always-optimized builds
+
+  ### Impact
+
+  - Smaller npm package size
+  - Faster install times for consumers
+  - Cleaner dist folder structure
+  - Better production performance
+
 ## 0.1.2
 
 ### Patch Changes
