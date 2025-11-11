@@ -14,6 +14,7 @@
     "clean": "turbo run clean && rm -rf .turbo",
     "changeset": "changeset",
     "changeset:add": "changeset add",
+    "changeset:status": "changeset status",
     "version": "changeset version",
     "release": "node scripts/release-package.js",
     "release:all": "turbo run build && changeset publish"

@@ -36,6 +36,7 @@ coverage/
 .changeset/
 !.changeset/README.md
 !.changeset/config.json
+!.changeset/*.md
 
 # LQIP generated files
 scripts/outputs/
