@@ -1,5 +1,5 @@
-import type { CarouselItem } from '@ddevkim/carousel-circular';
-import { CarouselCircular } from '@ddevkim/carousel-circular';
+import type { CarouselItem } from '@ddevkim/carousel-circular-3d';
+import { CarouselCircular } from '@ddevkim/carousel-circular-3d';
 import { useEffect, useState } from 'react';
 import type { AlbumName } from './utils/albumHelper';
 import { createAlbumItems, getAlbums } from './utils/albumHelper';
@@ -94,7 +94,7 @@ export function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1>@ddevkim/carousel-circular</h1>
+        <h1>@ddevkim/carousel-circular-3d</h1>
         <p>3D Circular Carousel with Interactive Controls</p>
       </header>
 

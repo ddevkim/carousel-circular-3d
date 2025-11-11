@@ -1,5 +1,5 @@
 {
-  "name": "@ddevkim/carousel-circular-playground",
+  "name": "@ddevkim/carousel-circular-3d-playground",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -13,7 +13,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ddevkim/carousel-circular": "workspace:*",
+    "@ddevkim/carousel-circular-3d": "workspace:*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "scheduler": "^0.27.0"

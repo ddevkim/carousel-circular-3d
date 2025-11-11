@@ -14,6 +14,7 @@
   },
   "files": [
     "dist",
+    "!dist/**/*.map",
     "README.md",
     "LICENSE"
   ],
@@ -23,7 +24,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "pnpm run playground:dev",
-    "playground:dev": "pnpm --filter @ddevkim/carousel-circular-playground dev",
+    "playground:dev": "pnpm --filter @ddevkim/carousel-circular-3d-playground dev",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "type-check": "tsc --noEmit",

@@ -1,5 +1,5 @@
-import type { CarouselCircularProps } from '@ddevkim/carousel-circular';
-import { CarouselCircular } from '@ddevkim/carousel-circular';
+import type { CarouselCircularProps } from '@ddevkim/carousel-circular-3d';
+import { CarouselCircular } from '@ddevkim/carousel-circular-3d';
 
 /**
  * ExampleContainer Props

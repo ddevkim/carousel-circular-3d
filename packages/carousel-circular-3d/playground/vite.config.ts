@@ -20,12 +20,12 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'scheduler'],
-    exclude: ['@ddevkim/carousel-circular'],
+    exclude: ['@ddevkim/carousel-circular-3d'],
   },
   resolve: {
     preserveSymlinks: true,
     alias: {
-      '@ddevkim/carousel-circular': path.resolve(__dirname, '../src/index.ts'),
+      '@ddevkim/carousel-circular-3d': path.resolve(__dirname, '../src/index.ts'),
     },
   },
   build: {
@@ -39,7 +39,7 @@ export default defineConfig({
         // Manual chunk splitting for better caching
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'scheduler'],
-          'carousel-lib': ['@ddevkim/carousel-circular'],
+          'carousel-lib': ['@ddevkim/carousel-circular-3d'],
         },
         // Clean file names with content hash
         entryFileNames: 'assets/[name]-[hash].js',

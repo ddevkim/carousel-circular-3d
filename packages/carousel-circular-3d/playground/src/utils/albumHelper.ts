@@ -1,4 +1,4 @@
-import type { CarouselItem, LQIPInfo } from '@ddevkim/carousel-circular';
+import type { CarouselItem, LQIPInfo } from '@ddevkim/carousel-circular-3d';
 
 // Constants
 const HOST = 'https://pub-7f7abe14948a4c78825b386f9eb1e70b.r2.dev';

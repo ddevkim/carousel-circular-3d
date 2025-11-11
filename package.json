@@ -25,6 +25,7 @@
     "@types/node": "^22.19.0",
     "@vitejs/plugin-react": "^4.7.0",
     "prompts": "^2.4.2",
+    "terser": "^5.44.1",
     "tsup": "^8.5.0",
     "turbo": "^2.6.1",
     "typescript": "^5.9.3",

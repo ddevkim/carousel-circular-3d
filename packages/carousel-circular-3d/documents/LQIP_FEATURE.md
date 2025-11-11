@@ -46,8 +46,8 @@ interface CarouselItemWithImage {
 ### 기본 사용 예제
 
 ```typescript
-import { CarouselCircular } from '@ddevkim/carousel-circular';
-import type { CarouselItemWithImage } from '@ddevkim/carousel-circular';
+import { CarouselCircular } from '@ddevkim/carousel-circular-3d';
+import type { CarouselItemWithImage } from '@ddevkim/carousel-circular-3d';
 
 const items: CarouselItemWithImage[] = [
   {

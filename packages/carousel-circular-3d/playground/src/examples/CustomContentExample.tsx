@@ -1,4 +1,4 @@
-import type { CarouselItem } from '@ddevkim/carousel-circular';
+import type { CarouselItem } from '@ddevkim/carousel-circular-3d';
 import { ExampleContainer } from '../components/ExampleContainer';
 
 const items: CarouselItem[] = [

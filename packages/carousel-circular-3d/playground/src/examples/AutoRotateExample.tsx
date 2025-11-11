@@ -1,4 +1,4 @@
-import type { CarouselItem } from '@ddevkim/carousel-circular';
+import type { CarouselItem } from '@ddevkim/carousel-circular-3d';
 import { useEffect, useState } from 'react';
 import { ExampleContainer } from '../components/ExampleContainer';
 import type { AlbumName } from '../utils/albumHelper';

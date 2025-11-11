@@ -16,7 +16,7 @@ AI 어시스턴트를 위한 프로젝트 컨텍스트 문서
 
 ```
 ddevkim/
-├── packages/carousel-circular/     # 메인 라이브러리 패키지
+├── packages/carousel-circular-3d/     # 메인 라이브러리 패키지
 │   ├── src/
 │   │   ├── components/            # UI 컴포넌트
 │   │   ├── hooks/                 # React 커스텀 훅
@@ -215,7 +215,7 @@ ddevkim/
 - `clean-code.mdc`: Clean Code 원칙
 - `tailwind.mdc`: Tailwind CSS 가이드 (해당시)
 
-### 프로젝트 문서 (packages/carousel-circular/)
+### 프로젝트 문서 (packages/carousel-circular-3d/)
 - `documents/PROJECT.mdc`: 프로젝트 상세 스펙 및 구현 가이드
 - `3D_TRANSFORM_EXPLANATION.md`: 3D Transform 동작 원리 상세 설명
 - `PERFORMANCE_OPTIMIZATION.md`: 성능 최적화 전체 가이드
