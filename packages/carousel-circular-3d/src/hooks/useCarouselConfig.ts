@@ -22,6 +22,7 @@ export interface NormalizedCarouselConfig {
   dragSensitivity: number;
   enableMomentum: boolean;
   momentumFriction: number;
+  enableKeyboardNavigation: boolean;
 
   // 자동 회전
   autoRotate: boolean;
@@ -90,10 +91,12 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
     [radius, customPerspective]
   );
 
-  // 상호작용 설정 (드래그, 관성)
+  // 상호작용 설정 (드래그, 관성, 키보드)
   const dragSensitivity = props.interaction?.dragSensitivity ?? DEFAULT_PROPS.DRAG_SENSITIVITY;
   const enableMomentum = props.interaction?.enableMomentum ?? DEFAULT_PROPS.ENABLE_MOMENTUM;
   const momentumFriction = props.interaction?.momentumFriction ?? DEFAULT_PROPS.MOMENTUM_FRICTION;
+  const enableKeyboardNavigation =
+    props.interaction?.enableKeyboardNavigation ?? DEFAULT_PROPS.ENABLE_KEYBOARD_NAVIGATION;
 
   // 자동 회전 설정
   const autoRotate = props.autoRotateConfig?.enabled ?? DEFAULT_PROPS.AUTO_ROTATE;
@@ -129,6 +132,7 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
     dragSensitivity,
     enableMomentum,
     momentumFriction,
+    enableKeyboardNavigation,
     autoRotate,
     autoRotateSpeed,
     autoRotateResumeDelay,

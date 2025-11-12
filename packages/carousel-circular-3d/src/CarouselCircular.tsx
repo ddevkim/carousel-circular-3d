@@ -57,9 +57,10 @@ export function CarouselCircular(props: CarouselCircularProps) {
     options: config.lightboxOptions,
   });
 
-  // 키보드 네비게이션 Hook (Lightbox가 열려있지 않고 로딩 완료 시만 동작)
+  // 키보드 네비게이션 Hook (설정에서 활성화되고, Lightbox가 열려있지 않고 로딩 완료 시만 동작)
   useKeyboard({
-    enabled: isBrowser && !lightbox.lightboxState.isOpen && isLoaded,
+    enabled:
+      isBrowser && config.enableKeyboardNavigation && !lightbox.lightboxState.isOpen && isLoaded,
     onRotateByDelta: rotation.rotateByDelta,
     onKeyboardInput: rotation.handleKeyboardInput,
   });

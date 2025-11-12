@@ -14,6 +14,8 @@ export const DEFAULT_PROPS = {
   MOMENTUM_FRICTION: 0.95,
   /** 관성 효과 활성화 */
   ENABLE_MOMENTUM: true,
+  /** 키보드 네비게이션 활성화 */
+  ENABLE_KEYBOARD_NAVIGATION: true,
   /** 자동 회전 활성화 */
   AUTO_ROTATE: false,
   /** 자동 회전 속도 (degree/frame) */

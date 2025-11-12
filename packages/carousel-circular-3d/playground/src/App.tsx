@@ -240,7 +240,7 @@ export function App() {
         </div>
       </nav>
 
-      <main className="main">
+      <main className="main ">
         <div className="example-section">
           <div className="example-header">
             <h2>Interactive 3D Carousel</h2>
