@@ -13,7 +13,7 @@
 - ⚡ **High Performance** - GPU-accelerated animations, 60fps on desktop, 55fps+ on mobile
 - 🖼️ **Built-in Lightbox** - Full-screen image viewer with smooth transitions
 - 🎯 **LQIP Support** - Progressive image loading with blur placeholders
-- ⌨️ **Keyboard Navigation** - Arrow keys support for accessibility
+- ⌨️ **Keyboard Navigation** - Enhanced keyboard support for carousel and lightbox (Arrow keys, ESC) with configurable options
 - 📱 **Fully Responsive** - Touch-optimized for mobile devices
 - 🔧 **Highly Customizable** - Extensive API for fine-tuning every aspect
 - 💪 **TypeScript** - Full type safety and IntelliSense support
@@ -86,11 +86,12 @@ function App() {
 
 #### Interaction (`interaction`)
 
-| Prop               | Type      | Default | Description                    |
-| ------------------ | --------- | ------- | ------------------------------ |
-| `dragSensitivity`  | `number`  | `1.0`   | Drag responsiveness multiplier |
-| `enableMomentum`   | `boolean` | `true`  | Enable physics-based momentum  |
-| `momentumFriction` | `number`  | `0.95`  | Friction coefficient (0-1)     |
+| Prop                       | Type      | Default | Description                                                                  |
+| -------------------------- | --------- | ------- | ---------------------------------------------------------------------------- |
+| `dragSensitivity`          | `number`  | `1.0`   | Drag responsiveness multiplier                                               |
+| `enableMomentum`           | `boolean` | `true`  | Enable physics-based momentum                                                |
+| `momentumFriction`         | `number`  | `0.95`  | Friction coefficient (0-1)                                                   |
+| `enableKeyboardNavigation` | `boolean` | `true`  | Enable keyboard navigation (Arrow keys). Auto-disabled when lightbox is open |
 
 #### Auto-Rotation (`autoRotateConfig`)
 
@@ -127,6 +128,17 @@ function App() {
 | ------------------------- | ----------------- | ------- | ------------------------ |
 | `enableLightboxWhenClick` | `boolean`         | `false` | Enable lightbox on click |
 | `lightboxOptions`         | `LightboxOptions` | -       | Lightbox configuration   |
+
+**LightboxOptions:**
+
+| Prop                       | Type       | Default | Description                                                   |
+| -------------------------- | ---------- | ------- | ------------------------------------------------------------- |
+| `enableKeyboardNavigation` | `boolean`  | `true`  | Enable keyboard navigation (ArrowLeft/ArrowRight) in lightbox |
+| `closeOnEsc`               | `boolean`  | `true`  | Enable ESC key to close lightbox                              |
+| `backgroundBlur`           | `number`   | `8`     | Background blur intensity in pixels                           |
+| `animationDuration`        | `number`   | `500`   | Animation duration in milliseconds                            |
+| `onOpen`                   | `function` | -       | Callback when lightbox opens (receives index)                 |
+| `onClose`                  | `function` | -       | Callback when lightbox closes                                 |
 
 #### Callbacks & Accessibility
 
@@ -249,8 +261,12 @@ const items = [
 
 1. Always provide `alt` text for images
 2. Set meaningful `ariaLabel` for container
-3. Test keyboard navigation (Arrow keys)
+3. Test keyboard navigation:
+   - **Carousel**: Arrow keys (Left/Right) for navigation
+   - **Lightbox**: Arrow keys (Left/Right) for navigation, ESC to close
+   - Keyboard navigation is automatically disabled for carousel when lightbox is open to prevent conflicts
 4. Ensure sufficient color contrast for text overlays
+5. Configure keyboard options via `interaction.enableKeyboardNavigation` and `lightboxOptions.enableKeyboardNavigation` if needed
 
 ## 🏗️ Architecture
 
