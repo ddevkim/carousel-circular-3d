@@ -24,6 +24,8 @@ export interface InteractionConfig {
   enableMomentum?: boolean;
   /** 관성 감속 계수 (기본: 0.95, 0~1 사이) */
   momentumFriction?: number;
+  /** 키보드 네비게이션 활성화 여부 (기본: true) */
+  enableKeyboardNavigation?: boolean;
 }
 
 /**
@@ -227,4 +229,8 @@ export interface LightboxOptions {
   backgroundBlur?: number;
   /** 애니메이션 지속 시간 (ms, 기본: 500) */
   animationDuration?: number;
+  /** Lightbox 열릴 때 호출되는 콜백 함수 */
+  onOpen?: (index: number) => void;
+  /** Lightbox 닫힐 때 호출되는 콜백 함수 */
+  onClose?: () => void;
 }

@@ -77,8 +77,11 @@ export function useLightbox({
         sourceRect: rect,
         sourceTransform: transform !== 'none' ? transform : null,
       });
+
+      // onOpen 콜백 실행
+      options?.onOpen?.(index);
     },
-    [enabled]
+    [enabled, options]
   );
 
   /**
@@ -89,7 +92,10 @@ export function useLightbox({
       ...prev,
       isOpen: false,
     }));
-  }, []);
+
+    // onClose 콜백 실행
+    options?.onClose?.();
+  }, [options]);
 
   /**
    * 이전/다음 이미지로 이동
@@ -116,9 +122,16 @@ export function useLightbox({
 
   /**
    * 키보드 이벤트 핸들러
-   * Lightbox에서는 carousel과 반대 방향으로 동작
+   *
+   * 기존 핸들러와의 간섭 방지 전략:
+   * 1. Capture 단계에서 등록하여 기존 bubble 핸들러보다 먼저 실행
+   * 2. Lightbox가 실제로 키를 처리한 경우에만 stopPropagation 호출
+   * 3. 옵션이 비활성화된 경우 이벤트를 전혀 건드리지 않고 기존 핸들러로 전파
+   *
+   * Lightbox 동작 (carousel과 반대 방향):
    * - ArrowRight: 이전 이미지 (낮은 index, carousel은 시계방향 회전)
    * - ArrowLeft: 다음 이미지 (높은 index, carousel은 반시계방향 회전)
+   * - Escape: Lightbox 닫기
    */
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -127,23 +140,36 @@ export function useLightbox({
       switch (e.key) {
         case 'Escape':
           if (closeOnEsc) {
+            // Lightbox가 처리: 기본 동작 방지 + 다른 핸들러로 전파 차단
             e.preventDefault();
+            e.stopPropagation();
             closeLightbox();
           }
+          // closeOnEsc=false: 이벤트를 건드리지 않고 기존 핸들러로 전파
           break;
+
         case 'ArrowLeft':
           if (enableKeyboardNav) {
+            // Lightbox가 처리: 기본 동작 방지 + 다른 핸들러로 전파 차단
             e.preventDefault();
-            // Lightbox: 다음 이미지 (carousel은 반시계방향)
+            e.stopPropagation();
             navigateLightbox('next');
           }
+          // enableKeyboardNav=false: 이벤트를 건드리지 않고 기존 핸들러로 전파
           break;
+
         case 'ArrowRight':
           if (enableKeyboardNav) {
+            // Lightbox가 처리: 기본 동작 방지 + 다른 핸들러로 전파 차단
             e.preventDefault();
-            // Lightbox: 이전 이미지 (carousel은 시계방향)
+            e.stopPropagation();
             navigateLightbox('prev');
           }
+          // enableKeyboardNav=false: 이벤트를 건드리지 않고 기존 핸들러로 전파
+          break;
+
+        // 다른 키는 완전히 무시하여 기존 핸들러로 전파
+        default:
           break;
       }
     },
@@ -193,16 +219,19 @@ export function useLightbox({
 
   /**
    * 키보드 및 터치 이벤트 리스너 등록
+   * Lightbox 리스너를 capture 단계에 등록하여 기존 리스너보다 먼저 실행
+   * 실제로 키를 처리한 경우에만 stopPropagation으로 전파 차단
    */
   useEffect(() => {
     if (!lightboxState.isOpen) return;
 
-    window.addEventListener('keydown', handleKeyDown);
+    // Lightbox 리스너를 capture 단계에 등록하여 최우선 처리
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
     window.addEventListener('touchstart', handleTouchStart, { passive: false });
     window.addEventListener('touchend', handleTouchEnd, { passive: false });
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown, { capture: true });
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchend', handleTouchEnd);
     };
