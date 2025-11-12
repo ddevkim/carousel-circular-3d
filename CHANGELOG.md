@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.1
+
+### Patch Changes
+
+- ## 📝 Documentation Updates
+
+  - Updated README to reflect CHANGELOG 0.2.0 changes
+  - Added `enableKeyboardNavigation` option to Interaction API documentation
+  - Added detailed `LightboxOptions` table with all available options
+  - Enhanced Accessibility section with keyboard navigation usage guide
+  - Updated Features section to highlight enhanced keyboard support
+
 ## 0.2.0
 
 ### Minor Changes
