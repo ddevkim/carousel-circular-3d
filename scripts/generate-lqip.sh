@@ -89,8 +89,8 @@ if [[ "$INPUT_IMAGE" =~ ^https?:// ]]; then
     # Create temp file
     TEMP_FILE="/tmp/lqip_${RANDOM}_${URL_FILENAME}"
 
-    # Download the image
-    if ! curl -sS -L -o "$TEMP_FILE" "$INPUT_IMAGE"; then
+    # Download the image (with -k to skip SSL certificate verification)
+    if ! curl -sS -L -k -o "$TEMP_FILE" "$INPUT_IMAGE"; then
         print_error "Failed to download image from URL: $INPUT_IMAGE"
         [ -f "$TEMP_FILE" ] && rm "$TEMP_FILE"
         exit 1

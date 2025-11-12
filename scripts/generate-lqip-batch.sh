@@ -71,6 +71,19 @@ if [ ! -f "$LQIP_SCRIPT" ]; then
     exit 1
 fi
 
+# Check if ImageMagick is installed
+if ! command -v magick &> /dev/null && ! command -v convert &> /dev/null; then
+    print_error "ImageMagick is not installed. Please install it first."
+    exit 1
+fi
+
+# Use 'magick' command if available (ImageMagick 7+), otherwise 'convert' (ImageMagick 6)
+if command -v magick &> /dev/null; then
+    CONVERT_CMD="magick"
+else
+    CONVERT_CMD="convert"
+fi
+
 # Parse arguments
 MODE="directory"
 FOLDER_NAME=""
@@ -189,6 +202,9 @@ METADATA_KEYS=()
 METADATA_BASE64=()
 METADATA_WIDTHS=()
 METADATA_HEIGHTS=()
+METADATA_ORIGINAL_WIDTHS=()
+METADATA_ORIGINAL_HEIGHTS=()
+METADATA_ORIGINAL_URLS=()
 
 for image in "${IMAGE_FILES[@]}"; do
     echo ""
@@ -212,22 +228,49 @@ for image in "${IMAGE_FILES[@]}"; do
             # Generate base64
             BASE64_DATA=$(image_to_base64 "$OUTPUT_PATH")
 
-            # Get image dimensions using ImageMagick
+            # Get LQIP image dimensions using ImageMagick
             DIMENSIONS=$($CONVERT_CMD identify -format "%w %h" "$OUTPUT_PATH")
             WIDTH=$(echo "$DIMENSIONS" | cut -d' ' -f1)
             HEIGHT=$(echo "$DIMENSIONS" | cut -d' ' -f2)
 
+            # Get original image dimensions
+            ORIGINAL_IMAGE_PATH="$image"
+            if [ "$MODE" != "directory" ]; then
+                # For URL mode, download temporarily to get dimensions
+                TEMP_ORIGINAL="/tmp/lqip_original_${RANDOM}_$(basename "$image")"
+                if curl -sS -L -k -o "$TEMP_ORIGINAL" "$image" 2>/dev/null; then
+                    ORIGINAL_IMAGE_PATH="$TEMP_ORIGINAL"
+                else
+                    TEMP_ORIGINAL=""
+                fi
+            fi
+
+            ORIGINAL_DIMENSIONS=$($CONVERT_CMD identify -format "%w %h" "$ORIGINAL_IMAGE_PATH" 2>/dev/null)
+            ORIGINAL_WIDTH=$(echo "$ORIGINAL_DIMENSIONS" | cut -d' ' -f1)
+            ORIGINAL_HEIGHT=$(echo "$ORIGINAL_DIMENSIONS" | cut -d' ' -f2)
+
+            # Cleanup temp file if created
+            if [ -n "$TEMP_ORIGINAL" ] && [ -f "$TEMP_ORIGINAL" ]; then
+                rm "$TEMP_ORIGINAL"
+            fi
+
             # Determine the key for metadata
             # Extract relative path from OUTPUT_BASE_DIR
             METADATA_KEY="${OUTPUT_PATH#$OUTPUT_BASE_DIR/}"
+
+            # Store original URL/path
+            ORIGINAL_URL="$image"
 
             # Store in metadata arrays
             METADATA_KEYS+=("$METADATA_KEY")
             METADATA_BASE64+=("data:image/webp;base64,$BASE64_DATA")
             METADATA_WIDTHS+=("$WIDTH")
             METADATA_HEIGHTS+=("$HEIGHT")
+            METADATA_ORIGINAL_WIDTHS+=("$ORIGINAL_WIDTH")
+            METADATA_ORIGINAL_HEIGHTS+=("$ORIGINAL_HEIGHT")
+            METADATA_ORIGINAL_URLS+=("$ORIGINAL_URL")
 
-            print_success "Added to metadata: $METADATA_KEY (${WIDTH}x${HEIGHT})"
+            print_success "Added to metadata: $METADATA_KEY (LQIP: ${WIDTH}x${HEIGHT}, Original: ${ORIGINAL_WIDTH}x${ORIGINAL_HEIGHT})"
         fi
     else
         ((FAILED++))
@@ -236,14 +279,18 @@ for image in "${IMAGE_FILES[@]}"; do
 done
 
 echo ""
-print_header "Generating metadata.json"
 
 # Determine metadata output path
 if [ "$MODE" = "directory" ]; then
-    METADATA_FILE="$OUTPUT_BASE_DIR/metadata.json"
+    # Extract folder name from input directory for directory mode
+    FOLDER_NAME_FOR_FILE=$(basename "$INPUT_DIR")
+    METADATA_FILE="$OUTPUT_BASE_DIR/${FOLDER_NAME_FOR_FILE}.json"
 else
-    METADATA_FILE="$OUTPUT_BASE_DIR/$FOLDER_NAME/metadata.json"
+    METADATA_FILE="$OUTPUT_BASE_DIR/$FOLDER_NAME/${FOLDER_NAME}.json"
 fi
+
+METADATA_FILENAME=$(basename "$METADATA_FILE")
+print_header "Generating $METADATA_FILENAME"
 
 # Create metadata directory if needed
 mkdir -p "$(dirname "$METADATA_FILE")"
@@ -256,6 +303,9 @@ for i in "${!METADATA_KEYS[@]}"; do
     base64="${METADATA_BASE64[$i]}"
     width="${METADATA_WIDTHS[$i]}"
     height="${METADATA_HEIGHTS[$i]}"
+    original_width="${METADATA_ORIGINAL_WIDTHS[$i]}"
+    original_height="${METADATA_ORIGINAL_HEIGHTS[$i]}"
+    original_url="${METADATA_ORIGINAL_URLS[$i]}"
 
     # Add comma if not first item
     if [ "$i" -gt 0 ]; then
@@ -265,12 +315,16 @@ for i in "${!METADATA_KEYS[@]}"; do
     # Properly escape the key and value for JSON
     ESCAPED_KEY=$(echo "$key" | sed 's/\\/\\\\/g; s/"/\\"/g')
     ESCAPED_BASE64=$(echo "$base64" | sed 's/\\/\\\\/g; s/"/\\"/g')
+    ESCAPED_ORIGINAL_URL=$(echo "$original_url" | sed 's/\\/\\\\/g; s/"/\\"/g')
 
     # Write structured JSON object
     echo -n "  \"$ESCAPED_KEY\": {" >> "$METADATA_FILE"
     echo -n "\"base64\": \"$ESCAPED_BASE64\", " >> "$METADATA_FILE"
     echo -n "\"width\": $width, " >> "$METADATA_FILE"
-    echo -n "\"height\": $height" >> "$METADATA_FILE"
+    echo -n "\"height\": $height, " >> "$METADATA_FILE"
+    echo -n "\"originalWidth\": $original_width, " >> "$METADATA_FILE"
+    echo -n "\"originalHeight\": $original_height, " >> "$METADATA_FILE"
+    echo -n "\"originalUrl\": \"$ESCAPED_ORIGINAL_URL\"" >> "$METADATA_FILE"
     echo -n "}" >> "$METADATA_FILE"
 done
 
