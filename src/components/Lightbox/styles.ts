@@ -20,6 +20,7 @@ export function createBackdropStyle(
     justifyContent: 'center',
     transition: `all ${animationDuration}ms ease-out`,
     opacity: isClosing ? 0 : 1,
+    pointerEvents: 'auto',
   };
 }
 
@@ -31,6 +32,7 @@ export function createImageContainerStyle(containerPadding: number): CSSProperti
     alignItems: 'center',
     justifyContent: 'center',
     pointerEvents: 'none',
+    zIndex: 9999,
   };
 }
 
@@ -45,5 +47,7 @@ export function createImageStyle(): CSSProperties {
     boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
     pointerEvents: 'auto',
     userSelect: 'none',
+    position: 'relative',
+    zIndex: 9999,
   };
 }
