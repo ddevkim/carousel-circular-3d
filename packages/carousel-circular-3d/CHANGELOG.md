@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.2.0
+
+### Minor Changes
+
+- ## ✨ New Features
+
+  - Enhanced keyboard navigation support for Lightbox
+    - Added ArrowLeft/ArrowRight key support for navigating between images in Lightbox
+    - Added Escape key support for closing Lightbox
+    - Keyboard events are handled in capture phase to prevent conflicts with other handlers
+    - Added `enableKeyboardNavigation` option to control keyboard navigation in Lightbox (default: true)
+    - Added `closeOnEsc` option to control ESC key behavior (default: true)
+  - Improved carousel keyboard navigation
+    - Added `enableKeyboardNavigation` option to control carousel keyboard navigation (default: true)
+    - Carousel keyboard navigation is automatically disabled when Lightbox is open to prevent conflicts
+
+  ## 🐛 Bug Fixes
+
+  - Fixed Lightbox navigation and close button rendering issues by explicitly setting z-index hierarchy
+    - Increased button z-index from 9999 to 10000 to ensure buttons are always above images
+    - Added z-index 9999 to image container and image elements
+    - Explicitly set `pointer-events: auto` on buttons and backdrop to prevent click interference
+    - Added `position: relative` to image element to ensure z-index is applied correctly
+
+  This release improves keyboard accessibility and ensures that navigation and close buttons are always clickable and properly rendered above the lightbox image, preventing rendering issues caused by style interference.
+
 ## 0.1.3
 
 ### Patch Changes
