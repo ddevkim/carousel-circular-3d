@@ -52,6 +52,10 @@ export function useLightbox({
   const touchStartXRef = useRef<number>(0);
   const touchStartYRef = useRef<number>(0);
 
+  // options를 ref로 관리하여 최신 값 유지
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
+
   // 옵션 기본값 적용
   const enableKeyboardNav =
     options?.enableKeyboardNavigation ?? LIGHTBOX_CONSTANTS.ENABLE_KEYBOARD_NAVIGATION;
@@ -78,10 +82,10 @@ export function useLightbox({
         sourceTransform: transform !== 'none' ? transform : null,
       });
 
-      // onOpen 콜백 실행
-      options?.onOpen?.(index);
+      // onOpen 콜백 실행 (ref를 통해 최신 options 사용)
+      optionsRef.current?.onOpen?.(index);
     },
-    [enabled, options]
+    [enabled]
   );
 
   /**
@@ -93,9 +97,9 @@ export function useLightbox({
       isOpen: false,
     }));
 
-    // onClose 콜백 실행
-    options?.onClose?.();
-  }, [options]);
+    // onClose 콜백 실행 (ref를 통해 최신 options 사용)
+    optionsRef.current?.onClose?.();
+  }, []);
 
   /**
    * 이전/다음 이미지로 이동

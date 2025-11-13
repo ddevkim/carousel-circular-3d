@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { CarouselContainer, CarouselItem } from './components/Carousel';
 import { Lightbox } from './components/Lightbox';
 import { useCarouselConfig } from './hooks/useCarouselConfig';
@@ -7,11 +7,6 @@ import { useImageOrientations } from './hooks/useImageOrientations';
 import { useKeyboard } from './hooks/useKeyboard';
 import { useLightbox } from './hooks/useLightbox';
 import type { CarouselCircularProps } from './types';
-import {
-  generateMetadataCacheKey,
-  getCachedMetadata,
-  setCachedMetadata,
-} from './utils/itemMetadataCache';
 import { calculateItemsMetadata } from './utils/itemMetadataCalculator';
 import { calculateItemTransform } from './utils/transformCalculator';
 
@@ -33,26 +28,13 @@ export function CarouselCircular(props: CarouselCircularProps) {
   // 아이템 메타데이터 계산 (orientation 기반 크기 및 각도)
   // containerHeight를 기준으로 아이템 크기 동적 계산
   // 로딩 완료 후에만 계산하여 일관된 각도 사용
-  // 캐시를 활용하여 동일한 앨범 재방문 시 즉시 표시
+  // useMemo로 메모이제이션하여 불필요한 재계산 방지
   const itemsMetadata = useMemo(() => {
     if (!isLoaded) {
       return [];
     }
 
-    // 캐시 키 생성
-    const itemIds = config.items.map((item) => item.id);
-    const cacheKey = generateMetadataCacheKey(itemIds, config.containerHeight);
-
-    // 캐시에서 확인
-    const cached = getCachedMetadata(cacheKey);
-    if (cached !== undefined) {
-      return cached;
-    }
-
-    // 캐시에 없으면 계산 후 저장
-    const result = calculateItemsMetadata(config.items, orientationMap, config.containerHeight);
-    setCachedMetadata(cacheKey, result);
-    return result;
+    return calculateItemsMetadata(config.items, orientationMap, config.containerHeight);
   }, [config.items, orientationMap, config.containerHeight, isLoaded]);
 
   // 회전 상태 통합 관리
@@ -85,113 +67,6 @@ export function CarouselCircular(props: CarouselCircularProps) {
     onKeyboardInput: rotation.handleKeyboardInput,
   });
 
-  /**
-   * 드래그가 수행된 경우 클릭 핸들러를 차단한다.
-   * checkSignificantDragNow()를 사용하여 현재 시점의 상태를 동기적으로 판단
-   * @returns 클릭을 취소해야 하면 true, 아니면 false
-   */
-  const shouldPreventItemClick = useCallback((): boolean => {
-    return rotation.checkSignificantDragNow();
-  }, [rotation.checkSignificantDragNow, rotation]);
-
-  /**
-   * 아이템별 transform 계산
-   * @param itemIndex - 아이템 인덱스
-   * @returns ItemTransform 객체
-   */
-  const calculateTransform = useCallback(
-    (itemIndex: number) => {
-      // itemsMetadata가 있으면 동적 각도 사용, 없으면 고정 각도 사용
-      const metadata = itemsMetadata[itemIndex];
-
-      return calculateItemTransform({
-        itemIndex,
-        anglePerItem: metadata ? undefined : config.anglePerItem,
-        cumulativeAngle: metadata?.cumulativeAngle,
-        finalRotation: rotation.finalRotation,
-        radius: config.radius,
-        opacityRange: config.opacityRange,
-        scaleRange: config.scaleRange,
-        depthIntensity: config.depthIntensity,
-      });
-    },
-    [
-      itemsMetadata,
-      config.anglePerItem,
-      rotation.finalRotation,
-      config.radius,
-      config.opacityRange,
-      config.scaleRange,
-      config.depthIntensity,
-    ]
-  );
-
-  /**
-   * Lightbox 열기 핸들러
-   * @param index - 아이템 인덱스
-   * @param element - 클릭된 요소
-   */
-  const handleLightboxOpen = useCallback(
-    (index: number, element: HTMLElement) => {
-      if (config.enableLightboxWhenClick) {
-        lightbox.openLightbox(index, element);
-      }
-    },
-    [config.enableLightboxWhenClick, lightbox]
-  );
-
-  /**
-   * 아이템 렌더링
-   * @param item - CarouselItem
-   * @param index - 아이템 인덱스
-   * @returns 렌더링된 아이템 컴포넌트
-   */
-  const renderItem = useCallback(
-    (item: (typeof config.items)[0], index: number) => {
-      const transform = calculateTransform(index);
-      const metadata = itemsMetadata[index];
-
-      // metadata에서 orientation 추출 (없으면 기본값 square 사용)
-      const orientation = metadata?.orientation ?? 'square';
-
-      return (
-        <CarouselItem
-          key={item.id}
-          item={item}
-          index={index}
-          transform={transform}
-          containerHeight={config.containerHeight}
-          orientation={orientation}
-          scaleRange={config.scaleRange}
-          perspective={config.perspective}
-          radius={config.radius}
-          itemClassName={config.itemClassName}
-          onItemClick={(item, index) => {
-            config.onItemClick?.(item, index);
-            rotation.resetSignificantDrag();
-          }}
-          shouldPreventClick={shouldPreventItemClick}
-          onLightboxOpen={config.enableLightboxWhenClick ? handleLightboxOpen : undefined}
-          enableReflection={config.enableReflection}
-        />
-      );
-    },
-    [
-      calculateTransform,
-      itemsMetadata,
-      config.containerHeight,
-      config.scaleRange,
-      config.perspective,
-      config.radius,
-      config.itemClassName,
-      config.onItemClick,
-      config.enableLightboxWhenClick,
-      config.enableReflection,
-      shouldPreventItemClick,
-      handleLightboxOpen,
-      rotation.resetSignificantDrag,
-    ]
-  );
 
   // 로딩 중일 때는 빈 컨테이너만 렌더링
   if (!isLoaded) {
@@ -237,7 +112,43 @@ export function CarouselCircular(props: CarouselCircularProps) {
         onMouseDown={rotation.handleMouseDown}
         onTouchStart={rotation.handleTouchStart}
       >
-        {config.items.map((item, index) => renderItem(item, index))}
+        {config.items.map((item, index) => {
+          const metadata = itemsMetadata[index];
+          const orientation = metadata?.orientation ?? 'square';
+
+          const transform = calculateItemTransform({
+            itemIndex: index,
+            anglePerItem: metadata ? undefined : config.anglePerItem,
+            cumulativeAngle: metadata?.cumulativeAngle,
+            finalRotation: rotation.finalRotation,
+            radius: config.radius,
+            opacityRange: config.opacityRange,
+            scaleRange: config.scaleRange,
+            depthIntensity: config.depthIntensity,
+          });
+
+          return (
+            <CarouselItem
+              key={item.id}
+              item={item}
+              index={index}
+              transform={transform}
+              containerHeight={config.containerHeight}
+              orientation={orientation}
+              scaleRange={config.scaleRange}
+              perspective={config.perspective}
+              radius={config.radius}
+              itemClassName={config.itemClassName}
+              onItemClick={(item, index) => {
+                config.onItemClick?.(item, index);
+                rotation.resetSignificantDrag();
+              }}
+              shouldPreventClick={rotation.checkSignificantDragNow}
+              onLightboxOpen={config.enableLightboxWhenClick ? lightbox.openLightbox : undefined}
+              enableReflection={config.enableReflection}
+            />
+          );
+        })}
       </CarouselContainer>
 
       {/* Lightbox */}

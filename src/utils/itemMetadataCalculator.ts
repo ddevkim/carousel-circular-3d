@@ -71,20 +71,3 @@ export function calculateItemsMetadata(
 
   return result;
 }
-
-/**
- * ItemWithOrientation 배열에서 특정 인덱스의 메타데이터를 가져온다.
- * @param itemsMetadata - ItemWithOrientation 배열
- * @param index - 아이템 인덱스
- * @returns ItemWithOrientation 또는 null
- */
-export function getItemMetadata(
-  itemsMetadata: ItemWithOrientation[],
-  index: number
-): ItemWithOrientation | null {
-  if (index < 0 || index >= itemsMetadata.length) {
-    return null;
-  }
-
-  return itemsMetadata[index] ?? null;
-}

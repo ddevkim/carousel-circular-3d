@@ -89,9 +89,9 @@ export function useCarouselRotation(params: UseCarouselRotationParams): UseCarou
 
   // 자동 회전 상태
   const [autoRotation, setAutoRotation] = useState(0);
-  const handleAutoRotate = useCallback((delta: number) => {
+  const handleAutoRotate = (delta: number) => {
     setAutoRotation((prev) => prev + delta);
-  }, []);
+  };
 
   // 자동 회전 Hook
   const autoRotateControl = useAutoRotate({
@@ -130,13 +130,8 @@ export function useCarouselRotation(params: UseCarouselRotationParams): UseCarou
     enabled: isBrowser,
   });
 
-  // 키보드 회전 값을 직접 사용 (불필요한 state 동기화 제거)
-  const keyboardRotation = rotateToIndexHook.keyboardRotation;
-
   // 최종 회전 각도 (dragRotation + autoRotation + keyboardRotation)
-  const finalRotation = dragRotation + autoRotation + keyboardRotation;
-
-  const rotateByDelta = rotateToIndexHook.rotateByDelta;
+  const finalRotation = dragRotation + autoRotation + rotateToIndexHook.keyboardRotation;
 
   // mousedown 시 현재 rotation 저장
   const handleMouseDown = useCallback(
@@ -178,25 +173,21 @@ export function useCarouselRotation(params: UseCarouselRotationParams): UseCarou
     mouseDownRotationRef.current = null;
   }, []);
 
-  // 키보드 입력 시 자동 회전 pause 및 타이머 리셋
+  // 키보드 입력 시 자동 회전 재개 스케줄
   const handleKeyboardInput = useCallback(() => {
-    if (autoRotate) {
-      autoRotateControl.scheduleResume();
-    }
-  }, [autoRotate, autoRotateControl]);
+    autoRotateControl.scheduleResume();
+  }, [autoRotateControl]);
 
   // 마우스 enter/leave 핸들러
   const handleMouseEnter = useCallback(() => {
-    if (autoRotate) {
-      autoRotateControl.pause();
-    }
-  }, [autoRotate, autoRotateControl]);
+    autoRotateControl.pause();
+  }, [autoRotateControl]);
 
   const handleMouseLeave = useCallback(() => {
-    if (autoRotate && !isDragging && !isMomentumActive) {
+    if (!isDragging && !isMomentumActive) {
       autoRotateControl.scheduleResume();
     }
-  }, [autoRotate, isDragging, isMomentumActive, autoRotateControl]);
+  }, [isDragging, isMomentumActive, autoRotateControl]);
 
   return {
     finalRotation,
@@ -208,7 +199,7 @@ export function useCarouselRotation(params: UseCarouselRotationParams): UseCarou
     handleMouseEnter,
     handleMouseLeave,
     handleKeyboardInput,
-    rotateByDelta,
+    rotateByDelta: rotateToIndexHook.rotateByDelta,
     resetSignificantDrag,
   };
 }
