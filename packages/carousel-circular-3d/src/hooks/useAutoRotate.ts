@@ -41,6 +41,11 @@ export function useAutoRotate({
   const isPausedRef = useRef(false);
   const easingStateRef = useRef(createEasingState());
 
+  // onRotate 콜백의 참조 안정화
+  // 최신 콜백을 ref에 저장하여 의존성 배열 문제 해결
+  const onRotateRef = useRef(onRotate);
+  onRotateRef.current = onRotate;
+
   /**
    * 애니메이션과 타이머를 정리하는 공통 로직
    */
@@ -66,7 +71,7 @@ export function useAutoRotate({
     const animId = stopEasingAnimation(
       easingStateRef.current,
       (speed) => {
-        onRotate(speed);
+        onRotateRef.current(speed);
       },
       () => {
         isPausedRef.current = true;
@@ -79,7 +84,7 @@ export function useAutoRotate({
     if (animId === null) {
       isPausedRef.current = true;
     }
-  }, [cleanup, onRotate]);
+  }, [cleanup]);
 
   /**
    * 자동 회전 재개 (easing 적용)
@@ -97,7 +102,7 @@ export function useAutoRotate({
         if (isPausedRef.current) {
           return;
         }
-        onRotate(newSpeed);
+        onRotateRef.current(newSpeed);
       },
       () => {
         if (isPausedRef.current) return;
@@ -110,7 +115,7 @@ export function useAutoRotate({
             }
             return;
           }
-          onRotate(speed);
+          onRotateRef.current(speed);
           easingStateRef.current.currentSpeed = speed;
           animationIdRef.current = requestAnimationFrame(continueAnimate);
         };
@@ -120,7 +125,7 @@ export function useAutoRotate({
     );
 
     animationIdRef.current = animId;
-  }, [enabled, speed, onRotate, cleanup]);
+  }, [enabled, speed, cleanup]);
 
   /**
    * 자동 회전 재개 스케줄 (딜레이 후)
@@ -153,7 +158,7 @@ export function useAutoRotate({
         speed,
         (newSpeed) => {
           if (isPausedRef.current) return;
-          onRotate(newSpeed);
+          onRotateRef.current(newSpeed);
         },
         () => {
           if (isPausedRef.current) return;
@@ -166,7 +171,7 @@ export function useAutoRotate({
               }
               return;
             }
-            onRotate(speed);
+            onRotateRef.current(speed);
             easingStateRef.current.currentSpeed = speed;
             animationIdRef.current = requestAnimationFrame(continueAnimate);
           };
@@ -184,7 +189,7 @@ export function useAutoRotate({
       const animId = stopEasingAnimation(
         easingStateRef.current,
         (speed) => {
-          onRotate(speed);
+          onRotateRef.current(speed);
         },
         () => {
           isPausedRef.current = true;
@@ -203,7 +208,7 @@ export function useAutoRotate({
       cleanup();
       isPausedRef.current = true;
     };
-  }, [enabled, speed, onRotate, cleanup]);
+  }, [enabled, speed, cleanup]); // onRotate 제거
 
   return {
     pause,
