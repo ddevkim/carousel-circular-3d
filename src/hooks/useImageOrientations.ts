@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { CarouselItem, ImageOrientation, LQIPInfo } from '../types';
+import {
+  getCachedOrientation,
+  loadImageOrientation,
+  setCachedOrientation,
+} from '../utils/imageOrientationCache';
 import { determineOrientation } from '../utils/orientationCalculator';
 
 /**
@@ -28,37 +33,7 @@ function getOrientationFromLQIP(lqip: LQIPInfo): ImageOrientation {
 }
 
 /**
- * 이미지 URL에서 이미지를 로드하여 aspect ratio를 분석하고 orientation을 결정한다.
- *
- * 주의: 이 함수는 LQIP가 없는 경우에만 호출됩니다.
- * 브라우저의 이미지 캐싱 덕분에 이후 <img> 태그에서 같은 URL을 사용할 때
- * 네트워크 요청 없이 캐시에서 가져옵니다.
- *
- * @param imageUrl - 이미지 URL
- * @returns Promise<ImageOrientation>
- */
-function loadImageOrientation(imageUrl: string): Promise<ImageOrientation> {
-  return new Promise((resolve) => {
-    const img = new Image();
-
-    img.onload = () => {
-      const aspectRatio = img.naturalWidth / img.naturalHeight;
-      const orientation = determineOrientation(aspectRatio);
-      resolve(orientation);
-    };
-
-    img.onerror = () => {
-      // 에러 발생 시 기본값으로 square 반환
-      console.warn(`Failed to load image: ${imageUrl}. Defaulting to square orientation.`);
-      resolve('square');
-    };
-
-    img.src = imageUrl;
-  });
-}
-
-/**
- * 초기 orientation 맵을 구성한다 (LQIP가 있는 아이템 처리)
+ * 초기 orientation 맵을 구성한다 (LQIP 및 캐시 활용)
  * @param items - CarouselItem 배열
  * @returns { newMap, itemsToLoad } - 초기 맵과 로드할 아이템 목록
  */
@@ -75,14 +50,24 @@ function buildInitialOrientationMap(items: CarouselItem[]): {
   );
 
   for (const item of imageItems) {
-    // LQIP가 있는 경우 즉시 orientation 계산
+    // 1순위: 글로벌 캐시 확인 (가장 빠름)
+    const cachedOrientation = getCachedOrientation(item.image);
+    if (cachedOrientation !== undefined) {
+      newMap.set(item.id, cachedOrientation);
+      continue;
+    }
+
+    // 2순위: LQIP가 있는 경우 즉시 orientation 계산 후 캐시 저장
     if ('lqip' in item && item.lqip) {
       const orientation = getOrientationFromLQIP(item.lqip);
       newMap.set(item.id, orientation);
-    } else {
-      // LQIP가 없는 경우 나중에 로드할 목록에 추가
-      itemsToLoad.push({ id: item.id, imageUrl: item.image });
+      // LQIP로 계산한 orientation도 캐시에 저장
+      setCachedOrientation(item.image, orientation);
+      continue;
     }
+
+    // 3순위: LQIP도 캐시도 없는 경우 나중에 로드할 목록에 추가
+    itemsToLoad.push({ id: item.id, imageUrl: item.image });
   }
 
   // content만 있는 아이템은 기본값으로 square 설정

@@ -53,6 +53,7 @@ export interface NormalizedCarouselConfig {
  * @param props - CarouselCircularProps
  * @returns 정규화된 설정 객체
  */
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Config 정규화 함수는 모든 props를 처리해야 하므로 복잡도가 높을 수밖에 없음
 export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarouselConfig {
   const { items: rawItems } = props;
 

@@ -7,6 +7,11 @@ import { useImageOrientations } from './hooks/useImageOrientations';
 import { useKeyboard } from './hooks/useKeyboard';
 import { useLightbox } from './hooks/useLightbox';
 import type { CarouselCircularProps } from './types';
+import {
+  generateMetadataCacheKey,
+  getCachedMetadata,
+  setCachedMetadata,
+} from './utils/itemMetadataCache';
 import { calculateItemsMetadata } from './utils/itemMetadataCalculator';
 import { calculateItemTransform } from './utils/transformCalculator';
 
@@ -28,11 +33,26 @@ export function CarouselCircular(props: CarouselCircularProps) {
   // 아이템 메타데이터 계산 (orientation 기반 크기 및 각도)
   // containerHeight를 기준으로 아이템 크기 동적 계산
   // 로딩 완료 후에만 계산하여 일관된 각도 사용
+  // 캐시를 활용하여 동일한 앨범 재방문 시 즉시 표시
   const itemsMetadata = useMemo(() => {
     if (!isLoaded) {
       return [];
     }
-    return calculateItemsMetadata(config.items, orientationMap, config.containerHeight);
+
+    // 캐시 키 생성
+    const itemIds = config.items.map((item) => item.id);
+    const cacheKey = generateMetadataCacheKey(itemIds, config.containerHeight);
+
+    // 캐시에서 확인
+    const cached = getCachedMetadata(cacheKey);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    // 캐시에 없으면 계산 후 저장
+    const result = calculateItemsMetadata(config.items, orientationMap, config.containerHeight);
+    setCachedMetadata(cacheKey, result);
+    return result;
   }, [config.items, orientationMap, config.containerHeight, isLoaded]);
 
   // 회전 상태 통합 관리

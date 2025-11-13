@@ -82,9 +82,69 @@ export interface CarouselItemProps {
 }
 
 /**
+ * CarouselItem의 커스텀 비교 함수
+ * 실제로 변경된 props만 체크하여 불필요한 리렌더링 방지
+ */
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Props 비교 함수는 모든 필드를 체크해야 하므로 복잡도가 높을 수밖에 없음
+function arePropsEqual(prev: CarouselItemProps, next: CarouselItemProps): boolean {
+  // 1. 기본 식별자 비교
+  if (prev.item.id !== next.item.id || prev.index !== next.index) {
+    return false;
+  }
+
+  // 2. Transform 값 비교 (가장 자주 변경됨)
+  if (
+    prev.transform.transform !== next.transform.transform ||
+    prev.transform.opacity !== next.transform.opacity ||
+    prev.transform.zIndex !== next.transform.zIndex
+  ) {
+    return false;
+  }
+
+  // 3. 이미지/컨텐츠 변경 비교
+  if ('image' in prev.item && 'image' in next.item) {
+    if (prev.item.image !== next.item.image) {
+      return false;
+    }
+  } else if ('content' in prev.item && 'content' in next.item) {
+    if (prev.item.content !== next.item.content) {
+      return false;
+    }
+  } else {
+    // item 타입이 변경된 경우
+    return false;
+  }
+
+  // 4. Orientation 변경 비교
+  if (prev.orientation !== next.orientation) {
+    return false;
+  }
+
+  // 5. enableReflection 변경 비교
+  if (prev.enableReflection !== next.enableReflection) {
+    return false;
+  }
+
+  // 6. 기타 설정값 비교 (자주 변경되지 않음)
+  if (
+    prev.containerHeight !== next.containerHeight ||
+    prev.scaleRange[0] !== next.scaleRange[0] ||
+    prev.scaleRange[1] !== next.scaleRange[1] ||
+    prev.perspective !== next.perspective ||
+    prev.radius !== next.radius ||
+    prev.itemClassName !== next.itemClassName
+  ) {
+    return false;
+  }
+
+  // 모든 검사를 통과하면 props가 동일함 (리렌더링 스킵)
+  return true;
+}
+
+/**
  * 캐러셀 아이템 컴포넌트
  * 개별 아이템의 렌더링을 담당한다.
- * React.memo로 최적화하여 props가 변경된 경우에만 리렌더링
+ * React.memo + 커스텀 비교 함수로 최적화하여 실제 변경 시에만 리렌더링
  */
 export const CarouselItem = memo(function CarouselItem({
   item,
@@ -207,4 +267,4 @@ export const CarouselItem = memo(function CarouselItem({
       {itemContent}
     </div>
   );
-});
+}, arePropsEqual);
