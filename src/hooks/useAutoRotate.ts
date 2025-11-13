@@ -148,9 +148,12 @@ export function useAutoRotate({
    * resume/pause 함수를 직접 호출하지 않고 내부 로직을 인라인으로 구현하여 의존성 문제 해결
    */
   useEffect(() => {
+    // CRITICAL: Cleanup previous animation BEFORE starting new one
+    // This prevents RAF loop overlap when props change
+    cleanup();
+
     if (enabled) {
       // Resume 로직
-      cleanup();
       isPausedRef.current = false;
 
       const animId = startEasingAnimation(
@@ -182,8 +185,7 @@ export function useAutoRotate({
 
       animationIdRef.current = animId;
     } else {
-      // Pause 로직
-      cleanup();
+      // Pause 로직 (cleanup already called above)
       isPausedRef.current = false;
 
       const animId = stopEasingAnimation(

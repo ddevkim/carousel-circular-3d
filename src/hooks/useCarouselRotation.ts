@@ -89,9 +89,9 @@ export function useCarouselRotation(params: UseCarouselRotationParams): UseCarou
 
   // 자동 회전 상태
   const [autoRotation, setAutoRotation] = useState(0);
-  const handleAutoRotate = (delta: number) => {
+  const handleAutoRotate = useCallback((delta: number) => {
     setAutoRotation((prev) => prev + delta);
-  };
+  }, []); // Empty deps - function logic is stable, uses setState updater function
 
   // 자동 회전 Hook
   const autoRotateControl = useAutoRotate({
