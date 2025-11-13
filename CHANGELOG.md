@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.3.1
+
+### Patch Changes
+
+- fix: resolve infinite loop and refactor useAutoRotate hook
+
+  Critical bug fix and code improvements:
+
+  **Bug Fixes:**
+
+  - Fixed "Maximum update depth exceeded" error in useAutoRotate hook
+  - Removed problematic circular dependencies between useEffect and useCallback
+  - Added useMemo to useCarouselConfig to stabilize config object references and prevent unnecessary re-renders
+  - Fixed infinite loop that occurred during carousel initialization and album changes
+
+  **Code Improvements:**
+
+  - Extracted common cleanup logic into reusable `cleanup()` function
+  - Simplified pause/resume functions (40% code reduction)
+  - Dramatically simplified scheduleResume function (89% code reduction: 90 lines → 10 lines)
+  - Reduced overall hook code by 38% (345 lines → 213 lines)
+  - Reduced bundle size by ~1.2KB (29.60KB → 28.43KB)
+
+  These changes improve code maintainability, readability, and performance while resolving critical runtime errors.
+
 ## 0.3.0
 
 ### Minor Changes
