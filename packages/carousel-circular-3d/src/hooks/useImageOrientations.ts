@@ -34,13 +34,15 @@ function getOrientationFromLQIP(lqip: LQIPInfo): ImageOrientation {
 
 /**
  * 초기 orientation 맵을 구성한다 (LQIP 및 캐시 활용)
+ * 배치 처리를 통해 메인 스레드 블로킹을 최소화
  * @param items - CarouselItem 배열
  * @returns { newMap, itemsToLoad } - 초기 맵과 로드할 아이템 목록
  */
-function buildInitialOrientationMap(items: CarouselItem[]): {
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: 배치 처리로 인한 복잡도 증가는 성능 최적화를 위해 불가피
+async function buildInitialOrientationMap(items: CarouselItem[]): Promise<{
   newMap: Map<string | number, ImageOrientation>;
   itemsToLoad: Array<{ id: string | number; imageUrl: string }>;
-} {
+}> {
   const newMap = new Map<string | number, ImageOrientation>();
   const itemsToLoad: Array<{ id: string | number; imageUrl: string }> = [];
 
@@ -49,25 +51,38 @@ function buildInitialOrientationMap(items: CarouselItem[]): {
     (item): item is CarouselItem & { image: string } => 'image' in item && Boolean(item.image)
   );
 
-  for (const item of imageItems) {
-    // 1순위: 글로벌 캐시 확인 (가장 빠름)
-    const cachedOrientation = getCachedOrientation(item.image);
-    if (cachedOrientation !== undefined) {
-      newMap.set(item.id, cachedOrientation);
-      continue;
+  // 배치 크기 (한 번에 처리할 아이템 수)
+  const BATCH_SIZE = 5;
+
+  // 아이템을 배치로 나눠서 처리 (메인 스레드 블로킹 방지)
+  for (let i = 0; i < imageItems.length; i += BATCH_SIZE) {
+    const batch = imageItems.slice(i, i + BATCH_SIZE);
+
+    // 배치 사이에 마이크로태스크 큐에 양보 (렌더링 기회 제공)
+    if (i > 0) {
+      await new Promise<void>((resolve) => queueMicrotask(resolve));
     }
 
-    // 2순위: LQIP가 있는 경우 즉시 orientation 계산 후 캐시 저장
-    if ('lqip' in item && item.lqip) {
-      const orientation = getOrientationFromLQIP(item.lqip);
-      newMap.set(item.id, orientation);
-      // LQIP로 계산한 orientation도 캐시에 저장
-      setCachedOrientation(item.image, orientation);
-      continue;
-    }
+    for (const item of batch) {
+      // 1순위: 글로벌 캐시 확인 (가장 빠름)
+      const cachedOrientation = getCachedOrientation(item.image);
+      if (cachedOrientation !== undefined) {
+        newMap.set(item.id, cachedOrientation);
+        continue;
+      }
 
-    // 3순위: LQIP도 캐시도 없는 경우 나중에 로드할 목록에 추가
-    itemsToLoad.push({ id: item.id, imageUrl: item.image });
+      // 2순위: LQIP가 있는 경우 즉시 orientation 계산 후 캐시 저장
+      if ('lqip' in item && item.lqip) {
+        const orientation = getOrientationFromLQIP(item.lqip);
+        newMap.set(item.id, orientation);
+        // LQIP로 계산한 orientation도 캐시에 저장
+        setCachedOrientation(item.image, orientation);
+        continue;
+      }
+
+      // 3순위: LQIP도 캐시도 없는 경우 나중에 로드할 목록에 추가
+      itemsToLoad.push({ id: item.id, imageUrl: item.image });
+    }
   }
 
   // content만 있는 아이템은 기본값으로 square 설정
@@ -115,7 +130,8 @@ export function useImageOrientations(items: CarouselItem[]): UseImageOrientation
     let isCancelled = false;
 
     const loadOrientations = async () => {
-      const { newMap, itemsToLoad } = buildInitialOrientationMap(items);
+      // 배치 처리로 메인 스레드 블로킹 최소화
+      const { newMap, itemsToLoad } = await buildInitialOrientationMap(items);
 
       // 컴포넌트가 언마운트되었으면 중단
       if (isCancelled) return;
