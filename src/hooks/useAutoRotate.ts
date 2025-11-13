@@ -42,10 +42,9 @@ export function useAutoRotate({
   const easingStateRef = useRef(createEasingState());
 
   /**
-   * 자동 회전 일시정지 (easing 적용)
+   * 애니메이션과 타이머를 정리하는 공통 로직
    */
-  const pause = useCallback(() => {
-    // 1. 기존 모든 애니메이션 즉시 취소
+  const cleanup = useCallback(() => {
     if (animationIdRef.current !== null) {
       cancelAnimationFrame(animationIdRef.current);
       animationIdRef.current = null;
@@ -54,12 +53,15 @@ export function useAutoRotate({
       clearTimeout(resumeTimeoutIdRef.current);
       resumeTimeoutIdRef.current = null;
     }
-
-    // 2. Easing 애니메이션도 취소
     cancelEasingAnimation(easingStateRef.current);
+  }, []);
 
-    // 3. Easing 종료 시작 (현재 속도에서 0으로)
-    isPausedRef.current = false; // easing 중에는 paused가 아님
+  /**
+   * 자동 회전 일시정지 (easing 적용)
+   */
+  const pause = useCallback(() => {
+    cleanup();
+    isPausedRef.current = false;
 
     const animId = stopEasingAnimation(
       easingStateRef.current,
@@ -72,14 +74,12 @@ export function useAutoRotate({
       }
     );
 
-    // 4. 애니메이션 ID 동기화
     animationIdRef.current = animId;
 
     if (animId === null) {
-      // 즉시 완료 (이미 속도가 0)
       isPausedRef.current = true;
     }
-  }, [onRotate]);
+  }, [cleanup, onRotate]);
 
   /**
    * 자동 회전 재개 (easing 적용)
@@ -87,22 +87,9 @@ export function useAutoRotate({
   const resume = useCallback(() => {
     if (!enabled) return;
 
-    // 1. 기존 모든 애니메이션/타이머 즉시 정리
-    if (animationIdRef.current !== null) {
-      cancelAnimationFrame(animationIdRef.current);
-      animationIdRef.current = null;
-    }
-    if (resumeTimeoutIdRef.current !== null) {
-      clearTimeout(resumeTimeoutIdRef.current);
-      resumeTimeoutIdRef.current = null;
-    }
-
-    // 2. Easing 애니메이션도 취소
-    cancelEasingAnimation(easingStateRef.current);
-
+    cleanup();
     isPausedRef.current = false;
 
-    // 3. Easing 시작 (0에서 speed로)
     const animId = startEasingAnimation(
       easingStateRef.current,
       speed,
@@ -113,7 +100,6 @@ export function useAutoRotate({
         onRotate(newSpeed);
       },
       () => {
-        // Easing 완료 - 정상 속도로 계속
         if (isPausedRef.current) return;
 
         const continueAnimate = () => {
@@ -133,37 +119,91 @@ export function useAutoRotate({
       }
     );
 
-    // 4. 애니메이션 ID 동기화
     animationIdRef.current = animId;
-  }, [enabled, speed, onRotate]);
+  }, [enabled, speed, onRotate, cleanup]);
 
   /**
    * 자동 회전 재개 스케줄 (딜레이 후)
+   * pause → delay → resume 순서로 실행
    */
   const scheduleResume = useCallback(() => {
     if (!enabled) return;
 
-    pause(); // 기존 타이머 정리
+    // 일시정지
+    pause();
 
+    // 딜레이 후 재개
     resumeTimeoutIdRef.current = window.setTimeout(() => {
       resume();
     }, resumeDelay);
-  }, [enabled, resumeDelay, resume, pause]);
+  }, [enabled, resumeDelay, pause, resume]);
 
   /**
    * enabled 변경 시 자동 회전 시작/중지
+   * resume/pause 함수를 직접 호출하지 않고 내부 로직을 인라인으로 구현하여 의존성 문제 해결
    */
   useEffect(() => {
     if (enabled) {
-      resume();
+      // Resume 로직
+      cleanup();
+      isPausedRef.current = false;
+
+      const animId = startEasingAnimation(
+        easingStateRef.current,
+        speed,
+        (newSpeed) => {
+          if (isPausedRef.current) return;
+          onRotate(newSpeed);
+        },
+        () => {
+          if (isPausedRef.current) return;
+
+          const continueAnimate = () => {
+            if (isPausedRef.current) {
+              if (animationIdRef.current !== null) {
+                cancelAnimationFrame(animationIdRef.current);
+                animationIdRef.current = null;
+              }
+              return;
+            }
+            onRotate(speed);
+            easingStateRef.current.currentSpeed = speed;
+            animationIdRef.current = requestAnimationFrame(continueAnimate);
+          };
+
+          animationIdRef.current = requestAnimationFrame(continueAnimate);
+        }
+      );
+
+      animationIdRef.current = animId;
     } else {
-      pause();
+      // Pause 로직
+      cleanup();
+      isPausedRef.current = false;
+
+      const animId = stopEasingAnimation(
+        easingStateRef.current,
+        (speed) => {
+          onRotate(speed);
+        },
+        () => {
+          isPausedRef.current = true;
+          animationIdRef.current = null;
+        }
+      );
+
+      animationIdRef.current = animId;
+
+      if (animId === null) {
+        isPausedRef.current = true;
+      }
     }
 
     return () => {
-      pause();
+      cleanup();
+      isPausedRef.current = true;
     };
-  }, [enabled, resume, pause]);
+  }, [enabled, speed, onRotate, cleanup]);
 
   return {
     pause,
