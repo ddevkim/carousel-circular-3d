@@ -93,6 +93,9 @@ export function useCarouselRotation(params: UseCarouselRotationParams): UseCarou
     setAutoRotation((prev) => prev + delta);
   }, []); // Empty deps - function logic is stable, uses setState updater function
 
+  // 최신 rotation 값을 ref로 관리 (checkSignificantDragNow 안정화용)
+  const finalRotationRef = useRef<number>(0);
+
   // 자동 회전 Hook
   const autoRotateControl = useAutoRotate({
     enabled: autoRotate && isBrowser,
@@ -133,6 +136,9 @@ export function useCarouselRotation(params: UseCarouselRotationParams): UseCarou
   // 최종 회전 각도 (dragRotation + autoRotation + keyboardRotation)
   const finalRotation = dragRotation + autoRotation + rotateToIndexHook.keyboardRotation;
 
+  // ref 업데이트 (매 렌더마다 - 하지만 렌더링을 트리거하지 않음)
+  finalRotationRef.current = finalRotation;
+
   // mousedown 시 현재 rotation 저장
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -160,13 +166,13 @@ export function useCarouselRotation(params: UseCarouselRotationParams): UseCarou
     // mousedown 시점의 각도와 현재 각도 비교
     if (mouseDownRotationRef.current !== null) {
       const startRotation = mouseDownRotationRef.current;
-      const endRotation = normalizeAngle360(finalRotation);
+      const endRotation = normalizeAngle360(finalRotationRef.current);
       const rotationDelta = normalizeAngle180(endRotation - startRotation);
       return Math.abs(rotationDelta) >= SIGNIFICANT_ROTATION_THRESHOLD_DEGREES;
     }
 
     return false;
-  }, [isDragging, isMomentumActive, finalRotation]);
+  }, [isDragging, isMomentumActive]);
 
   // 유의미한 드래그 상태 리셋 함수
   const resetSignificantDrag = useCallback(() => {

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { CarouselContainer, CarouselItem } from './components/Carousel';
 import { Lightbox } from './components/Lightbox';
 import { useCarouselConfig } from './hooks/useCarouselConfig';
@@ -66,6 +66,23 @@ export function CarouselCircular(props: CarouselCircularProps) {
     onRotateByDelta: rotation.rotateByDelta,
     onKeyboardInput: rotation.handleKeyboardInput,
   });
+
+  // 함수 props 참조 안정화 (CarouselItem memo 최적화를 위해)
+  // onItemClick과 rotation.resetSignificantDrag를 ref로 관리
+  const onItemClickRef = useRef(config.onItemClick);
+  onItemClickRef.current = config.onItemClick;
+
+  const resetSignificantDragRef = useRef(rotation.resetSignificantDrag);
+  resetSignificantDragRef.current = rotation.resetSignificantDrag;
+
+  // 안정화된 핸들러 생성
+  const handleItemClick = useCallback(
+    (item: (typeof config.items)[0], index: number) => {
+      onItemClickRef.current?.(item, index);
+      resetSignificantDragRef.current();
+    },
+    [] // 빈 deps - ref를 통해 최신 값 참조
+  );
 
   // 로딩 중일 때는 빈 컨테이너만 렌더링
   if (!isLoaded) {
@@ -138,10 +155,7 @@ export function CarouselCircular(props: CarouselCircularProps) {
               perspective={config.perspective}
               radius={config.radius}
               itemClassName={config.itemClassName}
-              onItemClick={(item, index) => {
-                config.onItemClick?.(item, index);
-                rotation.resetSignificantDrag();
-              }}
+              onItemClick={config.onItemClick ? handleItemClick : undefined}
               shouldPreventClick={rotation.checkSignificantDragNow}
               onLightboxOpen={config.enableLightboxWhenClick ? lightbox.openLightbox : undefined}
               enableReflection={config.enableReflection}

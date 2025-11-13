@@ -34,8 +34,33 @@ export interface ProgressiveImageProps {
  *   이 컴포넌트에서는 브라우저 캐시를 사용 (실제 다운로드 1번)
  */
 /**
+ * 이미지가 이미 캐시되어 있는지 확인한다.
+ * @param imageSrc - 이미지 URL
+ * @returns 캐시 여부
+ */
+function isImageCached(imageSrc: string): boolean {
+  const img = new Image();
+  img.src = imageSrc;
+  return img.complete && img.naturalWidth > 0;
+}
+
+/**
+ * LQIP 데이터 URL을 생성한다.
+ * @param lqipData - LQIP 정보
+ * @returns data URL
+ */
+function createLQIPDataUrl(lqipData: LQIPInfo): string {
+  return `data:image/jpeg;base64,${lqipData.base64}`;
+}
+
+/**
  * 초기 이미지 상태 결정 함수
  * 캐시된 이미지를 미리 감지하여 올바른 초기 상태를 반환
+ *
+ * @param imageSrc - 원본 이미지 URL
+ * @param lqipData - LQIP 정보 (선택적)
+ * @param skipLQIPIfCachedFlag - 캐시된 경우 LQIP 건너뛰기 여부
+ * @returns 초기 이미지 상태 { src, isLoaded }
  */
 const getInitialImageState = (
   imageSrc: string,
@@ -48,19 +73,13 @@ const getInitialImageState = (
   }
 
   // 스마트 로딩: 이미지가 이미 캐시되어 있으면 LQIP를 건너뛰고 원본으로 시작
-  if (skipLQIPIfCachedFlag) {
-    const img = new Image();
-    img.src = imageSrc;
-
-    if (img.complete && img.naturalWidth > 0) {
-      // 캐시된 이미지: 원본으로 바로 시작하고 로드 완료 표시
-      return { src: imageSrc, isLoaded: true };
-    }
+  if (skipLQIPIfCachedFlag && isImageCached(imageSrc)) {
+    return { src: imageSrc, isLoaded: true };
   }
 
   // 캐시되지 않은 이미지: LQIP부터 시작
   return {
-    src: `data:image/jpeg;base64,${lqipData.base64}`,
+    src: createLQIPDataUrl(lqipData),
     isLoaded: false,
   };
 };
@@ -82,34 +101,45 @@ export function ProgressiveImage({
       return;
     }
 
-    // 스마트 로딩: 이미지가 이미 캐시되어 있는지 확인
-    if (skipLQIPIfCached) {
-      const img = new Image();
-      img.src = src;
-
-      // 이미지가 이미 로드되어 있으면 (complete && naturalWidth > 0)
-      if (img.complete && img.naturalWidth > 0) {
-        // LQIP를 건너뛰고 바로 원본 이미지 표시
-        setCurrentSrc(src);
-        setIsLoaded(true);
-        return;
-      }
+    // 스마트 로딩: 이미지가 이미 캐시되어 있으면 LQIP 건너뛰기
+    if (skipLQIPIfCached && isImageCached(src)) {
+      setCurrentSrc(src);
+      setIsLoaded(true);
+      return;
     }
 
     // 상태 초기화 (앨범 전환 시 또는 캐시되지 않은 경우)
     setIsLoaded(false);
-    setCurrentSrc(`data:image/jpeg;base64,${lqip.base64}`);
+    setCurrentSrc(createLQIPDataUrl(lqip));
 
     // LQIP가 있는 경우: 백그라운드에서 원본 이미지 로드
     const img = new Image();
     img.src = src;
 
-    // 최소 LQIP 표시 시간 (300ms) - luxury한 전환을 위해
-    // skipLQIPIfCached인 경우 최소 시간 적용 안 함
-    const minDisplayTime = skipLQIPIfCached ? 0 : 300;
     const startTime = Date.now();
-
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    /**
+     * 이미지 로딩 시간에 따른 최소 표시 시간을 동적으로 결정한다.
+     *
+     * 성능 최적화:
+     * - skipLQIPIfCached: 0ms (즉시 표시, reflection 등)
+     * - 빠른 로딩(100ms 이내): 50ms (캐시 또는 작은 이미지)
+     * - 느린 로딩(100ms 이상): 300ms (luxury 전환)
+     *
+     * @param elapsedTime - 경과 시간 (ms)
+     * @param skipLQIPIfCached - 캐시 스킵 플래그
+     * @returns 최소 표시 시간 (ms)
+     */
+    const calculateMinDisplayTime = (elapsedTime: number, skipLQIPIfCached: boolean): number => {
+      if (skipLQIPIfCached) {
+        return 0; // reflection 등에서는 즉시 표시
+      }
+      if (elapsedTime < 100) {
+        return 50; // 빠른 로딩: 짧은 전환
+      }
+      return 300; // 느린 로딩: luxury 전환
+    };
 
     /**
      * 이미지 로드 완료 핸들러
@@ -117,6 +147,7 @@ export function ProgressiveImage({
      */
     const handleImageLoad = () => {
       const elapsedTime = Date.now() - startTime;
+      const minDisplayTime = calculateMinDisplayTime(elapsedTime, skipLQIPIfCached);
       const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
 
       // 최소 시간이 지나지 않았으면 대기 후 전환

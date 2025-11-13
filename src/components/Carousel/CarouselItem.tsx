@@ -84,8 +84,13 @@ export interface CarouselItemProps {
 /**
  * 캐러셀 아이템 컴포넌트
  * 개별 아이템의 렌더링을 담당한다.
+ *
+ * 성능 최적화:
+ * - React.memo로 불필요한 리렌더 방지
+ * - 함수 props는 부모에서 ref로 안정화되어 있음
+ * - transform 객체는 항상 새로 생성되지만, 내용이 같으면 리렌더 스킵
  */
-export function CarouselItem({
+function CarouselItemComponent({
   item,
   index,
   transform,
@@ -207,3 +212,50 @@ export function CarouselItem({
     </div>
   );
 }
+
+/**
+ * Transform 객체 비교 함수
+ * transform의 실제 값들을 비교하여 불필요한 리렌더 방지
+ */
+function areTransformsEqual(prevTransform: ItemTransform, nextTransform: ItemTransform): boolean {
+  return (
+    prevTransform.transform === nextTransform.transform &&
+    prevTransform.opacity === nextTransform.opacity &&
+    prevTransform.zIndex === nextTransform.zIndex
+  );
+}
+
+/**
+ * Props 비교 함수
+ * 함수 참조는 이미 안정화되어 있으므로 얕은 비교만 수행
+ * transform은 깊은 비교 수행
+ */
+function arePropsEqual(prev: CarouselItemProps, next: CarouselItemProps): boolean {
+  // item.id가 다르면 완전히 다른 아이템
+  if (prev.item.id !== next.item.id) return false;
+
+  // transform 깊은 비교
+  if (!areTransformsEqual(prev.transform, next.transform)) return false;
+
+  // 나머지 props 얕은 비교
+  return (
+    prev.index === next.index &&
+    prev.containerHeight === next.containerHeight &&
+    prev.orientation === next.orientation &&
+    prev.scaleRange === next.scaleRange &&
+    prev.perspective === next.perspective &&
+    prev.radius === next.radius &&
+    prev.itemClassName === next.itemClassName &&
+    prev.enableReflection === next.enableReflection &&
+    // 함수 props는 ref로 안정화되어 있으므로 참조 비교로 충분
+    prev.onItemClick === next.onItemClick &&
+    prev.shouldPreventClick === next.shouldPreventClick &&
+    prev.onLightboxOpen === next.onLightboxOpen
+  );
+}
+
+/**
+ * 메모이제이션된 CarouselItem 컴포넌트
+ * 앨범 변경 시 불필요한 리렌더 방지
+ */
+export const CarouselItem = memo(CarouselItemComponent, arePropsEqual);
