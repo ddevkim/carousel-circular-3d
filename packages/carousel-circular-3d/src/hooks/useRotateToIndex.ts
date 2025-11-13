@@ -61,24 +61,6 @@ export function useRotateToIndex({
   const [currentTargetIndex, setCurrentTargetIndex] = useState(0);
   const animationStateRef = useRef<RotationAnimationState>(createRotationAnimationState());
 
-  // 현재 회전 각도를 ref로 추적 (최신값 보장, 리렌더링 방지)
-  const keyboardRotationRef = useRef(0);
-  const itemsMetadataRef = useRef(itemsMetadata);
-  const dragAndAutoRotationRef = useRef(dragAndAutoRotation);
-
-  // ref 동기화 (리렌더링 없이)
-  useEffect(() => {
-    keyboardRotationRef.current = keyboardRotation;
-  }, [keyboardRotation]);
-
-  useEffect(() => {
-    itemsMetadataRef.current = itemsMetadata;
-  }, [itemsMetadata]);
-
-  useEffect(() => {
-    dragAndAutoRotationRef.current = dragAndAutoRotation;
-  }, [dragAndAutoRotation]);
-
   // 드래그/관성 종료 시 currentTargetIndex 동기화
   // 성능 최적화: 드래그/관성 중에는 동기화하지 않고, 종료 시점에만 계산
   useEffect(() => {
@@ -86,18 +68,18 @@ export function useRotateToIndex({
     if (isDragging || isMomentumActive) return;
 
     // 키보드 애니메이션 중이면 스킵 (명시적 인덱스 유지)
-    if (isAnimating || itemCount === 0 || itemsMetadataRef.current.length === 0) return;
+    if (isAnimating || itemCount === 0 || itemsMetadata.length === 0) return;
 
     // 드래그/관성 종료 후 실제 중앙 인덱스 계산하여 동기화
-    const finalRotation = dragAndAutoRotation + keyboardRotationRef.current;
+    const finalRotation = dragAndAutoRotation + keyboardRotation;
     const actualCenterIndex = calculateCenterIndex(
-      itemsMetadataRef.current,
+      itemsMetadata,
       finalRotation,
       itemCount
     );
 
     setCurrentTargetIndex(actualCenterIndex);
-  }, [isDragging, isMomentumActive, isAnimating, dragAndAutoRotation, itemCount]);
+  }, [isDragging, isMomentumActive, isAnimating, dragAndAutoRotation, keyboardRotation, itemCount, itemsMetadata]);
 
   /**
    * 상대적 인덱스 이동
@@ -107,20 +89,20 @@ export function useRotateToIndex({
    */
   const rotateByDelta = useCallback(
     (indexDelta: number, direction?: RotationDirection) => {
-      if (!enabled || itemCount === 0 || itemsMetadataRef.current.length === 0) return;
+      if (!enabled || itemCount === 0 || itemsMetadata.length === 0) return;
 
       // 드래그/관성 중 키보드 입력: 현재 각도 기준으로 실제 중앙 인덱스 즉시 계산
       // 정적 상태 중 키보드 입력: 캐시된 currentTargetIndex 사용 (성능 최적화)
       let baseIndex = currentTargetIndex;
       if (isDragging || isMomentumActive) {
-        const finalRotation = dragAndAutoRotationRef.current + keyboardRotationRef.current;
-        baseIndex = calculateCenterIndex(itemsMetadataRef.current, finalRotation, itemCount);
+        const finalRotation = dragAndAutoRotation + keyboardRotation;
+        baseIndex = calculateCenterIndex(itemsMetadata, finalRotation, itemCount);
       }
 
       const newTargetIndex = (baseIndex + indexDelta + itemCount) % itemCount;
 
       // 타겟 아이템 메타데이터 조회
-      const targetMetadata = itemsMetadataRef.current[newTargetIndex];
+      const targetMetadata = itemsMetadata[newTargetIndex];
       if (!targetMetadata) {
         return;
       }
@@ -135,7 +117,7 @@ export function useRotateToIndex({
       // 현재 실시간 keyboardRotation
       const currentRealTimeKeyboardRotation = isAnimating
         ? animationStateRef.current.currentAngle
-        : keyboardRotationRef.current;
+        : keyboardRotation;
 
       // 명시된 방향이 없으면 'auto' 사용
       const rotationDirection = direction ?? 'auto';
@@ -166,7 +148,9 @@ export function useRotateToIndex({
     [
       enabled,
       itemCount,
+      itemsMetadata,
       dragAndAutoRotation,
+      keyboardRotation,
       isAnimating,
       currentTargetIndex,
       isDragging,

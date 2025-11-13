@@ -3,17 +3,17 @@ import { defineConfig } from 'tsup';
 /**
  * tsup configuration for @ddevkim/carousel-circular
  *
- * Production-optimized build configuration:
+ * Library build configuration:
  * - ESM + CJS dual format for maximum compatibility
  * - TypeScript declarations with resolve
- * - Minified for smallest bundle size
+ * - NOT minified for better debugging experience in consuming applications
  * - Tree-shaking enabled
  * - React/React-DOM as external (peer dependencies)
  * - "use client" directive for Next.js App Router compatibility
  *
  * Output files:
- * - index.js (CJS, minified)
- * - index.mjs (ESM, minified)
+ * - index.js (CJS, readable)
+ * - index.mjs (ESM, readable)
  * - index.d.ts (TypeScript declarations)
  * - index.d.mts (ESM TypeScript declarations)
  * - index.css (Styles)
@@ -33,12 +33,12 @@ export default defineConfig({
   // Output directory
   outDir: 'dist',
 
-  // Build options - production optimized
+  // Build options - readable for consuming applications
   splitting: false,
-  sourcemap: false,
+  sourcemap: true, // Enable sourcemap for better debugging
   clean: true,
   treeshake: true,
-  minify: true, // Use esbuild built-in minification
+  minify: false, // Disabled for readable code in consuming applications
 
   // Platform target
   platform: 'browser',
