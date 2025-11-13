@@ -4,7 +4,128 @@ import type { CarouselItem, ImageOrientation, ItemWithOrientation } from '../typ
 import { calculateContainerSize } from './orientationCalculator';
 
 /**
+ * 아이템의 방향과 크기 정보
+ */
+interface ItemSizeData {
+  item: CarouselItem;
+  orientation: ImageOrientation;
+  width: number;
+  height: number;
+}
+
+/**
+ * 단일 아이템의 orientation과 크기를 계산한다.
+ * @param item - 캐러셀 아이템
+ * @param orientationMap - orientation 맵
+ * @param baseHeight - 기준 높이 (px)
+ * @returns 아이템 크기 데이터
+ */
+function calculateItemSize(
+  item: CarouselItem,
+  orientationMap: OrientationMap,
+  baseHeight: number
+): ItemSizeData {
+  const orientation: ImageOrientation = orientationMap.get(item.id) ?? 'square';
+  const { width, height } = calculateContainerSize(orientation, baseHeight);
+
+  return { item, orientation, width, height };
+}
+
+/**
+ * 모든 아이템의 크기 데이터와 총 너비를 계산한다.
+ * @param items - 아이템 배열
+ * @param orientationMap - orientation 맵
+ * @param baseHeight - 기준 높이 (px)
+ * @returns { itemsData, totalWidth }
+ */
+function calculateAllItemsSizeData(
+  items: CarouselItem[],
+  orientationMap: OrientationMap,
+  baseHeight: number
+): { itemsData: ItemSizeData[]; totalWidth: number } {
+  const itemCount = items.length;
+  const itemsData: ItemSizeData[] = new Array(itemCount);
+  let totalWidth = 0;
+
+  for (let i = 0; i < itemCount; i++) {
+    const item = items[i];
+    if (!item) continue;
+
+    const sizeData = calculateItemSize(item, orientationMap, baseHeight);
+    itemsData[i] = sizeData;
+    totalWidth += sizeData.width;
+  }
+
+  return { itemsData, totalWidth };
+}
+
+/**
+ * 첫 번째 아이템을 0도 중앙에 배치하기 위한 각도 오프셋을 계산한다.
+ * @param firstItemWidth - 첫 아이템 너비
+ * @param totalWidth - 전체 너비
+ * @returns 각도 오프셋 (degree)
+ */
+function calculateAngleOffset(firstItemWidth: number, totalWidth: number): number {
+  const firstItemAngle = (firstItemWidth / totalWidth) * 360;
+  return -firstItemAngle / 2;
+}
+
+/**
+ * 아이템의 각도와 중심 각도를 계산한다.
+ * @param itemWidth - 아이템 너비
+ * @param totalWidth - 전체 너비
+ * @param cumulativeAngle - 누적 각도
+ * @param angleOffset - 각도 오프셋
+ * @returns { angle, centerAngle }
+ */
+function calculateItemAngles(
+  itemWidth: number,
+  totalWidth: number,
+  cumulativeAngle: number,
+  angleOffset: number
+): { angle: number; centerAngle: number } {
+  const angle = (itemWidth / totalWidth) * 360;
+  const centerAngle = cumulativeAngle + angle / 2 + angleOffset;
+
+  return { angle, centerAngle };
+}
+
+/**
+ * 크기 데이터를 ItemWithOrientation으로 변환한다.
+ * @param sizeData - 아이템 크기 데이터
+ * @param angle - 아이템 각도
+ * @param centerAngle - 중심 각도
+ * @returns ItemWithOrientation
+ */
+function createItemWithOrientation(
+  sizeData: ItemSizeData,
+  angle: number,
+  centerAngle: number
+): ItemWithOrientation {
+  return {
+    item: sizeData.item,
+    orientation: sizeData.orientation,
+    width: sizeData.width,
+    height: sizeData.height,
+    angle,
+    cumulativeAngle: centerAngle,
+  };
+}
+
+/**
  * 아이템 배열과 orientation 맵을 기반으로 각 아이템의 메타데이터를 계산한다.
+ *
+ * 계산 과정:
+ * 1. 각 아이템의 orientation과 크기 계산
+ * 2. 전체 너비 대비 각 아이템의 각도 비율 계산
+ * 3. 첫 번째 아이템을 0도 중앙에 배치하기 위한 오프셋 적용
+ * 4. 누적 각도를 기반으로 각 아이템의 최종 위치 계산
+ *
+ * 성능 최적화:
+ * - 단일 패스로 모든 계산 수행 (O(n))
+ * - 중간 배열 최소화
+ * - 각 단계를 명확한 책임을 가진 함수로 분리
+ *
  * @param items - CarouselItem 배열
  * @param orientationMap - 아이템 id를 key로 하는 orientation 맵
  * @param baseHeight - 기준 높이 (px)
@@ -15,59 +136,36 @@ export function calculateItemsMetadata(
   orientationMap: OrientationMap,
   baseHeight: number
 ): ItemWithOrientation[] {
-  // 1단계: 각 아이템의 방향과 크기 결정
-  // orientationMap이 비어있어도 기본값 'square'를 사용하여 계산
-  const itemsWithSize = items.map((item) => {
-    const orientation: ImageOrientation = orientationMap.get(item.id) ?? 'square';
-    const { width, height } = calculateContainerSize(orientation, baseHeight);
+  const itemCount = items.length;
+  if (itemCount === 0) return [];
 
-    return {
-      item,
-      orientation,
-      width,
-      height,
-    };
-  });
+  // 1단계: 모든 아이템의 크기 데이터와 총 너비 계산
+  const { itemsData, totalWidth } = calculateAllItemsSizeData(items, orientationMap, baseHeight);
 
-  // 2단계: 전체 원주를 360도로 가정하고, 각 아이템이 차지할 각도를 비율로 계산
-  // 실제 container width를 기반으로 계산하여 간격이 일정하도록 함
-  const totalWidth = itemsWithSize.reduce((sum, { width }) => sum + width, 0);
+  // 2단계: 각도 오프셋 계산
+  const firstData = itemsData[0];
+  if (!firstData) return [];
 
-  // 각 아이템의 각도 비율 = (해당 아이템의 width) / (전체 width의 합) * 360도
-  // 이렇게 하면 각 container의 width + gap이 균등하게 360도를 구성
-  const itemsWithAngle = itemsWithSize.map(({ item, orientation, width, height }) => {
-    const angle = (width / totalWidth) * 360;
+  const angleOffset = calculateAngleOffset(firstData.width, totalWidth);
 
-    return {
-      item,
-      orientation,
-      width,
-      height,
-      angle,
-    };
-  });
-
-  // 3단계: 누적 각도 계산
-  // 첫 번째 아이템의 중심을 0도에 맞추기 위해 첫 아이템 각도의 절반만큼 음수 오프셋 적용
-  const firstItemAngle = itemsWithAngle[0]?.angle ?? 0;
-  const angleOffset = -firstItemAngle / 2;
-
-  // cumulativeAngle은 아이템의 시작 각도
-  // 실제 rotateY는 아이템의 중심 각도 (cumulativeAngle + angle/2 + angleOffset)를 사용
+  // 3단계: 각 아이템의 각도와 위치 계산
+  const result: ItemWithOrientation[] = new Array(itemCount);
   let cumulativeAngle = 0;
-  const result: ItemWithOrientation[] = itemsWithAngle.map((metadata) => {
-    // 아이템의 중심 각도 계산 (오프셋 적용)
-    const centerAngle = cumulativeAngle + metadata.angle / 2 + angleOffset;
 
-    const itemWithOrientation: ItemWithOrientation = {
-      ...metadata,
-      cumulativeAngle: centerAngle, // 중심 각도를 저장
-    };
+  for (let i = 0; i < itemCount; i++) {
+    const data = itemsData[i];
+    if (!data) continue;
 
-    cumulativeAngle += metadata.angle;
+    const { angle, centerAngle } = calculateItemAngles(
+      data.width,
+      totalWidth,
+      cumulativeAngle,
+      angleOffset
+    );
 
-    return itemWithOrientation;
-  });
+    result[i] = createItemWithOrientation(data, angle, centerAngle);
+    cumulativeAngle += angle;
+  }
 
   return result;
 }

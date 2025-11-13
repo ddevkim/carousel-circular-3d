@@ -33,12 +33,137 @@ function getOrientationFromLQIP(lqip: LQIPInfo): ImageOrientation {
 }
 
 /**
+ * Scheduler.yield() polyfill
+ * 브라우저에 렌더링 기회를 제공하는 진정한 yield
+ */
+const yieldToMain = (): Promise<void> => {
+  // Chrome 94+: Scheduler API 사용
+  // biome-ignore lint/suspicious/noExplicitAny: Scheduler API는 아직 TypeScript 타입이 없음
+  if ('scheduler' in window && 'yield' in (window.scheduler as any)) {
+    // biome-ignore lint/suspicious/noExplicitAny: Scheduler API는 아직 TypeScript 타입이 없음
+    return (window.scheduler as any).yield();
+  }
+
+  // 폴백: setTimeout(0)으로 매크로태스크 큐에 양보
+  return new Promise((resolve) => {
+    setTimeout(resolve, 0);
+  });
+};
+
+/**
+ * 화면 중앙 아이템을 우선 처리하기 위한 순서를 생성한다.
+ *
+ * 우선순위:
+ * 1. 중앙 아이템 (index 0)
+ * 2. 주변 아이템 (index ±1, ±2)
+ * 3. 나머지 아이템
+ *
+ * @param totalItems - 전체 아이템 수
+ * @returns 처리 순서 인덱스 배열
+ */
+function createPriorityProcessingOrder(totalItems: number): number[] {
+  const priorityOrder: number[] = [];
+
+  // 중앙 아이템
+  if (totalItems > 0) {
+    priorityOrder.push(0);
+  }
+
+  // 주변 아이템 (좌우 2개씩, 총 4개)
+  const surroundingRange = Math.min(2, Math.floor(totalItems / 2));
+  for (let offset = 1; offset <= surroundingRange; offset++) {
+    // 오른쪽 아이템
+    if (offset < totalItems) {
+      priorityOrder.push(offset);
+    }
+    // 왼쪽 아이템
+    const leftIndex = totalItems - offset;
+    if (leftIndex !== offset && leftIndex >= 0) {
+      priorityOrder.push(leftIndex);
+    }
+  }
+
+  // 나머지 아이템 (중앙 +/- 2 이후)
+  for (let i = 3; i < totalItems - 2; i++) {
+    priorityOrder.push(i);
+  }
+
+  return priorityOrder;
+}
+
+/**
+ * 단일 아이템의 orientation을 처리한다.
+ *
+ * 처리 우선순위:
+ * 1. 글로벌 캐시 확인
+ * 2. LQIP로 즉시 계산
+ * 3. 나중에 로드할 목록에 추가
+ *
+ * @param item - 이미지가 있는 캐러셀 아이템
+ * @param orientationMap - orientation 맵
+ * @param itemsToLoad - 로드할 아이템 목록
+ */
+function processItemOrientation(
+  item: CarouselItem & { image: string },
+  orientationMap: Map<string | number, ImageOrientation>,
+  itemsToLoad: Array<{ id: string | number; imageUrl: string }>
+): void {
+  // 1순위: 글로벌 캐시 확인 (가장 빠름)
+  const cachedOrientation = getCachedOrientation(item.image);
+  if (cachedOrientation !== undefined) {
+    orientationMap.set(item.id, cachedOrientation);
+    return;
+  }
+
+  // 2순위: LQIP가 있는 경우 즉시 orientation 계산 후 캐시 저장
+  if ('lqip' in item && item.lqip) {
+    const orientation = getOrientationFromLQIP(item.lqip);
+    orientationMap.set(item.id, orientation);
+    setCachedOrientation(item.image, orientation);
+    return;
+  }
+
+  // 3순위: LQIP도 캐시도 없는 경우 나중에 로드할 목록에 추가
+  itemsToLoad.push({ id: item.id, imageUrl: item.image });
+}
+
+/**
+ * 작업 시간을 체크하고 필요시 브라우저에 양보한다.
+ * @param startTime - 작업 시작 시간
+ * @param maxWorkTime - 최대 작업 시간 (ms)
+ * @param currentIndex - 현재 인덱스 (첫 N개는 즉시 처리)
+ * @param immediateProcessCount - 즉시 처리할 아이템 수
+ * @returns 새로운 작업 시작 시간
+ */
+async function yieldIfNeeded(
+  startTime: number,
+  maxWorkTime: number,
+  currentIndex: number,
+  immediateProcessCount: number
+): Promise<number> {
+  const elapsed = performance.now() - startTime;
+
+  // 첫 N개는 즉시 처리 (가시 영역)
+  if (elapsed > maxWorkTime && currentIndex >= immediateProcessCount) {
+    await yieldToMain();
+    return performance.now(); // 새로운 시작 시간
+  }
+
+  return startTime; // 기존 시작 시간 유지
+}
+
+/**
  * 초기 orientation 맵을 구성한다 (LQIP 및 캐시 활용)
  * 배치 처리를 통해 메인 스레드 블로킹을 최소화
+ *
+ * 성능 최적화:
+ * - Scheduler.yield()로 진정한 메인 스레드 양보
+ * - 동적 배치 크기 조정 (작업 시간 기반)
+ * - 총 작업 시간이 5ms 초과 시 yield
+ *
  * @param items - CarouselItem 배열
  * @returns { newMap, itemsToLoad } - 초기 맵과 로드할 아이템 목록
  */
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: 배치 처리로 인한 복잡도 증가는 성능 최적화를 위해 불가피
 async function buildInitialOrientationMap(items: CarouselItem[]): Promise<{
   newMap: Map<string | number, ImageOrientation>;
   itemsToLoad: Array<{ id: string | number; imageUrl: string }>;
@@ -51,38 +176,33 @@ async function buildInitialOrientationMap(items: CarouselItem[]): Promise<{
     (item): item is CarouselItem & { image: string } => 'image' in item && Boolean(item.image)
   );
 
-  // 배치 크기 (한 번에 처리할 아이템 수)
-  const BATCH_SIZE = 5;
+  // 우선순위 기반 처리 순서 생성
+  const priorityOrder = createPriorityProcessingOrder(imageItems.length);
 
-  // 아이템을 배치로 나눠서 처리 (메인 스레드 블로킹 방지)
-  for (let i = 0; i < imageItems.length; i += BATCH_SIZE) {
-    const batch = imageItems.slice(i, i + BATCH_SIZE);
+  // 상수: 성능 제어 파라미터
+  const MAX_WORK_TIME_MS = 5; // 5ms마다 브라우저에 제어권 양보
+  const IMMEDIATE_PROCESS_COUNT = 5; // 첫 5개는 즉시 처리 (가시 영역)
 
-    // 배치 사이에 마이크로태스크 큐에 양보 (렌더링 기회 제공)
-    if (i > 0) {
-      await new Promise<void>((resolve) => queueMicrotask(resolve));
-    }
+  let workStartTime = performance.now();
 
-    for (const item of batch) {
-      // 1순위: 글로벌 캐시 확인 (가장 빠름)
-      const cachedOrientation = getCachedOrientation(item.image);
-      if (cachedOrientation !== undefined) {
-        newMap.set(item.id, cachedOrientation);
-        continue;
-      }
+  // 우선순위 순서대로 아이템 처리
+  for (let idx = 0; idx < priorityOrder.length; idx++) {
+    const itemIndex = priorityOrder[idx];
+    if (itemIndex === undefined) continue;
 
-      // 2순위: LQIP가 있는 경우 즉시 orientation 계산 후 캐시 저장
-      if ('lqip' in item && item.lqip) {
-        const orientation = getOrientationFromLQIP(item.lqip);
-        newMap.set(item.id, orientation);
-        // LQIP로 계산한 orientation도 캐시에 저장
-        setCachedOrientation(item.image, orientation);
-        continue;
-      }
+    // 브라우저에 양보 (필요시)
+    workStartTime = await yieldIfNeeded(
+      workStartTime,
+      MAX_WORK_TIME_MS,
+      idx,
+      IMMEDIATE_PROCESS_COUNT
+    );
 
-      // 3순위: LQIP도 캐시도 없는 경우 나중에 로드할 목록에 추가
-      itemsToLoad.push({ id: item.id, imageUrl: item.image });
-    }
+    const item = imageItems[itemIndex];
+    if (!item) continue;
+
+    // 아이템의 orientation 처리
+    processItemOrientation(item, newMap, itemsToLoad);
   }
 
   // content만 있는 아이템은 기본값으로 square 설정
