@@ -72,14 +72,18 @@ export function useRotateToIndex({
 
     // 드래그/관성 종료 후 실제 중앙 인덱스 계산하여 동기화
     const finalRotation = dragAndAutoRotation + keyboardRotation;
-    const actualCenterIndex = calculateCenterIndex(
-      itemsMetadata,
-      finalRotation,
-      itemCount
-    );
+    const actualCenterIndex = calculateCenterIndex(itemsMetadata, finalRotation, itemCount);
 
     setCurrentTargetIndex(actualCenterIndex);
-  }, [isDragging, isMomentumActive, isAnimating, dragAndAutoRotation, keyboardRotation, itemCount, itemsMetadata]);
+  }, [
+    isDragging,
+    isMomentumActive,
+    isAnimating,
+    dragAndAutoRotation,
+    keyboardRotation,
+    itemCount,
+    itemsMetadata,
+  ]);
 
   /**
    * 상대적 인덱스 이동

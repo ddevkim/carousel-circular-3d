@@ -67,7 +67,6 @@ export function CarouselCircular(props: CarouselCircularProps) {
     onKeyboardInput: rotation.handleKeyboardInput,
   });
 
-
   // 로딩 중일 때는 빈 컨테이너만 렌더링
   if (!isLoaded) {
     return (
