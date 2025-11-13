@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { CarouselItem, ImageOrientation, LQIPInfo } from '../types';
 import {
   getCachedOrientation,
@@ -90,39 +90,114 @@ export function useImageOrientations(items: CarouselItem[]): UseImageOrientation
   const [orientationMap, setOrientationMap] = useState<OrientationMap>(new Map());
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // items 배열의 실제 내용이 변경되었을 때만 effect를 다시 실행하도록
+  // ID와 이미지 URL 기반으로 안정적인 의존성 생성
+  const itemsSignature = useMemo(() => {
+    return items
+      .map((item) => {
+        const id = item.id;
+        const image = 'image' in item ? item.image : '';
+        const lqipKey =
+          'lqip' in item &&
+          item.lqip &&
+          typeof item.lqip === 'object' &&
+          'width' in item.lqip &&
+          'height' in item.lqip
+            ? `${item.lqip.width}x${item.lqip.height}`
+            : '';
+        return `${id}:${image}:${lqipKey}`;
+      })
+      .join('|');
+  }, [items]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: items 대신 itemsSignature를 사용하여 불필요한 재실행 방지
   useEffect(() => {
+    let isCancelled = false;
+
     const loadOrientations = async () => {
       const { newMap, itemsToLoad } = buildInitialOrientationMap(items);
 
+      // 컴포넌트가 언마운트되었으면 중단
+      if (isCancelled) return;
+
       // 모든 아이템이 LQIP를 가지고 있거나 content인 경우
       if (itemsToLoad.length === 0) {
-        setOrientationMap(newMap);
-        setIsLoaded(true);
+        // 메인 스레드 블로킹을 피하기 위해 마이크로태스크에서 처리
+        queueMicrotask(() => {
+          if (!isCancelled) {
+            setOrientationMap(newMap);
+            setIsLoaded(true);
+          }
+        });
         return;
       }
 
       // LQIP가 없는 아이템들만 이미지를 로드해야 함
       // 로딩 전에 초기 맵 설정 (LQIP가 있는 아이템은 이미 orientation 계산됨)
-      setOrientationMap(new Map(newMap));
-      setIsLoaded(itemsToLoad.length === 0); // LQIP 없는 아이템이 있으면 아직 로딩 중
+      queueMicrotask(() => {
+        if (!isCancelled) {
+          setOrientationMap(new Map(newMap));
+        }
+      });
 
       // LQIP가 없는 아이템들을 병렬로 로드하여 orientation 결정
       await Promise.all(
         itemsToLoad.map(async ({ id, imageUrl }) => {
           const orientation = await loadImageOrientation(imageUrl);
-          newMap.set(id, orientation);
+          if (!isCancelled) {
+            newMap.set(id, orientation);
+          }
         })
       );
 
-      // 모든 로딩 완료 후 최종 맵 설정
-      setOrientationMap(newMap);
-      setIsLoaded(true);
+      // 컴포넌트가 언마운트되었으면 중단
+      if (isCancelled) return;
+
+      // 모든 로딩 완료 후 최종 맵 설정 (마이크로태스크에서 처리)
+      queueMicrotask(() => {
+        if (!isCancelled) {
+          setOrientationMap(new Map(newMap));
+          setIsLoaded(true);
+        }
+      });
     };
 
-    // 로딩 시작
-    setIsLoaded(false);
-    loadOrientations();
-  }, [items]);
+    // 로딩 시작 - setState 호출 전에 isCancelled 체크
+    // requestIdleCallback으로 메인 스레드 여유 시간에 처리
+    if (!isCancelled) {
+      setIsLoaded(false);
+
+      if ('requestIdleCallback' in window) {
+        const idleCallbackId = requestIdleCallback(() => {
+          if (!isCancelled) {
+            loadOrientations();
+          }
+        });
+
+        return () => {
+          isCancelled = true;
+          cancelIdleCallback(idleCallbackId);
+        };
+      } else {
+        // requestIdleCallback 미지원 브라우저 폴백
+        const timeoutId = setTimeout(() => {
+          if (!isCancelled) {
+            loadOrientations();
+          }
+        }, 0);
+
+        return () => {
+          isCancelled = true;
+          clearTimeout(timeoutId);
+        };
+      }
+    }
+
+    // cleanup 함수로 진행 중인 작업 취소
+    return () => {
+      isCancelled = true;
+    };
+  }, [itemsSignature]); // items 대신 itemsSignature 사용하여 무한 루프 방지
 
   return { orientationMap, isLoaded };
 }

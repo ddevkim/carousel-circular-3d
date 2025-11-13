@@ -40,18 +40,45 @@ export function App() {
   // 앨범 로드
   useEffect(() => {
     let isMounted = true;
+    let timeoutId: NodeJS.Timeout | null = null;
 
     setIsLoading(true);
 
-    createAlbumItems(selectedAlbum).then((loadedItems) => {
-      if (isMounted) {
-        setItems(loadedItems);
-        setIsLoading(false);
+    // requestIdleCallback이나 setTimeout(0)으로 메인 스레드 여유 시간에 처리
+    const scheduleLoad = () => {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => {
+          if (isMounted) {
+            createAlbumItems(selectedAlbum).then((loadedItems) => {
+              if (isMounted) {
+                setItems(loadedItems);
+                setIsLoading(false);
+              }
+            });
+          }
+        });
+      } else {
+        // requestIdleCallback 미지원 브라우저 폴백
+        timeoutId = setTimeout(() => {
+          if (isMounted) {
+            createAlbumItems(selectedAlbum).then((loadedItems) => {
+              if (isMounted) {
+                setItems(loadedItems);
+                setIsLoading(false);
+              }
+            });
+          }
+        }, 0);
       }
-    });
+    };
+
+    scheduleLoad();
 
     return () => {
       isMounted = false;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, [selectedAlbum]);
 

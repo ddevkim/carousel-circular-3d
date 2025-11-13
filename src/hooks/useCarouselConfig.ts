@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { DEFAULT_PROPS, PERSPECTIVE_MIN_MULTIPLIER, PERSPECTIVE_MULTIPLIER } from '../constants';
 import type { CarouselCircularProps, CarouselItem } from '../types';
 import { calculatePerspective } from '../utils/helpers';
@@ -117,10 +117,37 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
 
   // Lightbox 설정
   const enableLightboxWhenClick = props.enableLightboxWhenClick ?? false;
-  const lightboxOptions = props.lightboxOptions;
+
+  // lightboxOptions의 참조 안정화 (깊은 비교 최소화)
+  const lightboxOptionsRef = useRef(props.lightboxOptions);
+  const lightboxOptionsSignature = useMemo(() => {
+    return props.lightboxOptions ? JSON.stringify(props.lightboxOptions) : '';
+  }, [props.lightboxOptions]);
+
+  // signature가 변경되었을 때만 ref 업데이트 (한 번만 비교)
+  if (props.lightboxOptions && lightboxOptionsSignature !== JSON.stringify(lightboxOptionsRef.current)) {
+    lightboxOptionsRef.current = props.lightboxOptions;
+  }
+  const lightboxOptions = lightboxOptionsRef.current;
 
   // 콜백 및 접근성
-  const onItemClick = props.onItemClick;
+  // onItemClick은 함수이므로 참조 안정화 (사용자가 useCallback으로 감싸지 않았을 수 있음)
+  // ref를 통해 최신 함수를 유지하면서도 의존성 배열에는 포함하지 않음
+  const onItemClickRef = useRef(props.onItemClick);
+  onItemClickRef.current = props.onItemClick;
+
+  // 안정적인 래퍼 함수 생성 (존재 여부만 체크)
+  const hasOnItemClick = Boolean(props.onItemClick);
+  const onItemClick = useMemo(
+    () =>
+      hasOnItemClick
+        ? (item: CarouselItem, index: number) => {
+            onItemClickRef.current?.(item, index);
+          }
+        : undefined,
+    [hasOnItemClick]
+  );
+
   const ariaLabel = props.ariaLabel ?? DEFAULT_PROPS.ARIA_LABEL;
 
   // config 객체 메모이제이션하여 불필요한 리렌더링 방지
