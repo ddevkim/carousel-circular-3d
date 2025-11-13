@@ -1,5 +1,12 @@
 # @ddevkim/carousel-circular-3d-playground
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies [bb1669e]
+  - @ddevkim/carousel-circular-3d@0.3.3
+
 ## 0.0.7
 
 ### Patch Changes
