@@ -18,7 +18,8 @@
       "Bash(pnpm --filter @ddevkim/carousel-circular-playground type-check:*)",
       "Bash(pnpm clean:*)",
       "Bash(pnpm --filter @ddevkim/carousel-circular-3d lint:*)",
-      "Bash(pnpm --filter @ddevkim/carousel-circular-3d build:*)"
+      "Bash(pnpm --filter @ddevkim/carousel-circular-3d build:*)",
+      "Bash(pnpm --filter @ddevkim/carousel-circular-3d type-check:*)"
     ],
     "deny": [],
     "ask": []
