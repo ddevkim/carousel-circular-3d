@@ -23,7 +23,9 @@
       "Bash(pnpm --filter @ddevkim/carousel-circular-3d lint:fix:*)",
       "Bash(git add:*)",
       "Bash(pnpm --filter @ddevkim/carousel-circular-3d-playground build:*)",
-      "Bash(pnpm --filter @ddevkim/carousel-circular-3d-playground type-check:*)"
+      "Bash(pnpm --filter @ddevkim/carousel-circular-3d-playground type-check:*)",
+      "Bash(node /tmp/detailed-button-verification.js:*)",
+      "Bash(node /tmp/verify-auto-css.js:*)"
     ],
     "deny": [],
     "ask": []

@@ -38,8 +38,11 @@ pnpm add @ddevkim/carousel-circular-3d
 
 ## 🎯 Quick Start
 
+### Basic Usage (Automatic CSS)
+
 ```tsx
 import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+// CSS is automatically included - no separate import needed! ✨
 
 const items = [
   { id: 1, image: "/image1.jpg", alt: "Image 1" },
@@ -63,6 +66,15 @@ function App() {
     />
   );
 }
+```
+
+### Manual CSS Import (Optional)
+
+If your bundler doesn't support side effects or you prefer explicit imports:
+
+```tsx
+import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+import "@ddevkim/carousel-circular-3d/styles"; // Explicit CSS import
 ```
 
 ## 📖 API Reference
