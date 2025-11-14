@@ -1,5 +1,3 @@
-import './button.css';
-
 /**
  * NavigationButton 컴포넌트 Props
  */
