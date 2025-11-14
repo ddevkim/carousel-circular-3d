@@ -1,5 +1,43 @@
 # Changelog
 
+## 0.4.1
+
+### Patch Changes
+
+- fix: ensure lightbox button styles are included in bundle
+
+  **Issue:**
+  Lightbox 버튼(닫기, 네비게이션)의 CSS가 외부 애플리케이션에서 적용되지 않는 이슈 수정
+
+  **Root Cause:**
+
+  - `button.css`가 개별 컴포넌트에서만 import되고, 메인 스타일 엔트리 포인트(`styles/index.css`)에 포함되지 않았음
+  - 결과적으로 외부 앱에서 라이브러리 사용 시 버튼 스타일이 누락됨
+
+  **Symptoms:**
+
+  - 버튼의 원형 배경이 보이지 않음
+  - 버튼 위치가 정해진 위치에 있지 않음
+  - SVG 아이콘만 보이고 나머지 스타일(배경, blur, border, shadow 등)이 없음
+
+  **Solution:**
+
+  - `styles/index.css`에 `button.css`를 명시적으로 import 추가
+  - 개별 컴포넌트의 중복 import 제거 (단일 진실 공급원)
+  - CSS 번들링 일관성 확보
+
+  **Changes:**
+
+  - `src/styles/index.css`: `@import "../components/ui/button.css"` 추가
+  - `src/components/ui/CloseButton.tsx`: 중복 import 제거
+  - `src/components/ui/NavigationButton.tsx`: 중복 import 제거
+
+  **Impact:**
+
+  - ✅ 외부 애플리케이션에서 Lightbox 버튼 스타일이 올바르게 렌더링됨
+  - ✅ 모든 버튼 스타일(배경, 위치, 애니메이션)이 정상 작동
+  - ✅ Breaking changes 없음
+
 ## 0.4.0
 
 ### Minor Changes
