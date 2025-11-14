@@ -1,5 +1,69 @@
 # Changelog
 
+## 0.5.0
+
+### Minor Changes
+
+- feat: improve CSS import developer experience with automatic bundling
+
+  **Issue:**
+  사용자가 CSS를 수동으로 import해야 하는 불편함:
+
+  ```typescript
+  // ❌ Before: Manual node_modules path (bad DX)
+  import "../node_modules/@ddevkim/carousel-circular-3d/dist/index.css";
+  ```
+
+  **Solution:**
+  package.json exports와 sideEffects 설정으로 자동 CSS 번들링 지원
+
+  **Changes:**
+
+  1. **package.json exports 확장**
+
+     - `./styles` export 추가: 명시적 CSS import 지원
+     - `./dist/index.css` export 추가: 레거시 경로 지원
+
+  2. **sideEffects 최적화**
+
+     - `**/*.css` 추가: 소스 CSS 파일도 side effect로 인식
+     - 번들러가 CSS를 자동으로 포함하도록 보장
+
+  3. **README 업데이트**
+     - Automatic CSS 사용법 안내 (권장)
+     - Manual import 옵션 제공 (선택적)
+
+  **Usage (개선 후):**
+
+  ```typescript
+  // ✅ Recommended: Automatic (no CSS import needed!)
+  import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+  // CSS is automatically included by modern bundlers ✨
+
+  // ✅ Optional: Explicit import
+  import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+  import "@ddevkim/carousel-circular-3d/styles";
+
+  // ✅ Legacy: Direct path (still works)
+  import "@ddevkim/carousel-circular-3d/dist/index.css";
+  ```
+
+  **Bundler Support:**
+
+  - ✅ Webpack 5+ (full auto support)
+  - ✅ Vite (full auto support)
+  - ✅ Rollup (full auto support)
+  - ✅ Next.js 13+ (full auto support)
+  - ✅ Parcel 2+ (full auto support)
+  - ⚠️ CRA (may need explicit import)
+
+  **Benefits:**
+
+  - ✅ 더 나은 개발자 경험 (DX)
+  - ✅ 3가지 import 방식 모두 지원
+  - ✅ Breaking changes 없음 (기존 방식도 작동)
+  - ✅ 모든 lightbox 버튼 스타일 자동 포함
+
 ## 0.4.1
 
 ### Patch Changes
