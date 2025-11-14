@@ -1,5 +1,3 @@
-import './button.css';
-
 /**
  * CloseButton 컴포넌트 Props
  */

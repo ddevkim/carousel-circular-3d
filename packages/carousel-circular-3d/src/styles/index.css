@@ -1,3 +1,4 @@
 /* Carousel Circular - Base Styles */
 @import "./CarouselContainer.css";
 @import "./CarouselItem.css";
+@import "../components/ui/button.css";
