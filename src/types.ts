@@ -46,8 +46,8 @@ export interface AutoRotateConfig {
 export interface VisualEffectConfig {
   /** 투명도 범위 [최소, 최대] (기본: [0.3, 1.0]) */
   opacityRange?: [number, number];
-  /** 크기 스케일 범위 [최소, 최대] (기본: [0.7, 1.0]) */
-  scaleRange?: [number, number];
+  /** 뒤쪽 아이템의 최소 크기 스케일 (기본: 0.7, 범위: 0.0~1.0, 정면 아이템은 항상 1.0) */
+  minScale?: number;
   /** 하단 반사 효과 활성화 여부 (기본: false) */
   enableReflection?: boolean;
 }

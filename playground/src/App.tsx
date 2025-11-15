@@ -1,6 +1,7 @@
 import type { CarouselItem } from '@ddevkim/carousel-circular-3d';
 import { CarouselCircular } from '@ddevkim/carousel-circular-3d';
 import { useEffect, useState } from 'react';
+import { RangeSlider } from './components/RangeSlider';
 import type { AlbumName } from './utils/albumHelper';
 import { createAlbumItems, getAlbums } from './utils/albumHelper';
 import './App.css';
@@ -16,6 +17,16 @@ interface GeometryControls {
 }
 
 /**
+ * Visual Effect 파라미터 타입
+ */
+interface VisualEffectControls {
+  opacityMin: number;
+  opacityMax: number;
+  minScale: number;
+  enableReflection: boolean;
+}
+
+/**
  * 기본 geometry 값
  */
 const DEFAULT_GEOMETRY: GeometryControls = {
@@ -25,12 +36,22 @@ const DEFAULT_GEOMETRY: GeometryControls = {
   depthIntensity: 2,
 };
 
+/**
+ * 기본 visual effect 값
+ */
+const DEFAULT_VISUAL_EFFECT: VisualEffectControls = {
+  opacityMin: 0.3,
+  opacityMax: 1.0,
+  minScale: 0.7,
+  enableReflection: true,
+};
+
 export function App() {
   const [selectedAlbum, setSelectedAlbum] = useState<AlbumName>('bali');
   const [items, setItems] = useState<CarouselItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [geometry, setGeometry] = useState<GeometryControls>(DEFAULT_GEOMETRY);
-  const [enableReflection, setEnableReflection] = useState(true);
+  const [visualEffect, setVisualEffect] = useState<VisualEffectControls>(DEFAULT_VISUAL_EFFECT);
   const [autoRotateEnabled, setAutoRotateEnabled] = useState(true);
   const [isAlbumDropdownOpen, setIsAlbumDropdownOpen] = useState(false);
 
@@ -111,6 +132,16 @@ export function App() {
   };
 
   /**
+   * Visual Effect 변경 핸들러
+   */
+  const handleVisualEffectChange = (key: keyof VisualEffectControls, value: number | boolean) => {
+    setVisualEffect((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  /**
    * Album 선택 핸들러
    */
   const handleAlbumSelect = (album: AlbumName) => {
@@ -126,7 +157,8 @@ export function App() {
       </header>
 
       <nav className="nav">
-        <div className="nav-controls-section">
+        {/* Row 1: Toggles */}
+        <div className="nav-toggles-row">
           {/* Album Selector */}
           <div className="control-group control-group-toggle">
             <label htmlFor="album-select">Album</label>
@@ -165,7 +197,7 @@ export function App() {
               className="toggle-button"
               onClick={() => {
                 setGeometry(DEFAULT_GEOMETRY);
-                setEnableReflection(true);
+                setVisualEffect(DEFAULT_VISUAL_EFFECT);
                 setAutoRotateEnabled(true);
               }}
               aria-label="Reset all controls to default values"
@@ -180,11 +212,13 @@ export function App() {
             <button
               id="reflection-toggle"
               type="button"
-              className={`toggle-button ${enableReflection ? 'active' : ''}`}
-              onClick={() => setEnableReflection(!enableReflection)}
-              aria-pressed={enableReflection}
+              className={`toggle-button ${visualEffect.enableReflection ? 'active' : ''}`}
+              onClick={() =>
+                handleVisualEffectChange('enableReflection', !visualEffect.enableReflection)
+              }
+              aria-pressed={visualEffect.enableReflection}
             >
-              {enableReflection ? 'ON' : 'OFF'}
+              {visualEffect.enableReflection ? 'ON' : 'OFF'}
             </button>
           </div>
 
@@ -201,6 +235,10 @@ export function App() {
               {autoRotateEnabled ? 'ON' : 'OFF'}
             </button>
           </div>
+        </div>
+
+        {/* Row 2: Sliders */}
+        <div className="nav-controls-row">
           {/* Radius Control */}
           <div className="control-group">
             <label htmlFor="radius-control">
@@ -264,7 +302,41 @@ export function App() {
               onChange={(e) => handleGeometryChange('depthIntensity', Number(e.target.value))}
             />
           </div>
+
+          {/* Min Scale Control */}
+          <div className="control-group">
+            <label htmlFor="min-scale-control">
+              Min Scale: <span className="control-value">{visualEffect.minScale.toFixed(2)}</span>
+            </label>
+            <input
+              id="min-scale-control"
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={visualEffect.minScale}
+              onChange={(e) => handleVisualEffectChange('minScale', Number(e.target.value))}
+            />
+          </div>
+
+          {/* Opacity Range Control */}
+          <RangeSlider
+            min={0}
+            max={1}
+            minValue={visualEffect.opacityMin}
+            maxValue={visualEffect.opacityMax}
+            step={0.05}
+            label="Opacity Range"
+            onChange={(min, max) => {
+              setVisualEffect((prev) => ({
+                ...prev,
+                opacityMin: min,
+                opacityMax: max,
+              }));
+            }}
+          />
         </div>
+        {/* End of nav-controls-row */}
       </nav>
 
       <main className="main ">
@@ -300,9 +372,9 @@ export function App() {
                   depthIntensity: geometry.depthIntensity,
                 }}
                 visualEffect={{
-                  opacityRange: [0.3, 1],
-                  scaleRange: [0.7, 1],
-                  enableReflection: enableReflection,
+                  opacityRange: [visualEffect.opacityMin, visualEffect.opacityMax],
+                  minScale: visualEffect.minScale,
+                  enableReflection: visualEffect.enableReflection,
                 }}
                 autoRotateConfig={{
                   enabled: autoRotateEnabled,

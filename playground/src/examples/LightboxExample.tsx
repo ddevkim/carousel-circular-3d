@@ -63,7 +63,7 @@ export function LightboxExample({ album }: LightboxExampleProps) {
         },
         visualEffect: {
           opacityRange: [0.3, 1],
-          scaleRange: [0.7, 1],
+          minScale: 0.7,
         },
       }}
     />

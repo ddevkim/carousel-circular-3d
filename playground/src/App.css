@@ -32,6 +32,9 @@
   padding: 1.5rem 2rem;
   background: rgba(0, 0, 0, 0.3);
   border-bottom: 1px solid rgba(212, 175, 55, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .custom-select-wrapper {
@@ -119,12 +122,22 @@
   font-weight: 600;
 }
 
-.nav-controls-section {
+.nav-toggles-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: flex-end;
+  max-width: 1550px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.nav-controls-row {
   display: flex;
   flex-wrap: nowrap;
   gap: 2rem;
-  padding: 1rem 0;
-  max-width: 1400px;
+  max-width: 1550px;
   margin: 0 auto;
   width: 100%;
   align-items: flex-end;
@@ -134,25 +147,31 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  flex: 1 1 180px;
-  min-width: 180px;
+  flex: 1 1 160px;
+  min-width: 160px;
+  max-width: 200px;
+  align-items: center;
 }
 
 .control-group-toggle {
   flex: 0 1 auto;
   min-width: 120px;
   max-width: 150px;
+  align-items: center;
 }
 
 .control-group label {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: rgba(232, 232, 232, 0.7);
   letter-spacing: 0.03em;
   text-transform: uppercase;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  width: 100%;
+  text-align: center;
+  min-height: 1.25rem;
 }
 
 .control-value {
@@ -160,6 +179,7 @@
   font-weight: 700;
   color: #f4e5b1;
   letter-spacing: 0.02em;
+  margin-left: 0.5rem;
 }
 
 .control-group input[type="range"] {

@@ -63,8 +63,8 @@ export interface CarouselItemProps {
   containerHeight: number;
   /** 이미지 방향 */
   orientation: ImageOrientation;
-  /** 크기 스케일 범위 [최소, 최대] */
-  scaleRange: [number, number];
+  /** 뒤쪽 아이템의 최소 크기 스케일 (정면 아이템은 항상 1.0) */
+  minScale: number;
   /** Perspective 값 (px) */
   perspective: number;
   /** 원의 반지름 (px) */
@@ -96,7 +96,7 @@ function CarouselItemComponent({
   transform,
   containerHeight,
   orientation,
-  scaleRange,
+  minScale,
   perspective,
   radius,
   itemClassName,
@@ -118,7 +118,7 @@ function CarouselItemComponent({
       containerHeight,
       orientation,
       transform,
-      scaleRange,
+      minScale,
       perspective,
       radius,
       isClickable,
@@ -242,7 +242,7 @@ function arePropsEqual(prev: CarouselItemProps, next: CarouselItemProps): boolea
     prev.index === next.index &&
     prev.containerHeight === next.containerHeight &&
     prev.orientation === next.orientation &&
-    prev.scaleRange === next.scaleRange &&
+    prev.minScale === next.minScale &&
     prev.perspective === next.perspective &&
     prev.radius === next.radius &&
     prev.itemClassName === next.itemClassName &&

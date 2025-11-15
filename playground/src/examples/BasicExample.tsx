@@ -59,7 +59,7 @@ export function BasicExample({ album }: BasicExampleProps) {
           depthIntensity: 5, // Individual item Z-depth variation (0-3)
         },
         visualEffect: {
-          scaleRange: [0.5, 1],
+          minScale: 0.7,
           enableReflection: true, // Enable bottom reflection effect
         },
         onItemClick: handleItemClick,

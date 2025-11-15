@@ -31,7 +31,7 @@ export interface NormalizedCarouselConfig {
 
   // 시각 효과
   opacityRange: [number, number];
-  scaleRange: [number, number];
+  minScale: number;
   enableReflection: boolean;
 
   // 스타일
@@ -105,7 +105,7 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
       autoRotateResumeDelay:
         props.autoRotateConfig?.resumeDelay ?? DEFAULT_PROPS.AUTO_ROTATE_RESUME_DELAY,
       opacityRange: props.visualEffect?.opacityRange ?? DEFAULT_PROPS.OPACITY_RANGE,
-      scaleRange: props.visualEffect?.scaleRange ?? DEFAULT_PROPS.SCALE_RANGE,
+      minScale: props.visualEffect?.minScale ?? DEFAULT_PROPS.MIN_SCALE,
       enableReflection: props.visualEffect?.enableReflection ?? false,
       className: props.style?.className,
       itemClassName: props.style?.itemClassName,
@@ -131,7 +131,7 @@ export function useCarouselConfig(props: CarouselCircularProps): NormalizedCarou
     props.autoRotateConfig?.speed,
     props.autoRotateConfig?.resumeDelay,
     props.visualEffect?.opacityRange,
-    props.visualEffect?.scaleRange,
+    props.visualEffect?.minScale,
     props.visualEffect?.enableReflection,
     props.style?.className,
     props.style?.itemClassName,

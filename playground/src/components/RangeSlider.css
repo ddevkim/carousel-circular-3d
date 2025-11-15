@@ -1,0 +1,96 @@
+.range-slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1 1 220px;
+  min-width: 220px;
+  max-width: 280px;
+  align-items: center;
+}
+
+.range-slider-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(232, 232, 232, 0.7);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  gap: 0.25rem;
+  min-height: 1.25rem;
+  width: 100%;
+  text-align: center;
+}
+
+.range-slider-values {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #f4e5b1;
+  letter-spacing: 0.02em;
+  margin-left: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.range-slider-track-container {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+}
+
+.range-slider-track-bg {
+  position: absolute;
+  width: 100%;
+  height: 6px;
+  background: rgba(212, 175, 55, 0.15);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.range-slider-track-container:hover .range-slider-track-bg {
+  background: rgba(212, 175, 55, 0.25);
+}
+
+.range-slider-track-active {
+  position: absolute;
+  height: 6px;
+  background: linear-gradient(135deg, #d4af37 0%, #f4e5b1 100%);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.range-slider-handle {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, #d4af37 0%, #f4e5b1 100%);
+  border: none;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  cursor: grab;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.range-slider-handle:hover {
+  transform: translateX(-50%) scale(1.15);
+  box-shadow: 0 3px 12px rgba(212, 175, 55, 0.5);
+}
+
+.range-slider-handle:focus {
+  outline: none;
+  box-shadow: 0 3px 16px rgba(212, 175, 55, 0.6);
+}
+
+.range-slider-handle.dragging {
+  cursor: grabbing;
+  transform: translateX(-50%) scale(1.2);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.7);
+  z-index: 3;
+}

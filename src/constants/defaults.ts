@@ -26,8 +26,8 @@ export const DEFAULT_PROPS = {
   AUTO_ROTATE_EASING_DURATION: 500,
   /** Opacity 범위 [min, max] */
   OPACITY_RANGE: [0.2, 1] as [number, number],
-  /** Scale 범위 [min, max] */
-  SCALE_RANGE: [0.7, 1] as [number, number],
+  /** 뒤쪽 아이템의 최소 크기 스케일 (정면 아이템은 항상 1.0) */
+  MIN_SCALE: 0.7,
   /** 컨테이너 aria-label */
   ARIA_LABEL: 'Circular Carousel',
   /** 최대 아이템 수 */

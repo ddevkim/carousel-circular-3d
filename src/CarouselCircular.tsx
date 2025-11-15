@@ -139,7 +139,7 @@ export function CarouselCircular(props: CarouselCircularProps) {
             finalRotation: rotation.finalRotation,
             radius: config.radius,
             opacityRange: config.opacityRange,
-            scaleRange: config.scaleRange,
+            minScale: config.minScale,
             depthIntensity: config.depthIntensity,
           });
 
@@ -151,7 +151,7 @@ export function CarouselCircular(props: CarouselCircularProps) {
               transform={transform}
               containerHeight={config.containerHeight}
               orientation={orientation}
-              scaleRange={config.scaleRange}
+              minScale={config.minScale}
               perspective={config.perspective}
               radius={config.radius}
               itemClassName={config.itemClassName}

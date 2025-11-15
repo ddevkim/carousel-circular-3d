@@ -17,8 +17,8 @@ export interface TransformCalculationParams {
   radius: number;
   /** 투명도 범위 [최소, 최대] */
   opacityRange: [number, number];
-  /** 크기 스케일 범위 [최소, 최대] */
-  scaleRange: [number, number];
+  /** 뒤쪽 아이템의 최소 크기 스케일 (0.0~1.0, 정면 아이템은 항상 1.0) */
+  minScale: number;
   /** 개별 아이템 Z축 깊이 변동 강도 */
   depthIntensity: number;
 }
@@ -36,7 +36,7 @@ export function calculateItemTransform(params: TransformCalculationParams): Item
     finalRotation,
     radius,
     opacityRange,
-    scaleRange,
+    minScale,
     depthIntensity,
   } = params;
 
@@ -58,8 +58,8 @@ export function calculateItemTransform(params: TransformCalculationParams): Item
   const opacityRatio = Math.abs(normalizedAngle) / 180;
   const opacity = Math.max(minOpacity, maxOpacity - opacityRatio * (maxOpacity - minOpacity));
 
-  // Scale 계산
-  const [minScale, maxScale] = scaleRange;
+  // Scale 계산 (maxScale은 항상 1.0 고정)
+  const maxScale = 1.0;
   const scaleRatio = Math.abs(normalizedAngle) / 180;
   const scale = Math.max(minScale, maxScale - scaleRatio * (maxScale - minScale));
 

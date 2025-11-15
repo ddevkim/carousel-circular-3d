@@ -75,7 +75,7 @@ export function CustomContentExample() {
           depthIntensity: 1.2,
         },
         style: { className: 'carousel-container', itemClassName: 'carousel-item' },
-        visualEffect: { opacityRange: [0.2, 1], scaleRange: [0.6, 1] },
+        visualEffect: { opacityRange: [0.2, 1], minScale: 0.7 },
       }}
     />
   );
