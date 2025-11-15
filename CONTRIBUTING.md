@@ -21,6 +21,32 @@ This project and everyone participating in it is governed by our [Code of Conduc
 
 ## How Can I Contribute?
 
+### 📢 Important: Development Workflow
+
+**Note for External Contributors:**
+
+This package is maintained as part of a private monorepo and automatically synced to this public repository.
+
+**What this means for you:**
+
+1. **Submit PRs normally** - You can fork and submit pull requests to this repository as usual
+2. **We review here** - All code review and discussion happens in this public repository
+3. **Integration process** - If approved, we integrate your changes into our main development repository
+4. **Auto-sync** - Changes automatically sync back to this repository (usually within minutes)
+5. **You get credit** - Your contribution is preserved with proper attribution in:
+   - Commit messages (`Co-authored-by`)
+   - Release notes
+   - Contributors list
+
+**Why this workflow?**
+
+We maintain the package in a monorepo for:
+- Shared development tools and configurations
+- Cross-package testing
+- Coordinated releases with related packages
+
+This workflow ensures your contributions integrate properly while keeping the contribution process simple for you!
+
 ### Reporting Bugs
 
 Before creating bug reports, please check the [existing issues](https://github.com/ddevkim/carousel-circular-3d/issues) to avoid duplicates.
