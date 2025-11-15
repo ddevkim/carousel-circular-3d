@@ -19,9 +19,40 @@
 - 💪 **TypeScript** - Full type safety and IntelliSense support
 - 🌟 **Zero Dependencies** - Only React as peer dependency
 
+## 🎯 Why Choose This?
+
+Unlike traditional flat carousels, this component provides:
+
+- **✨ Premium Feel**: 3D transforms and smooth physics-based interactions
+- **🚀 Production Ready**: Used in real projects, battle-tested
+- **📦 Zero Config**: Works out of the box with sensible defaults
+- **🎨 Fully Customizable**: 30+ props to fine-tune every aspect
+- **📱 Mobile First**: Touch-optimized with momentum scrolling
+- **♿ Accessible**: ARIA labels, keyboard navigation, screen reader friendly
+- **⚡ Performant**: GPU-accelerated, 60fps on desktop
+
+## 📚 Table of Contents
+
+- [Why Choose This?](#-why-choose-this)
+- [Demo](#-demo)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Use Cases & Examples](#-use-cases--examples)
+- [API Reference](#-api-reference)
+- [Framework Integration](#-framework-integration)
+- [Troubleshooting](#-troubleshooting)
+- [Best Practices](#-best-practices)
+- [Architecture](#-architecture)
+- [FAQ](#-faq)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Contact](#-contact)
+
 ## 🚀 Demo
 
 **[Live Demo](https://carousel-circular.vercel.app)** - See it in action!
+
+_Interactive 3D carousel with smooth animations and lightbox_
 
 ## 📦 Installation
 
@@ -38,17 +69,41 @@ pnpm add @ddevkim/carousel-circular-3d
 
 ## 🎯 Quick Start
 
-### Basic Usage (Automatic CSS)
+### 1️⃣ Import Component + CSS
+
+**Important:** You must import the CSS file for styles to work properly!
 
 ```tsx
 import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
-// CSS is automatically included - no separate import needed! ✨
+import "@ddevkim/carousel-circular-3d/dist/index.css"; // Required for styles
+```
+
+### 2️⃣ Minimal Example (30 seconds)
+
+```tsx
+import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+import "@ddevkim/carousel-circular-3d/dist/index.css";
 
 const items = [
   { id: 1, image: "/image1.jpg", alt: "Image 1" },
   { id: 2, image: "/image2.jpg", alt: "Image 2" },
   { id: 3, image: "/image3.jpg", alt: "Image 3" },
 ];
+
+function App() {
+  return <CarouselCircular items={items} />;
+}
+```
+
+That's it! 🎉 The carousel will render with sensible defaults.
+
+### 3️⃣ Luxury Example (Recommended)
+
+For a premium look with 3D depth and smooth interactions:
+
+```tsx
+import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+import "@ddevkim/carousel-circular-3d/dist/index.css";
 
 function App() {
   return (
@@ -66,15 +121,6 @@ function App() {
     />
   );
 }
-```
-
-### Manual CSS Import (Optional)
-
-If your bundler doesn't support side effects or you prefer explicit imports:
-
-```tsx
-import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
-import "@ddevkim/carousel-circular-3d/styles"; // Explicit CSS import
 ```
 
 ## 📖 API Reference
@@ -186,71 +232,213 @@ type CarouselItemWithContent = {
 type CarouselItem = CarouselItemWithImage | CarouselItemWithContent;
 ```
 
-## 🎨 Advanced Usage
+## 🎨 Use Cases & Examples
 
-### With LQIP (Progressive Loading)
+### 📸 Product Gallery with Lightbox
+
+Perfect for e-commerce sites, portfolios, or any image-heavy application:
 
 ```tsx
+import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+import "@ddevkim/carousel-circular-3d/dist/index.css";
+
+const products = [
+  { id: 1, image: "/products/watch.jpg", alt: "Luxury Watch" },
+  { id: 2, image: "/products/phone.jpg", alt: "Smartphone" },
+  { id: 3, image: "/products/laptop.jpg", alt: "Laptop" },
+];
+
+export function ProductGallery() {
+  return (
+    <CarouselCircular
+      items={products}
+      enableLightboxWhenClick={true}
+      lightboxOptions={{
+        enableKeyboardNavigation: true,
+        closeOnEsc: true,
+        backgroundBlur: 10,
+      }}
+      geometry={{
+        radius: 900,
+        cameraAngle: 12,
+      }}
+    />
+  );
+}
+```
+
+**Features:**
+
+- Click any product to view full-screen
+- Navigate with arrow keys or swipe
+- Press ESC to close
+- Smooth fade transitions
+
+### 🚀 Progressive Loading with LQIP
+
+Show blurred placeholders instantly while high-res images load:
+
+```tsx
+import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+import "@ddevkim/carousel-circular-3d/dist/index.css";
+
 const items = [
   {
     id: 1,
-    image: "/high-res.jpg",
+    image: "/gallery/hero.jpg",
     lqip: {
-      base64: "iVBORw0KGgoAAAANSUhEUgAAAA...",
+      base64: "data:image/webp;base64,UklGRiQAAABXRUJQ...", // tiny base64 image
       width: 800,
       height: 600,
     },
-    alt: "Beautiful landscape",
+    alt: "Mountain landscape",
   },
 ];
 
 <CarouselCircular items={items} />;
 ```
 
-### With Lightbox
+**Benefits:**
+
+- Instant visual feedback (no blank space)
+- Smooth transition from blur to sharp
+- Better perceived performance
+- Works offline (base64 inline)
+
+### 🎡 Auto-Rotating Hero Carousel
+
+Great for landing pages or showcases:
 
 ```tsx
-<CarouselCircular
-  items={items}
-  enableLightboxWhenClick={true}
-  lightboxOptions={{
-    enableKeyboardNavigation: true,
-    closeOnEsc: true,
-    backgroundBlur: 8,
-    animationDuration: 500,
-  }}
-/>
+import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+import "@ddevkim/carousel-circular-3d/dist/index.css";
+
+export function HeroCarousel() {
+  return (
+    <CarouselCircular
+      items={items}
+      autoRotateConfig={{
+        enabled: true,
+        speed: 0.1, // Slow, elegant rotation
+        resumeDelay: 3000, // Resume 3s after user interaction
+      }}
+      geometry={{
+        radius: 1200,
+        cameraAngle: 15,
+      }}
+    />
+  );
+}
 ```
 
-### With Auto-Rotation
+**Pro Tips:**
+
+- Use slower speed (0.05-0.15) for luxury feel
+- Longer `resumeDelay` gives users control
+- Rotation pauses on hover/drag automatically
+
+### 🎨 Custom Content Cards
+
+Not just images! Render any React component:
 
 ```tsx
-<CarouselCircular
-  items={items}
-  autoRotateConfig={{
-    enabled: true,
-    speed: 0.1,
-    resumeDelay: 3000,
-  }}
-/>
-```
+import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+import "@ddevkim/carousel-circular-3d/dist/index.css";
 
-### Custom Content
-
-```tsx
-const items = [
+const teamMembers = [
   {
     id: 1,
     content: (
-      <div className="custom-card">
-        <h3>Custom Content</h3>
-        <p>You can render anything here!</p>
+      <div className="team-card">
+        <img src="/avatar1.jpg" alt="John Doe" />
+        <h3>John Doe</h3>
+        <p>CEO & Founder</p>
+        <div className="social-links">{/* Your custom content */}</div>
       </div>
     ),
   },
 ];
 
-<CarouselCircular items={items} />;
+export function TeamCarousel() {
+  return (
+    <CarouselCircular
+      items={teamMembers}
+      containerHeight={500}
+      itemClassName="custom-team-card"
+    />
+  );
+}
+```
+
+**Use Cases:**
+
+- Team members
+- Testimonials
+- Feature cards
+- Pricing tiers
+- Anything you can imagine!
+
+### 🎯 Full Example: Complete Product Showcase
+
+```tsx
+import { useState } from "react";
+import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+import "@ddevkim/carousel-circular-3d/dist/index.css";
+
+export function ProductShowcase() {
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const products = [
+    {
+      id: 1,
+      image: "/products/watch.jpg",
+      lqip: { base64: "...", width: 800, height: 600 },
+      alt: "Premium Watch",
+      title: "Swiss Automatic Watch",
+    },
+    // ... more products
+  ];
+
+  return (
+    <div className="showcase">
+      <CarouselCircular
+        items={products}
+        containerHeight={700}
+        geometry={{
+          radius: 1000,
+          cameraAngle: 12,
+          depthIntensity: 1.5,
+        }}
+        visualEffect={{
+          scaleRange: [0.6, 1],
+          opacityRange: [0.4, 1],
+          enableReflection: true,
+        }}
+        enableLightboxWhenClick={true}
+        lightboxOptions={{
+          onOpen: (index) => setSelectedProduct(products[index]),
+          onClose: () => setSelectedProduct(null),
+        }}
+        autoRotateConfig={{
+          enabled: true,
+          speed: 0.08,
+          resumeDelay: 4000,
+        }}
+        onItemClick={(item, index) => {
+          console.log("Clicked:", item.title);
+        }}
+        ariaLabel="Product showcase carousel"
+      />
+
+      {selectedProduct && (
+        <div className="product-info">
+          <h2>{selectedProduct.title}</h2>
+          {/* Additional product details */}
+        </div>
+      )}
+    </div>
+  );
+}
 ```
 
 ## 🎯 Best Practices
@@ -280,6 +468,187 @@ const items = [
 4. Ensure sufficient color contrast for text overlays
 5. Configure keyboard options via `interaction.enableKeyboardNavigation` and `lightboxOptions.enableKeyboardNavigation` if needed
 
+## 🔧 Framework Integration
+
+### Next.js (App Router)
+
+```tsx
+// app/components/ProductCarousel.tsx
+"use client"; // Required for client-side interactivity
+
+import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+import "@ddevkim/carousel-circular-3d/dist/index.css";
+
+export function ProductCarousel({ items }) {
+  return <CarouselCircular items={items} />;
+}
+```
+
+### Next.js (Pages Router)
+
+```tsx
+// pages/index.tsx
+import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+import "@ddevkim/carousel-circular-3d/dist/index.css";
+
+export default function Home() {
+  return <CarouselCircular items={items} />;
+}
+```
+
+### Vite + React
+
+```tsx
+// src/App.tsx
+import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+import "@ddevkim/carousel-circular-3d/dist/index.css";
+
+export default function App() {
+  return <CarouselCircular items={items} />;
+}
+```
+
+### Create React App
+
+```tsx
+// src/App.js
+import { CarouselCircular } from "@ddevkim/carousel-circular-3d";
+import "@ddevkim/carousel-circular-3d/dist/index.css";
+
+function App() {
+  return <CarouselCircular items={items} />;
+}
+```
+
+## ❓ Troubleshooting
+
+### Styles Not Showing
+
+**Problem:** Carousel renders but has no styles (buttons missing, layout broken)
+
+**Solution:** Make sure you import the CSS file:
+
+```tsx
+import "@ddevkim/carousel-circular-3d/dist/index.css"; // ← Don't forget this!
+```
+
+**Alternative imports that work:**
+
+```tsx
+// Option 1: Direct path (recommended)
+import "@ddevkim/carousel-circular-3d/dist/index.css";
+
+// Option 2: Using styles export
+import "@ddevkim/carousel-circular-3d/styles";
+```
+
+### TypeScript Errors
+
+**Problem:** Type errors when using the component
+
+**Solution:** The package includes TypeScript definitions. Make sure your `tsconfig.json` includes:
+
+```json
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler", // or "node"
+    "esModuleInterop": true
+  }
+}
+```
+
+### Images Not Loading
+
+**Problem:** Images show broken icon or don't load
+
+**Solution:**
+
+1. **Check image paths:** Ensure paths are correct relative to your public folder
+2. **Use absolute URLs:** Try using full URLs: `https://example.com/image.jpg`
+3. **Verify CORS:** If using external images, ensure CORS headers are set
+
+```tsx
+// ✅ Good - relative to public folder
+{ id: 1, image: "/images/product.jpg" }
+
+// ✅ Good - absolute URL
+{ id: 1, image: "https://cdn.example.com/product.jpg" }
+
+// ❌ Bad - relative to component file
+{ id: 1, image: "../assets/product.jpg" }
+```
+
+### Performance Issues
+
+**Problem:** Carousel feels laggy or slow
+
+**Solutions:**
+
+1. **Reduce item count:** Keep items under 30
+2. **Optimize images:** Use WebP format and compress
+3. **Add LQIP:** Use progressive loading
+4. **Check radius:** Very large radius (>2000px) may impact performance
+
+```tsx
+// ✅ Optimized
+<CarouselCircular
+  items={items.slice(0, 20)} // Limit items
+  geometry={{ radius: 900 }} // Reasonable radius
+/>
+```
+
+### Lightbox Not Opening
+
+**Problem:** Click on image but lightbox doesn't open
+
+**Solution:** Make sure `enableLightboxWhenClick` is set to `true`:
+
+```tsx
+<CarouselCircular
+  items={items}
+  enableLightboxWhenClick={true} // ← Required for lightbox
+/>
+```
+
+### Auto-Rotation Not Working
+
+**Problem:** Carousel doesn't auto-rotate
+
+**Solution:** Check your config:
+
+```tsx
+<CarouselCircular
+  items={items}
+  autoRotateConfig={{
+    enabled: true, // ← Must be true
+    speed: 0.1,
+  }}
+/>
+```
+
+### Keyboard Navigation Issues
+
+**Problem:** Arrow keys don't work
+
+**Solutions:**
+
+1. **Carousel navigation:** Ensure `interaction.enableKeyboardNavigation` is `true` (default)
+2. **Lightbox navigation:** Check `lightboxOptions.enableKeyboardNavigation` is `true` (default)
+3. **Focus state:** Carousel container must be focused (click on it first)
+
+```tsx
+<CarouselCircular
+  items={items}
+  interaction={{
+    enableKeyboardNavigation: true, // Carousel arrow keys
+  }}
+  lightboxOptions={{
+    enableKeyboardNavigation: true, // Lightbox arrow keys
+    closeOnEsc: true, // ESC to close
+  }}
+/>
+```
+
 ## 🏗️ Architecture
 
 ### Key Features
@@ -290,18 +659,131 @@ const items = [
 - **Smart Angle Distribution**: Even spacing regardless of portrait/landscape mix
 - **RAF-Based**: All animations use `requestAnimationFrame` for smooth performance
 
+## 💡 FAQ
+
+### Can I use this with TypeScript?
+
+Yes! The package includes full TypeScript definitions with IntelliSense support.
+
+### Does it work with Server-Side Rendering (SSR)?
+
+Yes! It works with Next.js (both App Router and Pages Router), including SSR and SSG.
+
+For Next.js App Router, use the `"use client"` directive in your component file.
+
+### How do I generate LQIP data?
+
+You can use any LQIP generation tool. Here are popular options:
+
+- **[sqip](https://github.com/axe312ger/sqip)** - SVG-based LQIP generator
+- **[lqip-modern](https://github.com/transitive-bullshit/lqip-modern)** - Modern LQIP with multiple algorithms
+- **[plaiceholder](https://plaiceholder.co/)** - Next.js-friendly LQIP generator
+- **ImageMagick** - Create base64 thumbnails with blur
+
+Example with ImageMagick:
+
+```bash
+convert input.jpg -resize 20x -quality 30 -blur 0x1 output.webp
+base64 output.webp
+```
+
+### Can I customize the lightbox appearance?
+
+The lightbox uses minimal inline styles. You can customize it by overriding CSS classes or using `className` props.
+
+### What's the browser support?
+
+Modern browsers (Chrome, Firefox, Safari, Edge) with CSS3 transforms support. IE11 is not supported.
+
+### How many items can I display?
+
+We recommend keeping items under 30 for optimal performance. The component can handle more, but performance may degrade on lower-end devices.
+
+### Can I use videos instead of images?
+
+Currently, the component is optimized for images. For videos, use the `content` prop with a custom video player component.
+
 ## 🤝 Contributing
 
-Contributions are welcome! Please submit issues or pull requests to improve this component.
+Contributions are welcome! This project is open source and we appreciate your help.
+
+### How to Contribute
+
+1. **Fork the repository**: Click the "Fork" button on GitHub
+2. **Clone your fork**:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/carousel-circular-3d.git
+   cd carousel-circular-3d
+   ```
+3. **Install dependencies**:
+   ```bash
+   pnpm install
+   ```
+4. **Create a feature branch**:
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+5. **Make your changes** and test in the playground:
+   ```bash
+   pnpm dev
+   ```
+6. **Run linting**:
+   ```bash
+   pnpm lint:fix
+   ```
+7. **Run type checking**:
+   ```bash
+   pnpm type-check
+   ```
+8. **Commit your changes**:
+   ```bash
+   git commit -m 'feat: add amazing feature'
+   ```
+9. **Push to your fork**:
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+10. **Open a Pull Request** on GitHub
+
+### Reporting Bugs
+
+Found a bug? Please [open an issue](https://github.com/ddevkim/carousel-circular-3d/issues) with:
+
+- Clear description of the problem
+- Steps to reproduce
+- Expected vs actual behavior
+- Browser/device information
+- Minimal code example
+
+### Feature Requests
+
+Have an idea? [Open an issue](https://github.com/ddevkim/carousel-circular-3d/issues) describing:
+
+- The feature you'd like
+- Why it would be useful
+- Proposed API (if applicable)
 
 ## 📄 License
 
 MIT © ddevkim
 
-## 🔗 Links
+## 🙏 Acknowledgments
 
-- [Live Demo](https://carousel-circular.vercel.app)
-- [npm Package](https://www.npmjs.com/package/@ddevkim/carousel-circular-3d)
+Built with:
+
+- React 18+ for modern UI
+- TypeScript for type safety
+- tsup for blazing-fast builds
+- Turbo for monorepo management
+
+## 📬 Contact
+
+Have questions or need support?
+
+- 🌐 **Website**: [https://ddev.kim](https://ddev.kim)
+- 💼 **GitHub**: [ddevkim/carousel-circular-3d](https://github.com/ddevkim/carousel-circular-3d)
+- 📦 **npm**: [@ddevkim/carousel-circular-3d](https://www.npmjs.com/package/@ddevkim/carousel-circular-3d)
+- 🐛 **Issues**: [Report a bug or request a feature](https://github.com/ddevkim/carousel-circular-3d/issues)
 
 ---
 

@@ -66,7 +66,14 @@
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://carousel-circular.vercel.app",
+  "homepage": "https://github.com/ddevkim/carousel-circular-3d#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ddevkim/carousel-circular-3d.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ddevkim/carousel-circular-3d/issues"
+  },
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
