@@ -2,9 +2,12 @@
 
 > A luxury 3D circular carousel component for React with smooth animations, drag interactions, and premium visual effects.
 
-[![npm version](https://img.shields.io/npm/v/@ddevkim/carousel-circular-3d.svg)](https://www.npmjs.com/package/@ddevkim/carousel-circular-3d)
-[![npm downloads](https://img.shields.io/npm/dm/@ddevkim/carousel-circular-3d.svg)](https://www.npmjs.com/package/@ddevkim/carousel-circular-3d)
-[![license](https://img.shields.io/npm/l/@ddevkim/carousel-circular-3d.svg)](LICENSE)
+[![npm version](https://img.shields.io/npm/v/@ddevkim/carousel-circular-3d.svg?style=flat-square)](https://www.npmjs.com/package/@ddevkim/carousel-circular-3d)
+[![npm downloads](https://img.shields.io/npm/dm/@ddevkim/carousel-circular-3d.svg?style=flat-square)](https://www.npmjs.com/package/@ddevkim/carousel-circular-3d)
+[![license](https://img.shields.io/npm/l/@ddevkim/carousel-circular-3d.svg?style=flat-square)](LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/ddevkim/carousel-circular-3d.svg?style=flat-square)](https://github.com/ddevkim/carousel-circular-3d/issues)
+[![GitHub stars](https://img.shields.io/github/stars/ddevkim/carousel-circular-3d.svg?style=flat-square)](https://github.com/ddevkim/carousel-circular-3d/stargazers)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
 ## ✨ Features
 
@@ -705,63 +708,40 @@ Currently, the component is optimized for images. For videos, use the `content` 
 
 ## 🤝 Contributing
 
-Contributions are welcome! This project is open source and we appreciate your help.
+We welcome contributions from the community! Whether it's bug reports, feature requests, or code contributions, we appreciate your help in making this library better.
 
-### How to Contribute
+### Ways to Contribute
 
-1. **Fork the repository**: Click the "Fork" button on GitHub
-2. **Clone your fork**:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/carousel-circular-3d.git
-   cd carousel-circular-3d
-   ```
-3. **Install dependencies**:
-   ```bash
-   pnpm install
-   ```
-4. **Create a feature branch**:
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-5. **Make your changes** and test in the playground:
-   ```bash
-   pnpm dev
-   ```
-6. **Run linting**:
-   ```bash
-   pnpm lint:fix
-   ```
-7. **Run type checking**:
-   ```bash
-   pnpm type-check
-   ```
-8. **Commit your changes**:
-   ```bash
-   git commit -m 'feat: add amazing feature'
-   ```
-9. **Push to your fork**:
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-10. **Open a Pull Request** on GitHub
+- **🐛 Report Bugs**: Use our [Bug Report template](https://github.com/ddevkim/carousel-circular-3d/issues/new?template=bug_report.yml)
+- **✨ Request Features**: Use our [Feature Request template](https://github.com/ddevkim/carousel-circular-3d/issues/new?template=feature_request.yml)
+- **❓ Ask Questions**: Use our [Question template](https://github.com/ddevkim/carousel-circular-3d/issues/new?template=question.yml)
+- **💻 Submit Pull Requests**: Check our [Contributing Guide](CONTRIBUTING.md)
 
-### Reporting Bugs
+### Quick Start for Contributors
 
-Found a bug? Please [open an issue](https://github.com/ddevkim/carousel-circular-3d/issues) with:
+```bash
+# Fork and clone the repository
+git clone https://github.com/YOUR_USERNAME/carousel-circular-3d.git
+cd carousel-circular-3d
 
-- Clear description of the problem
-- Steps to reproduce
-- Expected vs actual behavior
-- Browser/device information
-- Minimal code example
+# Install dependencies
+pnpm install
 
-### Feature Requests
+# Start development
+pnpm dev
 
-Have an idea? [Open an issue](https://github.com/ddevkim/carousel-circular-3d/issues) describing:
+# Run tests
+pnpm lint && pnpm type-check && pnpm build
+```
 
-- The feature you'd like
-- Why it would be useful
-- Proposed API (if applicable)
+For detailed guidelines, please read our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
+
+### Community Guidelines
+
+- Be respectful and inclusive
+- Provide constructive feedback
+- Help others when you can
+- Follow our [Code of Conduct](CODE_OF_CONDUCT.md)
 
 ## 📄 License
 

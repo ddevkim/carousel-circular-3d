@@ -1,0 +1,140 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior in @ddevkim/carousel-circular-3d
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the information below to help us resolve the issue quickly.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+      placeholder: "The carousel stops rotating when..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Install package with 'npm install @ddevkim/carousel-circular-3d'
+        2. Add component with props '...'
+        3. Click on '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: "The carousel should continue rotating..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: "The carousel stops and shows an error..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: code-sample
+    attributes:
+      label: Code Sample
+      description: Please provide a minimal code sample that reproduces the issue
+      render: tsx
+      placeholder: |
+        import { CarouselCircular } from '@ddevkim/carousel-circular-3d';
+        import '@ddevkim/carousel-circular-3d/dist/index.css';
+
+        function App() {
+          return (
+            <CarouselCircular
+              items={items}
+              // your props here
+            />
+          );
+        }
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Package Version
+      description: What version of @ddevkim/carousel-circular-3d are you using?
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: react-version
+    attributes:
+      label: React Version
+      description: What version of React are you using?
+      options:
+        - "18.x"
+        - "17.x"
+        - "16.x"
+        - Other (please specify in additional context)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      description: Which browser(s) are you experiencing this issue on?
+      multiple: true
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Other (please specify in additional context)
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device Type
+      description: What device are you using?
+      multiple: true
+      options:
+        - Desktop
+        - Mobile
+        - Tablet
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here (screenshots, error messages, etc.)
+      placeholder: |
+        - Console errors
+        - Network tab information
+        - Screenshots or screen recordings
+        - Links to reproduction repository
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Checklist
+      description: Please confirm the following
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have provided all the required information above
+          required: true
+        - label: I am willing to help fix this issue if guidance is provided
+          required: false
