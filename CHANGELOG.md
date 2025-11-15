@@ -1,5 +1,55 @@
 # Changelog
 
+## 1.0.0
+
+### Major Changes
+
+- **BREAKING CHANGE:** Simplified scale API - replaced `scaleRange` with `minScale`
+
+  The `visualEffect.scaleRange` prop has been replaced with `visualEffect.minScale` for better clarity and to enforce the correct usage pattern.
+
+  ## Migration Guide
+
+  ### Before (v2.x)
+
+  ```tsx
+  <CarouselCircular
+    visualEffect={{
+      scaleRange: [0.7, 1.0], // ❌ Removed
+    }}
+  />
+  ```
+
+  ### After (v3.0)
+
+  ```tsx
+  <CarouselCircular
+    visualEffect={{
+      minScale: 0.7, // ✅ New API
+    }}
+  />
+  ```
+
+  ## Why This Change?
+
+  1. **Enforces correct usage**: The max scale is now always fixed at 1.0, ensuring front items always fill the container height
+  2. **Clearer API**: `minScale` directly communicates its purpose - controlling the minimum size of back items
+  3. **Prevents confusion**: Users previously could set `scaleRange: [0.7, 0.8]`, causing unwanted behavior (front items not filling container)
+
+  ## What Changed?
+
+  - **Removed**: `visualEffect.scaleRange: [number, number]`
+  - **Added**: `visualEffect.minScale: number` (range: 0.0~1.0, default: 0.7)
+  - Front items now always scale to 1.0 (fills container height)
+  - Back items scale to `minScale` value
+
+  ## Recommended Values
+
+  - `0.5` - Strong perspective effect
+  - `0.7` - Balanced depth (default)
+  - `0.9` - Subtle depth
+  - `1.0` - No depth (all items same size)
+
 ## 0.5.0
 
 ### Minor Changes
