@@ -1,7 +1,7 @@
 {
   "name": "@ddevkim/carousel-circular-3d",
   "version": "1.0.0",
-  "description": "A luxury 3D circular carousel component for React with smooth animations, drag interactions, and premium visual effects",
+  "description": "A luxury 3D circular carousel component for React with smooth animations, drag interactions, premium visual effects, and lightbox support",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
