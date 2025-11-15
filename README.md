@@ -115,7 +115,7 @@ function App() {
         cameraAngle: 12,
       }}
       visualEffect={{
-        scaleRange: [0.5, 1],
+        minScale: 0.5,
         enableReflection: true,
       }}
     />
@@ -164,7 +164,7 @@ function App() {
 | Prop               | Type               | Default      | Description                     |
 | ------------------ | ------------------ | ------------ | ------------------------------- |
 | `opacityRange`     | `[number, number]` | `[0.3, 1.0]` | Opacity range [min, max]        |
-| `scaleRange`       | `[number, number]` | `[0.7, 1.0]` | Scale range [min, max]          |
+| `minScale`         | `number`           | `0.7`        | Minimum scale for back items (0.0~1.0, front items are always 1.0) |
 | `enableReflection` | `boolean`          | `false`      | Enable bottom reflection effect |
 
 #### Styling (`style`)
@@ -410,7 +410,7 @@ export function ProductShowcase() {
           depthIntensity: 1.5,
         }}
         visualEffect={{
-          scaleRange: [0.6, 1],
+          minScale: 0.6,
           opacityRange: [0.4, 1],
           enableReflection: true,
         }}
