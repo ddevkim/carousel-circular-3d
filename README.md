@@ -787,4 +787,4 @@ Have questions or need support?
 
 ---
 
-Made with ❤️ by ddevkim
+Made with ❤️ by [ddevkim](https://ddev.kim)
